@@ -1,7 +1,5 @@
-// Global CSS must be imported before other app modules
-import '../global.css';
-
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+
 import { ThemeProvider } from '@react-navigation/native';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { Stack } from 'expo-router';
@@ -13,12 +11,15 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import { AuthWallSheet } from '@/components/auth/auth-wall-sheet';
 
 import { useThemeConfig } from '@/components/ui/use-theme-config';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
 import { injectStore } from '@/services/api/client';
 import { asyncStoragePersister, queryClient } from '@/services/query/client';
 import { persistor, store } from '@/store';
+// Global CSS must be imported before other app modules
+import '../global.css';
 
 // Inject Redux store into the Axios client for 401 token refresh + logout dispatch
 injectStore(store);
@@ -71,6 +72,7 @@ function Providers({ children }: { children: React.ReactNode }) {
         <ThemeProvider value={theme}>
           <BottomSheetModalProvider>
             {children}
+            <AuthWallSheet />
             <FlashMessage position="top" />
           </BottomSheetModalProvider>
         </ThemeProvider>
