@@ -1,6 +1,9 @@
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+// Global CSS must be imported before other app modules
+import '../global.css';
 
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ThemeProvider } from '@react-navigation/native';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
@@ -8,40 +11,51 @@ import { StyleSheet } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { useThemeConfig } from '@/components/ui/use-theme-config';
-import { hydrateAuth } from '@/features/auth/use-auth-store';
+import { Provider as ReduxProvider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 
-import { APIProvider } from '@/lib/api';
+import { useThemeConfig } from '@/components/ui/use-theme-config';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
-// Import  global CSS file
-import '../global.css';
+import { injectStore } from '@/services/api/client';
+import { asyncStoragePersister, queryClient } from '@/services/query/client';
+import { persistor, store } from '@/store';
+
+// Inject Redux store into the Axios client for 401 token refresh + logout dispatch
+injectStore(store);
+
+// Restore theme from MMKV before first render
+loadSelectedTheme();
+
+SplashScreen.preventAutoHideAsync();
+SplashScreen.setOptions({ duration: 500, fade: true });
 
 export { ErrorBoundary } from 'expo-router';
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const unstable_settings = {
-  initialRouteName: '(app)',
+  initialRouteName: '(tabs)',
 };
-
-hydrateAuth();
-loadSelectedTheme();
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-// Set the animation options. This is optional.
-SplashScreen.setOptions({
-  duration: 500,
-  fade: true,
-});
 
 export default function RootLayout() {
   return (
-    <Providers>
-      <Stack>
-        <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-      </Stack>
-    </Providers>
+    <ReduxProvider store={store}>
+      <PersistGate persistor={persistor}>
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={{ persister: asyncStoragePersister }}
+        >
+          <Providers>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(merchant)" options={{ headerShown: false }} />
+              <Stack.Screen name="(admin)" options={{ headerShown: false }} />
+              <Stack.Screen name="checkout" options={{ headerShown: false }} />
+              <Stack.Screen name="notifications" options={{ headerShown: false }} />
+            </Stack>
+          </Providers>
+        </PersistQueryClientProvider>
+      </PersistGate>
+    </ReduxProvider>
   );
 }
 
@@ -51,16 +65,14 @@ function Providers({ children }: { children: React.ReactNode }) {
     <GestureHandlerRootView
       style={styles.container}
       // eslint-disable-next-line better-tailwindcss/no-unknown-classes
-      className={theme.dark ? `dark` : undefined}
+      className={theme.dark ? 'dark' : undefined}
     >
       <KeyboardProvider>
         <ThemeProvider value={theme}>
-          <APIProvider>
-            <BottomSheetModalProvider>
-              {children}
-              <FlashMessage position="top" />
-            </BottomSheetModalProvider>
-          </APIProvider>
+          <BottomSheetModalProvider>
+            {children}
+            <FlashMessage position="top" />
+          </BottomSheetModalProvider>
         </ThemeProvider>
       </KeyboardProvider>
     </GestureHandlerRootView>
@@ -68,7 +80,5 @@ function Providers({ children }: { children: React.ReactNode }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
 });

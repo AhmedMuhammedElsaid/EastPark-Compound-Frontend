@@ -1,78 +1,80 @@
+// EastPark brand palette — derived from eastpark.jpg logo
+// Token authority: DESIGN.md and src/global.css
+//
+// Backward-compat aliases kept for existing template UI components
+// (Button, Input, Checkbox, etc.) — these will be rebuilt in Phase 2+
 module.exports = {
-  white: '#ffffff',
-  black: '#000000',
+  // ─── Gold (primary brand) ────────────────────────────────
+  gold: {
+    400: '#c4a07a',
+    500: '#b8966a', // PRIMARY — use sparingly
+    600: '#9e7d52',
+    700: '#7a5e38', // Use for text on light backgrounds (WCAG AA)
+    800: '#5c4628',
+  },
+  // ─── Dark surfaces (flagship dark mode) ─────────────────
+  dark: {
+    bg:       '#0d0c0b',
+    card:     '#221f1c',
+    elevated: '#2e2a26',
+    border:   '#3d3830',
+    text:     '#faf8f5',
+    muted:    '#a89880',
+  },
+  // ─── Light surfaces ───────────────────────────────────────
+  light: {
+    bg:     '#faf8f5',
+    card:   '#ffffff',
+    border: '#e4ceae',
+    text:   '#1a1714',
+    muted:  '#7a6e62',
+  },
+  // ─── Semantic ─────────────────────────────────────────────
+  success: '#5A7A52',
+  warning: '#C48B2F',
+  error:   '#B03A2E',
+  info:    '#4A6B8A',
+
+  // ─── Backward-compat aliases for template UI components ───
+  // These match the obytes color API used by Button, Checkbox, etc.
+  white: '#faf8f5',   // warm white (not pure #fff)
+  black: '#0d0c0b',   // warm black (not pure #000)
+  primary: {
+    50:  '#f7f0e8',
+    100: '#f0e1d1',
+    200: '#dbc3a3',
+    300: '#c4a07a',   // gold-400
+    400: '#b8966a',   // gold-500 (PRIMARY)
+    500: '#9e7d52',   // gold-600
+    600: '#7a5e38',   // gold-700
+    700: '#5c4628',   // gold-800
+    800: '#42331e',
+    900: '#2a2012',
+  },
   charcoal: {
-    50: '#F2F2F2',
-    100: '#E5E5E5',
-    200: '#C9C9C9',
-    300: '#B0B0B0',
-    400: '#969696',
-    500: '#7D7D7D',
-    600: '#616161',
-    700: '#474747',
-    800: '#383838',
-    850: '#2E2E2E',
-    900: '#1E1E1E',
-    950: '#121212',
+    50:  '#faf8f5',
+    100: '#f0ece6',
+    200: '#e4ddd4',
+    300: '#c8bead',
+    400: '#a89880',   // dark-muted
+    500: '#7a6e62',   // light-muted
+    600: '#5c5248',
+    700: '#3d3830',   // dark-border
+    800: '#2e2a26',   // dark-elevated
+    850: '#221f1c',   // dark-card
+    900: '#0d0c0b',   // dark-bg
+    950: '#080706',
   },
   neutral: {
-    50: '#FAFAFA',
-    100: '#F5F5F5',
-    200: '#F0EFEE',
-    300: '#D4D4D4',
-    400: '#A3A3A3',
-    500: '#737373',
-    600: '#525252',
-    700: '#404040',
-    800: '#262626',
-    900: '#171717',
-  },
-  primary: {
-    50: '#FFE2CC',
-    100: '#FFC499',
-    200: '#FFA766',
-    300: '#FF984C',
-    400: '#FF8933',
-    500: '#FF7B1A',
-    600: '#FF6C00',
-    700: '#E56100',
-    800: '#CC5600',
-    900: '#B24C00',
-  },
-  success: {
-    50: '#F0FDF4',
-    100: '#DCFCE7',
-    200: '#BBF7D0',
-    300: '#86EFAC',
-    400: '#4ADE80',
-    500: '#22C55E',
-    600: '#16A34A',
-    700: '#15803D',
-    800: '#166534',
-    900: '#14532D',
-  },
-  warning: {
-    50: '#FFFBEB',
-    100: '#FEF3C7',
-    200: '#FDE68A',
-    300: '#FCD34D',
-    400: '#FBBF24',
-    500: '#F59E0B',
-    600: '#D97706',
-    700: '#B45309',
-    800: '#92400E',
-    900: '#78350F',
-  },
-  danger: {
-    50: '#FEF2F2',
-    100: '#FEE2E2',
-    200: '#FECACA',
-    300: '#FCA5A5',
-    400: '#F87171',
-    500: '#EF4444',
-    600: '#DC2626',
-    700: '#B91C1C',
-    800: '#991B1B',
-    900: '#7F1D1D',
+    50:  '#faf8f5',
+    100: '#f0ece6',
+    200: '#e4ddd4',
+    300: '#d4c9bc',
+    400: '#b5a593',
+    500: '#a89880',   // dark-muted
+    600: '#7a6e62',   // light-muted
+    700: '#5c5248',
+    800: '#3d3830',   // dark-border
+    900: '#221f1c',   // dark-card
   },
 };

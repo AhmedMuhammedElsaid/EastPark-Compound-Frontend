@@ -8,8 +8,8 @@ import 'tsx/cjs';
 // eslint-disable-next-line perfectionist/sort-imports
 import Env from './env';
 
-const EXPO_ACCOUNT_OWNER = 'obytes';
-const EAS_PROJECT_ID = 'c3e1075b-6fe7-4686-aa49-35b46a229044';
+// Leave blank until EAS project is initialized: eas init
+const EAS_PROJECT_ID = '';
 
 const appIconBadgeConfig: AppIconBadgeConfig = {
   enabled: Env.EXPO_PUBLIC_APP_ENV !== 'production',
@@ -30,10 +30,9 @@ const appIconBadgeConfig: AppIconBadgeConfig = {
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: Env.EXPO_PUBLIC_NAME,
-  description: `${Env.EXPO_PUBLIC_NAME} Mobile App`,
-  owner: EXPO_ACCOUNT_OWNER,
+  description: 'EastPark — Residential Compound Super-App',
   scheme: Env.EXPO_PUBLIC_SCHEME,
-  slug: 'obytesapp',
+  slug: 'eastpark',
   version: Env.EXPO_PUBLIC_VERSION.toString(),
   orientation: 'portrait',
   icon: './assets/icon.png',
@@ -44,10 +43,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   assetBundlePatterns: ['**/*'],
   ios: {
-    supportsTablet: true,
+    supportsTablet: false,
     bundleIdentifier: Env.EXPO_PUBLIC_BUNDLE_ID,
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
+      NSCameraUsageDescription: 'EastPark uses the camera to upload shop photos and feedback attachments.',
+      NSPhotoLibraryUsageDescription: 'EastPark accesses your photo library to upload images.',
     },
   },
   experiments: {
@@ -56,9 +57,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#2E3C4B',
+      backgroundColor: '#0d0c0b',
     },
     package: Env.EXPO_PUBLIC_PACKAGE,
+    permissions: [
+      'android.permission.CAMERA',
+      'android.permission.READ_EXTERNAL_STORAGE',
+      'android.permission.RECEIVE_BOOT_COMPLETED',
+      'android.permission.VIBRATE',
+    ],
   },
   web: {
     favicon: './assets/favicon.png',
@@ -68,9 +75,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-splash-screen',
       {
-        backgroundColor: '#2E3C4B',
+        // EastPark brand dark background
+        backgroundColor: '#0d0c0b',
         image: './assets/splash-icon.png',
-        imageWidth: 150,
+        imageWidth: 200,
       },
     ],
     [
@@ -78,31 +86,53 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         ios: {
           fonts: [
-            'node_modules/@expo-google-fonts/inter/400Regular/Inter_400Regular.ttf',
-            'node_modules/@expo-google-fonts/inter/500Medium/Inter_500Medium.ttf',
-            'node_modules/@expo-google-fonts/inter/600SemiBold/Inter_600SemiBold.ttf',
-            'node_modules/@expo-google-fonts/inter/700Bold/Inter_700Bold.ttf',
+            // Cairo — primary UI font
+            'node_modules/@expo-google-fonts/cairo/400Regular/Cairo_400Regular.ttf',
+            'node_modules/@expo-google-fonts/cairo/500Medium/Cairo_500Medium.ttf',
+            'node_modules/@expo-google-fonts/cairo/600SemiBold/Cairo_600SemiBold.ttf',
+            'node_modules/@expo-google-fonts/cairo/700Bold/Cairo_700Bold.ttf',
+            // Cormorant Garamond — display/hero only, English only
+            'node_modules/@expo-google-fonts/cormorant-garamond/400Regular/CormorantGaramond_400Regular.ttf',
+            'node_modules/@expo-google-fonts/cormorant-garamond/600SemiBold/CormorantGaramond_600SemiBold.ttf',
+            'node_modules/@expo-google-fonts/cormorant-garamond/700Bold/CormorantGaramond_700Bold.ttf',
           ],
         },
         android: {
           fonts: [
             {
-              fontFamily: 'Inter',
+              fontFamily: 'Cairo',
               fontDefinitions: [
                 {
-                  path: 'node_modules/@expo-google-fonts/inter/400Regular/Inter_400Regular.ttf',
+                  path: 'node_modules/@expo-google-fonts/cairo/400Regular/Cairo_400Regular.ttf',
                   weight: 400,
                 },
                 {
-                  path: 'node_modules/@expo-google-fonts/inter/500Medium/Inter_500Medium.ttf',
+                  path: 'node_modules/@expo-google-fonts/cairo/500Medium/Cairo_500Medium.ttf',
                   weight: 500,
                 },
                 {
-                  path: 'node_modules/@expo-google-fonts/inter/600SemiBold/Inter_600SemiBold.ttf',
+                  path: 'node_modules/@expo-google-fonts/cairo/600SemiBold/Cairo_600SemiBold.ttf',
                   weight: 600,
                 },
                 {
-                  path: 'node_modules/@expo-google-fonts/inter/700Bold/Inter_700Bold.ttf',
+                  path: 'node_modules/@expo-google-fonts/cairo/700Bold/Cairo_700Bold.ttf',
+                  weight: 700,
+                },
+              ],
+            },
+            {
+              fontFamily: 'CormorantGaramond',
+              fontDefinitions: [
+                {
+                  path: 'node_modules/@expo-google-fonts/cormorant-garamond/400Regular/CormorantGaramond_400Regular.ttf',
+                  weight: 400,
+                },
+                {
+                  path: 'node_modules/@expo-google-fonts/cormorant-garamond/600SemiBold/CormorantGaramond_600SemiBold.ttf',
+                  weight: 600,
+                },
+                {
+                  path: 'node_modules/@expo-google-fonts/cormorant-garamond/700Bold/CormorantGaramond_700Bold.ttf',
                   weight: 700,
                 },
               ],
@@ -113,6 +143,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     'expo-localization',
     'expo-router',
+    'expo-notifications',
     ['app-icon-badge', appIconBadgeConfig],
     ['react-native-edge-to-edge'],
   ],
@@ -120,5 +151,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     eas: {
       projectId: EAS_PROJECT_ID,
     },
+    apiUrl: Env.EXPO_PUBLIC_API_URL,
+    socketUrl: Env.EXPO_PUBLIC_SOCKET_URL,
+    posthogKey: Env.EXPO_PUBLIC_POSTHOG_KEY,
   },
 });

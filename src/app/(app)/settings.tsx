@@ -1,1 +1,4 @@
-export { SettingsScreen as default } from '@/features/settings/settings-screen';
+import { Redirect } from 'expo-router';
+export default function OldSettings() {
+  return <Redirect href="/(tabs)/profile" />;
+}

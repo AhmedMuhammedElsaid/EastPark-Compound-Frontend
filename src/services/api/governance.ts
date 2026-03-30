@@ -1,0 +1,60 @@
+import { client } from './client';
+
+export type ElectionVisibilityMode = 'SEALED_UNTIL_DEADLINE' | 'LIVE_COUNT' | 'ADMIN_CONTROLLED';
+
+export interface Poll {
+  id: string;
+  question: string;
+  questionAr: string;
+  options: Array<{ id: string; text: string; textAr: string; votes?: number }>;
+  totalVotes: number;
+  expiresAt: string;
+  myVote: string | null;
+  resultsOpen: boolean;
+}
+
+export interface Candidate {
+  id: string;
+  name: string;
+  nameAr: string;
+  statement: string | null;
+  statementAr: string | null;
+  photoUrl: string | null;
+  votes?: number;
+}
+
+export interface Election {
+  id: string;
+  title: string;
+  titleAr: string;
+  description: string | null;
+  descriptionAr: string | null;
+  candidates: Candidate[];
+  totalVotes: number;
+  expiresAt: string;
+  resultsOpen: boolean;
+  visibilityMode: ElectionVisibilityMode;
+  myVote: string | null;
+}
+
+export const governanceApi = {
+  // Polls
+  getPolls: (params?: { cursor?: string; limit?: number }) =>
+    client.get<{ data: { data: Poll[]; nextCursor: string | null } }>('/polls', { params }),
+
+  getPoll: (pollId: string) =>
+    client.get<{ data: Poll }>(`/polls/${pollId}`),
+
+  votePoll: (pollId: string, optionId: string) =>
+    client.post<{ data: Poll }>(`/polls/${pollId}/vote`, { optionId }),
+
+  // Elections
+  getElections: (params?: { cursor?: string; limit?: number }) =>
+    client.get<{ data: { data: Election[]; nextCursor: string | null } }>('/elections', { params }),
+
+  getElection: (electionId: string) =>
+    client.get<{ data: Election }>(`/elections/${electionId}`),
+
+  voteElection: (electionId: string, candidateId: string) =>
+    client.post<{ data: Election }>(`/elections/${electionId}/vote`, { candidateId }),
+};

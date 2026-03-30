@@ -1,128 +1,90 @@
-/* Import Tailwind base styles */
+/* EastPark Design System — token authority: DESIGN.md */
 @import 'tailwindcss';
 @import 'uniwind';
 
-/* Define your theme in CSS (replaces tailwind.config.js) */
 @theme {
-  /* Font families */
-  --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /* ─── Typography ───────────────────────────────────────────────── */
+  --font-family-sans:    'Cairo', ui-sans-serif, system-ui, sans-serif;
+  --font-family-display: 'CormorantGaramond', Georgia, serif;
 
-  /* Base colors */
-  --color-white: #ffffff;
-  --color-black: #000000;
+  /* ─── Gold palette (derived from eastpark.jpg brand logo) ──────── */
+  --color-gold-400: #c4a07a;
+  --color-gold-500: #b8966a;
+  --color-gold-600: #9e7d52;
+  --color-gold-700: #7a5e38;
+  --color-gold-800: #5c4628;
 
-  /* Charcoal palette */
-  --color-charcoal-50: #F2F2F2;
-  --color-charcoal-100: #E5E5E5;
-  --color-charcoal-200: #C9C9C9;
-  --color-charcoal-300: #B0B0B0;
-  --color-charcoal-400: #969696;
-  --color-charcoal-500: #7D7D7D;
-  --color-charcoal-600: #616161;
-  --color-charcoal-700: #474747;
-  --color-charcoal-800: #383838;
-  --color-charcoal-850: #2E2E2E;
-  --color-charcoal-900: #1E1E1E;
-  --color-charcoal-950: #121212;
+  /* ─── Dark surfaces (flagship mode) ────────────────────────────── */
+  --color-dark-bg:       #0d0c0b;
+  --color-dark-card:     #221f1c;
+  --color-dark-elevated: #2e2a26;
+  --color-dark-border:   #3d3830;
+  --color-dark-text:     #faf8f5;
+  --color-dark-muted:    #a89880;
 
-  /* Neutral palette */
-  --color-neutral-50: #FAFAFA;
-  --color-neutral-100: #F5F5F5;
-  --color-neutral-200: #F0EFEE;
-  --color-neutral-300: #D4D4D4;
-  --color-neutral-400: #A3A3A3;
-  --color-neutral-500: #737373;
-  --color-neutral-600: #525252;
-  --color-neutral-700: #404040;
-  --color-neutral-800: #262626;
-  --color-neutral-900: #171717;
+  /* ─── Light surfaces ────────────────────────────────────────────── */
+  --color-light-bg:     #faf8f5;
+  --color-light-card:   #ffffff;
+  --color-light-border: #e4ceae;
+  --color-light-text:   #1a1714;
+  --color-light-muted:  #7a6e62;
 
-  /* Primary palette */
-  --color-primary-50: #FFE2CC;
-  --color-primary-100: #FFC499;
-  --color-primary-200: #FFA766;
-  --color-primary-300: #FF984C;
-  --color-primary-400: #FF8933;
-  --color-primary-500: #FF7B1A;
-  --color-primary-600: #FF6C00;
-  --color-primary-700: #E56100;
-  --color-primary-800: #CC5600;
-  --color-primary-900: #B24C00;
+  /* ─── Semantic (muted, premium — never neon) ────────────────────── */
+  --color-success: #5A7A52;
+  --color-warning: #C48B2F;
+  --color-error:   #B03A2E;
+  --color-info:    #4A6B8A;
 
-  /* Success palette */
-  --color-success-50: #F0FDF4;
-  --color-success-100: #DCFCE7;
-  --color-success-200: #BBF7D0;
-  --color-success-300: #86EFAC;
-  --color-success-400: #4ADE80;
-  --color-success-500: #22C55E;
-  --color-success-600: #16A34A;
-  --color-success-700: #15803D;
-  --color-success-800: #166534;
-  --color-success-900: #14532D;
+  /* ─── Design-system surface tokens (dark-first) ─────────────────── */
+  --color-background:           #0d0c0b;
+  --color-foreground:           #faf8f5;
+  --color-card:                 #221f1c;
+  --color-card-foreground:      #faf8f5;
+  --color-muted:                #2e2a26;
+  --color-muted-foreground:     #a89880;
+  --color-border:               #3d3830;
+  --color-input:                #3d3830;
+  --color-ring:                 #b8966a;
+  --color-primary:              #b8966a;
+  --color-primary-foreground:   #0d0c0b;
+  --color-destructive:          #B03A2E;
+  --color-destructive-foreground: #faf8f5;
 
-  /* Warning palette */
-  --color-warning-50: #FFFBEB;
-  --color-warning-100: #FEF3C7;
-  --color-warning-200: #FDE68A;
-  --color-warning-300: #FCD34D;
-  --color-warning-400: #FBBF24;
-  --color-warning-500: #F59E0B;
-  --color-warning-600: #D97706;
-  --color-warning-700: #B45309;
-  --color-warning-800: #92400E;
-  --color-warning-900: #78350F;
-
-  /* Danger palette */
-  --color-danger-50: #FEF2F2;
-  --color-danger-100: #FEE2E2;
-  --color-danger-200: #FECACA;
-  --color-danger-300: #FCA5A5;
-  --color-danger-400: #F87171;
-  --color-danger-500: #EF4444;
-  --color-danger-600: #DC2626;
-  --color-danger-700: #B91C1C;
-  --color-danger-800: #991B1B;
-  --color-danger-900: #7F1D1D;
-
-  /* Semantic colors - using primary for main brand color */
-  --color-background: #ffffff;
-  --color-foreground: #0a0a0a;
-
-  --color-card: #ffffff;
-  --color-card-foreground: #0a0a0a;
-
-  --color-muted: #f5f5f5;
-  --color-muted-foreground: #737373;
-
-  --color-border: #e5e5e5;
-  --color-input: #e5e5e5;
-  --color-ring: #FF6C00;
-
-  --color-destructive: #ef4444;
-  --color-destructive-foreground: #ffffff;
+  /* ─── Radius tokens ─────────────────────────────────────────────── */
+  --radius-xs:   4px;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
 }
 
-/* Dark mode colors */
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-background: #0a0a0a;
-    --color-foreground: #fafafa;
-
-    --color-card: #171717;
-    --color-card-foreground: #fafafa;
-
-    --color-muted: #262626;
-    --color-muted-foreground: #a3a3a3;
-
-    --color-border: #404040;
-    --color-input: #404040;
-  }
+/* ─── Light mode class override (user preference toggle) ────────────── */
+.light {
+  --color-background:           #faf8f5;
+  --color-foreground:           #1a1714;
+  --color-card:                 #ffffff;
+  --color-card-foreground:      #1a1714;
+  --color-muted:                #f0ece6;
+  --color-muted-foreground:     #7a6e62;
+  --color-border:               #e4ceae;
+  --color-input:                #e4ceae;
+  --color-primary:              #7a5e38;
+  --color-primary-foreground:   #faf8f5;
 }
 
-/* Custom utilities (if needed) */
+/* ─── Utilities ─────────────────────────────────────────────────────── */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Warm gold shadow — never cold drop shadows */
+  .shadow-gold {
+    box-shadow: 0 4px 24px rgba(184, 150, 106, 0.10);
+  }
+
+  .shadow-gold-deep {
+    box-shadow: 0 2px 12px rgba(184, 150, 106, 0.20);
   }
 }

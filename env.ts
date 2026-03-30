@@ -2,7 +2,6 @@ import z from 'zod';
 
 import packageJSON from './package.json';
 
-// Single unified environment schema
 const envSchema = z.object({
   EXPO_PUBLIC_APP_ENV: z.enum(['development', 'preview', 'production']),
   EXPO_PUBLIC_NAME: z.string(),
@@ -10,43 +9,37 @@ const envSchema = z.object({
   EXPO_PUBLIC_BUNDLE_ID: z.string(),
   EXPO_PUBLIC_PACKAGE: z.string(),
   EXPO_PUBLIC_VERSION: z.string(),
-  EXPO_PUBLIC_API_URL: z.string().url(),
-  EXPO_PUBLIC_ASSOCIATED_DOMAIN: z.string().url().optional(),
-  EXPO_PUBLIC_VAR_NUMBER: z.number(),
-  EXPO_PUBLIC_VAR_BOOL: z.boolean(),
-
-  // only available for app.config.ts usage
+  EXPO_PUBLIC_API_URL: z.string(),
+  EXPO_PUBLIC_SOCKET_URL: z.string(),
+  EXPO_PUBLIC_POSTHOG_KEY: z.string().optional(),
   APP_BUILD_ONLY_VAR: z.string().optional(),
 });
 
-// Config records per environment
 const EXPO_PUBLIC_APP_ENV = (process.env.EXPO_PUBLIC_APP_ENV
   ?? 'development') as z.infer<typeof envSchema>['EXPO_PUBLIC_APP_ENV'];
 
 const BUNDLE_IDS = {
-  development: 'com.obytes.development',
-  preview: 'com.obytes.preview',
-  production: 'com.obytes',
+  development: 'com.eastpark.app.development',
+  preview: 'com.eastpark.app.preview',
+  production: 'com.eastpark.app',
 } as const;
 
 const PACKAGES = {
-  development: 'com.obytes.development',
-  preview: 'com.obytes.preview',
-  production: 'com.obytes',
+  development: 'com.eastpark.app.development',
+  preview: 'com.eastpark.app.preview',
+  production: 'com.eastpark.app',
 } as const;
 
 const SCHEMES = {
-  development: 'obytesApp',
-  preview: 'obytesApp.preview',
-  production: 'obytesApp',
+  development: 'eastpark',
+  preview: 'eastpark.preview',
+  production: 'eastpark',
 } as const;
 
-const NAME = 'ObytesApp';
+const NAME = 'EastPark';
 
-// Check if strict validation is required (before prebuild)
 const STRICT_ENV_VALIDATION = process.env.STRICT_ENV_VALIDATION === '1';
 
-// Build env object
 const _env: z.infer<typeof envSchema> = {
   EXPO_PUBLIC_APP_ENV,
   EXPO_PUBLIC_NAME: NAME,
@@ -54,10 +47,9 @@ const _env: z.infer<typeof envSchema> = {
   EXPO_PUBLIC_BUNDLE_ID: BUNDLE_IDS[EXPO_PUBLIC_APP_ENV],
   EXPO_PUBLIC_PACKAGE: PACKAGES[EXPO_PUBLIC_APP_ENV],
   EXPO_PUBLIC_VERSION: packageJSON.version,
-  EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL ?? '',
-  EXPO_PUBLIC_ASSOCIATED_DOMAIN: process.env.EXPO_PUBLIC_ASSOCIATED_DOMAIN,
-  EXPO_PUBLIC_VAR_NUMBER: Number(process.env.EXPO_PUBLIC_VAR_NUMBER ?? 0),
-  EXPO_PUBLIC_VAR_BOOL: process.env.EXPO_PUBLIC_VAR_BOOL === 'true',
+  EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',
+  EXPO_PUBLIC_SOCKET_URL: process.env.EXPO_PUBLIC_SOCKET_URL ?? 'http://localhost:3000',
+  EXPO_PUBLIC_POSTHOG_KEY: process.env.EXPO_PUBLIC_POSTHOG_KEY,
   APP_BUILD_ONLY_VAR: process.env.APP_BUILD_ONLY_VAR,
 };
 
@@ -77,7 +69,7 @@ function getValidatedEnv(env: z.infer<typeof envSchema>) {
     }
   }
   else {
-    console.log('✅ Environment variables validated successfully');
+    console.log('✅ EastPark environment variables validated');
   }
 
   return parsed.success ? parsed.data : env;
