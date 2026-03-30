@@ -9,6 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
 import { shopsApi } from '@/services/api/shops';
 import type { Shop } from '@/services/api/shops';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { addItem } from '@/store/slices/cartSlice';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 export default function ShopDetailScreen() {
@@ -59,9 +61,10 @@ export default function ShopDetailScreen() {
 
         <ShopInfoSection shop={shop} isAr={isAr} />
 
-        {activeTab === 'menu' && <MenuTabContent shopId={shopId} />}
+        {activeTab === 'menu' && <MenuTabContent shopId={shopId} shopName={shop.name} />}
         {activeTab === 'reviews' && <ReviewsTabContent shopId={shopId} />}
       </ScrollView>
+      <CartBar shopId={shopId} bottomInset={insets.bottom} />
     </View>
   );
 }
@@ -158,7 +161,7 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
   );
 }
 
-function MenuTabContent({ shopId }: { shopId: string }) {
+function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string }) {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
 
@@ -190,15 +193,37 @@ function MenuTabContent({ shopId }: { shopId: string }) {
   return (
     <View style={styles.tabContent}>
       {products.map((product) => (
-        <ProductRow key={product.id} product={product} isAr={isAr} />
+        <ProductRow key={product.id} product={product} isAr={isAr} shopId={shopId} shopName={shopName} />
       ))}
     </View>
   );
 }
 
-function ProductRow({ product, isAr }: { product: any; isAr: boolean }) {
+function ProductRow({
+  product,
+  isAr,
+  shopId,
+  shopName,
+}: {
+  product: any;
+  isAr: boolean;
+  shopId: string;
+  shopName: string;
+}) {
+  const { requireAuth } = useAuthGuard();
+  const dispatch = useAppDispatch();
   const name = isAr ? product.nameAr : product.name;
   const desc = isAr ? product.descriptionAr : product.description;
+
+  function handleAddToCart() {
+    requireAuth(() => {
+      dispatch(addItem({
+        item: { productId: product.id, name: product.name, nameAr: product.nameAr, price: product.price, quantity: 1, imageUrl: product.imageUrl ?? null },
+        shopId,
+        shopName,
+      }));
+    });
+  }
 
   return (
     <View style={styles.productRow}>
@@ -207,9 +232,14 @@ function ProductRow({ product, isAr }: { product: any; isAr: boolean }) {
         {desc ? <Text style={styles.productDesc} numberOfLines={2}>{desc}</Text> : null}
         <Text style={styles.productPrice}>EGP {product.price.toFixed(2)}</Text>
       </View>
-      {product.imageUrl ? (
-        <Image source={{ uri: product.imageUrl }} style={styles.productImage} resizeMode="cover" />
-      ) : null}
+      <View style={styles.productRight}>
+        {product.imageUrl ? (
+          <Image source={{ uri: product.imageUrl }} style={styles.productImage} resizeMode="cover" />
+        ) : null}
+        <Pressable style={styles.addBtn} onPress={handleAddToCart} hitSlop={8}>
+          <Text style={styles.addBtnText}>+</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -253,6 +283,29 @@ function ReviewsTabContent({ shopId }: { shopId: string }) {
         </View>
       ))}
     </View>
+  );
+}
+
+function CartBar({ shopId, bottomInset }: { shopId: string; bottomInset: number }) {
+  const { t } = useTranslation();
+  const { items, shopId: cartShopId } = useAppSelector((s) => s.cart);
+
+  if (cartShopId !== shopId || !items.length) return null;
+
+  const count = items.reduce((sum, item) => sum + item.quantity, 0);
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  return (
+    <Pressable
+      style={[styles.cartBar, { paddingBottom: bottomInset + SPACING.sm }]}
+      onPress={() => router.push('/checkout/cart' as any)}
+    >
+      <View style={styles.cartBarBadge}>
+        <Text style={styles.cartBarBadgeText}>{count}</Text>
+      </View>
+      <Text style={styles.cartBarLabel}>{t('cart.checkout')}</Text>
+      <Text style={styles.cartBarTotal}>EGP {total.toFixed(2)}</Text>
+    </Pressable>
   );
 }
 
@@ -348,7 +401,17 @@ const styles = StyleSheet.create({
   productName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: DARK.text },
   productDesc: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted, lineHeight: 20 },
   productPrice: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: BRAND.gold },
-  productImage: { width: 80, height: 80, borderRadius: RADIUS.sm },
+  productRight: { alignItems: 'center', gap: SPACING.xs },
+  productImage: { width: 72, height: 72, borderRadius: RADIUS.sm },
+  addBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: BRAND.gold,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addBtnText: { fontSize: 20, color: DARK.bg, lineHeight: 24, fontWeight: '700' },
   reviewCard: {
     backgroundColor: DARK.card,
     borderRadius: RADIUS.sm,
@@ -360,4 +423,27 @@ const styles = StyleSheet.create({
   reviewerName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text },
   reviewRating: { fontSize: 12 },
   reviewComment: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, lineHeight: 22 },
+  cartBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: BRAND.gold,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.base,
+    paddingTop: SPACING.md,
+    gap: SPACING.sm,
+  },
+  cartBarBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cartBarBadgeText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 13, color: DARK.text },
+  cartBarLabel: { flex: 1, fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: DARK.bg },
+  cartBarTotal: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: DARK.bg },
 });

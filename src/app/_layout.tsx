@@ -12,6 +12,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { AuthWallSheet } from '@/components/auth/auth-wall-sheet';
+import { CartConflictSheet } from '@/components/cart/cart-conflict-sheet';
 
 import { useThemeConfig } from '@/components/ui/use-theme-config';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
@@ -73,6 +74,7 @@ function Providers({ children }: { children: React.ReactNode }) {
           <BottomSheetModalProvider>
             {children}
             <AuthWallSheet />
+            <CartConflictSheet />
             <FlashMessage position="top" />
           </BottomSheetModalProvider>
         </ThemeProvider>
