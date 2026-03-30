@@ -1,14 +1,14 @@
+import type { AxiosResponse } from 'axios';
+import type { Order, OrderStatus } from '@/services/api/orders';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import type { AxiosResponse } from 'axios';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Order, OrderStatus } from '@/services/api/orders';
 import { ordersApi } from '@/services/api/orders';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -27,8 +27,8 @@ export default function OrdersScreen() {
   const insets = useSafeAreaInsets();
   const isAr = i18n.language === 'ar';
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } =
-    useInfiniteQuery<
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
+    = useInfiniteQuery<
       AxiosResponse<{ data: { data: Order[]; nextCursor: string | null } }>,
       Error,
       { pages: AxiosResponse<{ data: { data: Order[]; nextCursor: string | null } }>[] },
@@ -37,11 +37,11 @@ export default function OrdersScreen() {
     >({
       queryKey: ['orders'],
       queryFn: ({ pageParam }) => ordersApi.getOrders({ cursor: pageParam, limit: 20 }),
-      getNextPageParam: (last) => last.data.data.nextCursor ?? undefined,
+      getNextPageParam: last => last.data.data.nextCursor ?? undefined,
       initialPageParam: undefined,
     });
 
-  const orders = data?.pages.flatMap((p) => p.data.data.data) ?? [];
+  const orders = data?.pages.flatMap(p => p.data.data.data) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -60,9 +60,12 @@ export default function OrdersScreen() {
         : (
             <FlashList
               data={orders}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
               renderItem={({ item }) => <OrderCard order={item} isAr={isAr} />}
-              onEndReached={() => { if (hasNextPage && !isFetchingNextPage) fetchNextPage(); }}
+              onEndReached={() => {
+                if (hasNextPage && !isFetchingNextPage)
+                  fetchNextPage();
+              }}
               onEndReachedThreshold={0.5}
               contentContainerStyle={styles.listContent}
               onRefresh={refetch}
@@ -102,10 +105,13 @@ function OrderCard({ order, isAr }: { order: Order; isAr: boolean }) {
         </View>
       </View>
       <Text style={styles.items} numberOfLines={1}>
-        {order.items.map((item) => (isAr ? item.productNameArSnapshot : item.productNameSnapshot)).join(', ')}
+        {order.items.map(item => (isAr ? item.productNameArSnapshot : item.productNameSnapshot)).join(', ')}
       </Text>
       <View style={styles.cardBottom}>
-        <Text style={styles.total}>EGP {order.totalAmount.toFixed(2)}</Text>
+        <Text style={styles.total}>
+          EGP
+          {order.totalAmount.toFixed(2)}
+        </Text>
         <Text style={styles.date}>{date}</Text>
       </View>
     </Pressable>

@@ -64,6 +64,8 @@ export default antfu(
             'README-project.md',
             'ISSUE_TEMPLATE.md',
             'PULL_REQUEST_TEMPLATE.md',
+            // Expo Router dynamic segments use camelCase: [shopId].tsx, [orderId].tsx, etc.
+            /^\[.*[A-Z].*\]\.(tsx?|jsx?)$/,
           ],
         },
       ],

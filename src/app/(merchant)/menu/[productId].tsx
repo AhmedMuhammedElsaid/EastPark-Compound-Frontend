@@ -1,3 +1,4 @@
+import type { Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -33,11 +34,11 @@ export default function ProductFormScreen() {
     queryKey: ['merchant-product', productId],
     queryFn: () => merchantApi.getMyProducts({ limit: 100, includeUnavailable: true }),
     enabled: !isNew,
-    select: (res) => res.data.data.data.find((p) => p.id === productId),
+    select: res => res.data.data.data.find(p => p.id === productId),
   });
 
   const { control, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as Resolver<FormData>,
     defaultValues: {
       name: '',
       nameAr: '',
@@ -99,7 +100,7 @@ export default function ProductFormScreen() {
 
         <Pressable
           style={[styles.saveBtn, isPending && styles.saveBtnDisabled]}
-          onPress={handleSubmit((d) => mutate(d))}
+          onPress={handleSubmit((d: FormData) => mutate(d))}
           disabled={isPending}
         >
           <Text style={styles.saveBtnText}>{isPending ? t('common.loading') : t('common.save')}</Text>
@@ -150,7 +151,10 @@ function PField({
       <TextInput
         value={String(field.value ?? '')}
         onChangeText={field.onChange}
-        onBlur={() => { field.onBlur(); setIsFocused(false); }}
+        onBlur={() => {
+          field.onBlur();
+          setIsFocused(false);
+        }}
         onFocus={() => setIsFocused(true)}
         multiline={multiline}
         keyboardType={keyboardType}

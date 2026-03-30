@@ -1,14 +1,14 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
 import type { AxiosResponse } from 'axios';
+import type { MerchantOrder } from '@/services/api/merchant';
+import { FlashList } from '@shopify/flash-list';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlashList } from '@shopify/flash-list';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { MerchantOrder } from '@/services/api/merchant';
 import { merchantApi } from '@/services/api/merchant';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -30,8 +30,8 @@ export default function MerchantOrdersScreen() {
   const insets = useSafeAreaInsets();
   const [filter, setFilter] = React.useState<StatusFilter>('ALL');
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } =
-    useInfiniteQuery<
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
+    = useInfiniteQuery<
       AxiosResponse<{ data: { data: MerchantOrder[]; nextCursor: string | null } }>,
       Error,
       { pages: AxiosResponse<{ data: { data: MerchantOrder[]; nextCursor: string | null } }>[] },
@@ -45,12 +45,12 @@ export default function MerchantOrdersScreen() {
           limit: 20,
           status: filter === 'ALL' ? undefined : filter,
         }),
-      getNextPageParam: (last) => last.data.data.nextCursor ?? undefined,
+      getNextPageParam: last => last.data.data.nextCursor ?? undefined,
       initialPageParam: undefined,
       refetchInterval: 15000, // poll every 15s for new orders
     });
 
-  const orders = data?.pages.flatMap((p) => p.data.data.data) ?? [];
+  const orders = data?.pages.flatMap(p => p.data.data.data) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -74,19 +74,22 @@ export default function MerchantOrdersScreen() {
         : (
             <FlashList
               data={orders}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
               renderItem={({ item }) => <MerchantOrderCard order={item} />}
-              onEndReached={() => { if (hasNextPage && !isFetchingNextPage) fetchNextPage(); }}
+              onEndReached={() => {
+                if (hasNextPage && !isFetchingNextPage)
+                  fetchNextPage();
+              }}
               onEndReachedThreshold={0.5}
               contentContainerStyle={styles.listContent}
               onRefresh={refetch}
               refreshing={false}
-              ListEmptyComponent={
+              ListEmptyComponent={(
                 <View style={styles.empty}>
                   <Text style={styles.emptyIcon}>📭</Text>
                   <Text style={styles.emptyText}>{t('common.no_results')}</Text>
                 </View>
-              }
+              )}
               ListFooterComponent={
                 isFetchingNextPage ? <Skeleton width="100%" height={104} borderRadius={RADIUS.md} /> : null
               }
@@ -131,7 +134,10 @@ function MerchantOrderCard({ order }: { order: MerchantOrder }) {
     >
       <View style={styles.cardTop}>
         <View style={styles.cardLeft}>
-          <Text style={styles.unitLabel}>Unit {order.user.unitNumber}</Text>
+          <Text style={styles.unitLabel}>
+            Unit
+            {order.user.unitNumber}
+          </Text>
           <Text style={styles.customerName}>{order.user.name}</Text>
         </View>
         <View style={styles.cardRight}>
@@ -142,9 +148,12 @@ function MerchantOrderCard({ order }: { order: MerchantOrder }) {
         </View>
       </View>
       <Text style={styles.items} numberOfLines={1}>
-        {order.items.map((item) => `${item.quantity}× ${item.productNameSnapshot}`).join(', ')}
+        {order.items.map(item => `${item.quantity}× ${item.productNameSnapshot}`).join(', ')}
       </Text>
-      <Text style={styles.total}>EGP {order.totalAmount.toFixed(2)}</Text>
+      <Text style={styles.total}>
+        EGP
+        {order.totalAmount.toFixed(2)}
+      </Text>
     </Pressable>
   );
 }

@@ -1,14 +1,14 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
 import type { AxiosResponse } from 'axios';
+import type { Report } from '@/services/api/community';
+import { FlashList } from '@shopify/flash-list';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Report } from '@/services/api/community';
 import { communityApi } from '@/services/api/community';
 import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
@@ -17,8 +17,8 @@ export default function ReportsScreen() {
   const insets = useSafeAreaInsets();
   const isAr = i18n.language === 'ar';
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } =
-    useInfiniteQuery<
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
+    = useInfiniteQuery<
       AxiosResponse<{ data: { data: Report[]; nextCursor: string | null } }>,
       Error,
       { pages: AxiosResponse<{ data: { data: Report[]; nextCursor: string | null } }>[] },
@@ -27,11 +27,11 @@ export default function ReportsScreen() {
     >({
       queryKey: ['reports'],
       queryFn: ({ pageParam }) => communityApi.getReports({ cursor: pageParam, limit: 20 }),
-      getNextPageParam: (last) => last.data.data.nextCursor ?? undefined,
+      getNextPageParam: last => last.data.data.nextCursor ?? undefined,
       initialPageParam: undefined,
     });
 
-  const reports = data?.pages.flatMap((p) => p.data.data.data) ?? [];
+  const reports = data?.pages.flatMap(p => p.data.data.data) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -53,19 +53,22 @@ export default function ReportsScreen() {
         : (
             <FlashList
               data={reports}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
               renderItem={({ item }) => <ReportRow report={item} isAr={isAr} />}
-              onEndReached={() => { if (hasNextPage && !isFetchingNextPage) fetchNextPage(); }}
+              onEndReached={() => {
+                if (hasNextPage && !isFetchingNextPage)
+                  fetchNextPage();
+              }}
               onEndReachedThreshold={0.5}
               contentContainerStyle={styles.listContent}
               onRefresh={refetch}
               refreshing={false}
-              ListEmptyComponent={
+              ListEmptyComponent={(
                 <View style={styles.empty}>
                   <Text style={styles.emptyIcon}>📋</Text>
                   <Text style={styles.emptyText}>{t('community.no_reports')}</Text>
                 </View>
-              }
+              )}
               ListFooterComponent={
                 isFetchingNextPage
                   ? <Skeleton width="100%" height={80} borderRadius={RADIUS.md} />

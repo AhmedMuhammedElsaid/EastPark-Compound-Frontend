@@ -1,12 +1,12 @@
+import type { Product } from '@/services/api/merchant';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Product } from '@/services/api/merchant';
 import { merchantApi } from '@/services/api/merchant';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -70,8 +70,7 @@ export default function MerchantMenuScreen() {
             <ScrollView
               showsVerticalScrollIndicator={false}
               contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + SPACING.xl }]}
-              onRefresh={refetch}
-              refreshing={false}
+              refreshControl={<RefreshControl refreshing={false} onRefresh={() => { void refetch(); }} tintColor={BRAND.gold} />}
             >
               {products.length === 0 && (
                 <View style={styles.empty}>
@@ -79,12 +78,12 @@ export default function MerchantMenuScreen() {
                   <Text style={styles.emptyText}>{t('common.no_results')}</Text>
                 </View>
               )}
-              {products.map((product) => (
+              {products.map(product => (
                 <ProductRow
                   key={product.id}
                   product={product}
                   isAr={isAr}
-                  onToggle={(v) => toggleAvailability({ productId: product.id, isAvailable: v })}
+                  onToggle={v => toggleAvailability({ productId: product.id, isAvailable: v })}
                   onEdit={() => router.push(`/(merchant)/menu/${product.id}` as any)}
                   onDelete={() => handleDelete(product)}
                 />
@@ -114,7 +113,10 @@ function ProductRow({
     <View style={[styles.row, !product.isAvailable && styles.rowUnavailable]}>
       <View style={styles.rowInfo}>
         <Text style={styles.rowName} numberOfLines={1}>{name}</Text>
-        <Text style={styles.rowPrice}>EGP {product.price.toFixed(2)}</Text>
+        <Text style={styles.rowPrice}>
+          EGP
+          {product.price.toFixed(2)}
+        </Text>
       </View>
       <View style={styles.rowActions}>
         <Switch

@@ -1,14 +1,14 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AxiosResponse } from 'axios';
+import type { Comment } from '@/services/api/community';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
-import type { Comment } from '@/services/api/community';
 import { communityApi } from '@/services/api/community';
 import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
@@ -28,7 +28,8 @@ export default function AnnouncementDetailScreen() {
   const title = ann ? (isAr ? ann.titleAr : ann.title) : '';
   const body = ann ? (isAr ? ann.bodyAr : ann.body) : '';
 
-  if (isLoading || !ann) return <AnnouncementSkeleton insets={insets} />;
+  if (isLoading || !ann)
+    return <AnnouncementSkeleton insets={insets} />;
 
   return (
     <KeyboardAvoidingView
@@ -69,8 +70,8 @@ export default function AnnouncementDetailScreen() {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function CommentsSection({ announcementId }: { announcementId: string }) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery<
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage }
+    = useInfiniteQuery<
       AxiosResponse<{ data: { data: Comment[]; nextCursor: string | null } }>,
       Error,
       { pages: AxiosResponse<{ data: { data: Comment[]; nextCursor: string | null } }>[] },
@@ -80,11 +81,11 @@ function CommentsSection({ announcementId }: { announcementId: string }) {
       queryKey: ['comments', announcementId],
       queryFn: ({ pageParam }) =>
         communityApi.getComments(announcementId, { cursor: pageParam, limit: 20 }),
-      getNextPageParam: (last) => last.data.data.nextCursor ?? undefined,
+      getNextPageParam: last => last.data.data.nextCursor ?? undefined,
       initialPageParam: undefined,
     });
 
-  const comments = data?.pages.flatMap((p) => p.data.data.data) ?? [];
+  const comments = data?.pages.flatMap(p => p.data.data.data) ?? [];
 
   if (isLoading) {
     return (
@@ -98,11 +99,14 @@ function CommentsSection({ announcementId }: { announcementId: string }) {
 
   return (
     <View style={styles.commentsWrap}>
-      {comments.map((c) => <CommentRow key={c.id} comment={c} />)}
+      {comments.map(c => <CommentRow key={c.id} comment={c} />)}
       {hasNextPage && (
         <Pressable
           style={styles.loadMoreBtn}
-          onPress={() => { if (!isFetchingNextPage) fetchNextPage(); }}
+          onPress={() => {
+            if (!isFetchingNextPage)
+              fetchNextPage();
+          }}
         >
           <Text style={styles.loadMoreText}>Load more</Text>
         </Pressable>
@@ -140,7 +144,8 @@ function AddCommentBar({ announcementId, bottomInset }: { announcementId: string
   });
 
   function handleSubmit() {
-    if (!text.trim()) return;
+    if (!text.trim())
+      return;
     requireAuth(() => mutate());
   }
 

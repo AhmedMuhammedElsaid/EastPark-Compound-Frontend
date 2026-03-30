@@ -1,14 +1,14 @@
+import type { Order, OrderStatus } from '@/services/api/orders';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Order, OrderStatus } from '@/services/api/orders';
 import { ordersApi } from '@/services/api/orders';
-import { disconnectSocket, getOrdersSocket, joinOrderRoom, leaveOrderRoom } from '@/services/socket/client';
+import { getOrdersSocket, joinOrderRoom, leaveOrderRoom } from '@/services/socket/client';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const STATUS_STEPS: OrderStatus[] = ['PLACED', 'CONFIRMED', 'PREPARING', 'READY', 'ON_THE_WAY', 'DELIVERED'];
@@ -40,11 +40,13 @@ export default function OrderDetailScreen() {
 
   // Socket.io real-time status
   React.useEffect(() => {
-    if (!orderId) return;
+    if (!orderId)
+      return;
     let mounted = true;
 
     getOrdersSocket().then((socket) => {
-      if (!mounted) return;
+      if (!mounted)
+        return;
       joinOrderRoom(orderId);
       socket.on('order_status_updated', (update: { orderId: string; status: OrderStatus }) => {
         if (update.orderId === orderId) {
@@ -79,7 +81,8 @@ export default function OrderDetailScreen() {
     );
   }
 
-  if (isLoading || !order) return <OrderDetailSkeleton insets={insets} />;
+  if (isLoading || !order)
+    return <OrderDetailSkeleton insets={insets} />;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -157,13 +160,19 @@ function StatusTimeline({ currentStatus }: { currentStatus: OrderStatus }) {
 function OrderItems({ order, isAr }: { order: Order; isAr: boolean }) {
   return (
     <View style={styles.section}>
-      {order.items.map((item) => (
+      {order.items.map(item => (
         <View key={item.id} style={styles.itemRow}>
-          <Text style={styles.itemQty}>{item.quantity}×</Text>
+          <Text style={styles.itemQty}>
+            {item.quantity}
+            ×
+          </Text>
           <Text style={styles.itemName} numberOfLines={1}>
             {isAr ? item.productNameArSnapshot : item.productNameSnapshot}
           </Text>
-          <Text style={styles.itemPrice}>EGP {item.totalPrice.toFixed(2)}</Text>
+          <Text style={styles.itemPrice}>
+            EGP
+            {item.totalPrice.toFixed(2)}
+          </Text>
         </View>
       ))}
     </View>
@@ -188,7 +197,10 @@ function OrderSummary({ order }: { order: Order }) {
       </View>
       <View style={[styles.summaryRow, styles.totalRow]}>
         <Text style={styles.totalLabel}>{t('cart.total')}</Text>
-        <Text style={styles.totalValue}>EGP {order.totalAmount.toFixed(2)}</Text>
+        <Text style={styles.totalValue}>
+          EGP
+          {order.totalAmount.toFixed(2)}
+        </Text>
       </View>
     </View>
   );

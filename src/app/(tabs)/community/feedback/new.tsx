@@ -1,3 +1,4 @@
+import type { FeedbackCategory } from '@/services/api/community';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
@@ -16,9 +17,8 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { z } from 'zod';
 
-import type { FeedbackCategory } from '@/services/api/community';
+import { z } from 'zod';
 import { communityApi } from '@/services/api/community';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -82,7 +82,7 @@ export default function NewFeedbackScreen() {
 
         <Pressable
           style={[styles.submitBtn, isPending && styles.submitBtnDisabled]}
-          onPress={handleSubmit((d) => mutate(d))}
+          onPress={handleSubmit(d => mutate(d))}
           disabled={isPending}
         >
           <Text style={styles.submitBtnText}>
@@ -145,7 +145,10 @@ function RhfTextInput({
       <TextInput
         value={field.value as string}
         onChangeText={field.onChange}
-        onBlur={() => { field.onBlur(); setIsFocused(false); }}
+        onBlur={() => {
+          field.onBlur();
+          setIsFocused(false);
+        }}
         onFocus={() => setIsFocused(true)}
         placeholderTextColor={DARK.textMuted}
         placeholder={label}

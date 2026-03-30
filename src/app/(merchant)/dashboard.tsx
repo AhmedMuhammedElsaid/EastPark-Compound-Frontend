@@ -6,14 +6,12 @@ import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-nat
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAppSelector } from '@/store';
 import { merchantApi } from '@/services/api/merchant';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 export default function MerchantDashboard() {
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
-  const user = useAppSelector((s) => s.auth.user);
   const queryClient = useQueryClient();
   const isAr = i18n.language === 'ar';
 
@@ -36,7 +34,8 @@ export default function MerchantDashboard() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['merchant-shop'] }),
   });
 
-  if (isLoading || !shop) return <DashboardSkeleton insets={insets} />;
+  if (isLoading || !shop)
+    return <DashboardSkeleton insets={insets} />;
 
   const shopName = isAr ? shop.nameAr : shop.name;
 
@@ -53,7 +52,7 @@ export default function MerchantDashboard() {
           </Text>
           <Switch
             value={shop.isOpen}
-            onValueChange={(v) => toggleOpen(v)}
+            onValueChange={v => toggleOpen(v)}
             trackColor={{ true: SEMANTIC.success, false: DARK.elevated }}
             thumbColor={DARK.text}
           />
@@ -68,7 +67,12 @@ export default function MerchantDashboard() {
           <Pressable style={styles.alertBanner} onPress={() => router.push('/(merchant)/orders' as any)}>
             <Text style={styles.alertIcon}>🔔</Text>
             <Text style={styles.alertText}>
-              {pendingCount} new {pendingCount === 1 ? 'order' : 'orders'} waiting
+              {pendingCount}
+              {' '}
+              new
+              {pendingCount === 1 ? 'order' : 'orders'}
+              {' '}
+              waiting
             </Text>
             <Text style={styles.alertChevron}>›</Text>
           </Pressable>
@@ -159,7 +163,7 @@ const styles = StyleSheet.create({
   alertBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: SEMANTIC.warning + '22',
+    backgroundColor: `${SEMANTIC.warning}22`,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     borderWidth: 1,

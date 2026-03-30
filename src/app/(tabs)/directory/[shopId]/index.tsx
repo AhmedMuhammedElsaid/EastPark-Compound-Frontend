@@ -1,21 +1,22 @@
+import type { Shop } from '@/services/api/shops';
+import type { CartItem } from '@/store/slices/cartSlice';
 import { useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
 import { shopsApi } from '@/services/api/shops';
-import type { Shop } from '@/services/api/shops';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { addItem } from '@/store/slices/cartSlice';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 export default function ShopDetailScreen() {
   const { shopId } = useLocalSearchParams<{ shopId: string }>();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const { requireAuth } = useAuthGuard();
   const [saved, setSaved] = React.useState(false);
@@ -33,14 +34,17 @@ export default function ShopDetailScreen() {
   async function handleSave() {
     requireAuth(async () => {
       try {
-        if (saved) await shopsApi.unsaveShop(shopId);
+        if (saved)
+          await shopsApi.unsaveShop(shopId);
         else await shopsApi.saveShop(shopId);
-        setSaved((v) => !v);
-      } catch {}
+        setSaved(v => !v);
+      }
+      catch {}
     });
   }
 
-  if (isLoading || !shop) return <ShopDetailSkeleton />;
+  if (isLoading || !shop)
+    return <ShopDetailSkeleton />;
 
   return (
     <View style={styles.container}>
@@ -80,7 +84,7 @@ type ShopHeroProps = {
 };
 
 function ShopHero({ shop, saved, onBack, onSave, topInset }: ShopHeroProps) {
-  const coverPhoto = shop.photos.find((p) => p.isPrimary) ?? shop.photos[0];
+  const coverPhoto = shop.photos.find(p => p.isPrimary) ?? shop.photos[0];
   return (
     <View style={styles.hero}>
       {coverPhoto
@@ -108,7 +112,7 @@ function ShopTabBar({
   const { t } = useTranslation();
   return (
     <View style={styles.tabBar}>
-      {(['menu', 'reviews'] as const).map((tab) => (
+      {(['menu', 'reviews'] as const).map(tab => (
         <Pressable
           key={tab}
           style={[styles.tab, activeTab === tab && styles.tabActive]}
@@ -140,22 +144,36 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
       </View>
       {shop.averageRating !== null && (
         <Text style={styles.rating}>
-          ⭐ {shop.averageRating.toFixed(1)} · {shop.reviewCount}{' '}
+          ⭐
+          {' '}
+          {shop.averageRating.toFixed(1)}
+          {' '}
+          ·
+          {' '}
+          {shop.reviewCount}
+          {' '}
           {t('directory.reviews_tab').toLowerCase()}
         </Text>
       )}
       {description ? <Text style={styles.description}>{description}</Text> : null}
       <View style={styles.ctaRow}>
-        {shop.phone ? (
-          <Pressable style={styles.ctaBtn}>
-            <Text style={styles.ctaBtnText}>📞 {t('directory.call')}</Text>
-          </Pressable>
-        ) : null}
-        {shop.whatsapp ? (
-          <Pressable style={[styles.ctaBtn, styles.ctaBtnWhatsapp]}>
-            <Text style={styles.ctaBtnText}>💬 WhatsApp</Text>
-          </Pressable>
-        ) : null}
+        {shop.phone
+          ? (
+              <Pressable style={styles.ctaBtn}>
+                <Text style={styles.ctaBtnText}>
+                  📞
+                  {t('directory.call')}
+                </Text>
+              </Pressable>
+            )
+          : null}
+        {shop.whatsapp
+          ? (
+              <Pressable style={[styles.ctaBtn, styles.ctaBtnWhatsapp]}>
+                <Text style={styles.ctaBtnText}>💬 WhatsApp</Text>
+              </Pressable>
+            )
+          : null}
       </View>
     </View>
   );
@@ -192,7 +210,7 @@ function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string
 
   return (
     <View style={styles.tabContent}>
-      {products.map((product) => (
+      {products.map(product => (
         <ProductRow key={product.id} product={product} isAr={isAr} shopId={shopId} shopName={shopName} />
       ))}
     </View>
@@ -230,12 +248,17 @@ function ProductRow({
       <View style={styles.productInfo}>
         <Text style={styles.productName} numberOfLines={1}>{name}</Text>
         {desc ? <Text style={styles.productDesc} numberOfLines={2}>{desc}</Text> : null}
-        <Text style={styles.productPrice}>EGP {product.price.toFixed(2)}</Text>
+        <Text style={styles.productPrice}>
+          EGP
+          {product.price.toFixed(2)}
+        </Text>
       </View>
       <View style={styles.productRight}>
-        {product.imageUrl ? (
-          <Image source={{ uri: product.imageUrl }} style={styles.productImage} resizeMode="cover" />
-        ) : null}
+        {product.imageUrl
+          ? (
+              <Image source={{ uri: product.imageUrl }} style={styles.productImage} resizeMode="cover" />
+            )
+          : null}
         <Pressable style={styles.addBtn} onPress={handleAddToCart} hitSlop={8}>
           <Text style={styles.addBtnText}>+</Text>
         </Pressable>
@@ -273,7 +296,7 @@ function ReviewsTabContent({ shopId }: { shopId: string }) {
 
   return (
     <View style={styles.tabContent}>
-      {reviews.map((r) => (
+      {reviews.map(r => (
         <View key={r.id} style={styles.reviewCard}>
           <View style={styles.reviewHeader}>
             <Text style={styles.reviewerName}>{r.user.name}</Text>
@@ -288,12 +311,13 @@ function ReviewsTabContent({ shopId }: { shopId: string }) {
 
 function CartBar({ shopId, bottomInset }: { shopId: string; bottomInset: number }) {
   const { t } = useTranslation();
-  const { items, shopId: cartShopId } = useAppSelector((s) => s.cart);
+  const { items, shopId: cartShopId } = useAppSelector(s => s.cart);
 
-  if (cartShopId !== shopId || !items.length) return null;
+  if (cartShopId !== shopId || !items.length)
+    return null;
 
-  const count = items.reduce((sum, item) => sum + item.quantity, 0);
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const count = items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
+  const total = items.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
 
   return (
     <Pressable
@@ -304,7 +328,10 @@ function CartBar({ shopId, bottomInset }: { shopId: string; bottomInset: number 
         <Text style={styles.cartBarBadgeText}>{count}</Text>
       </View>
       <Text style={styles.cartBarLabel}>{t('cart.checkout')}</Text>
-      <Text style={styles.cartBarTotal}>EGP {total.toFixed(2)}</Text>
+      <Text style={styles.cartBarTotal}>
+        EGP
+        {total.toFixed(2)}
+      </Text>
     </Pressable>
   );
 }

@@ -1,12 +1,12 @@
+import type { FeedbackStatus } from '@/services/api/community';
 import { useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { FeedbackStatus } from '@/services/api/community';
 import { communityApi } from '@/services/api/community';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -30,7 +30,8 @@ export default function FeedbackDetailScreen() {
 
   const fb = data?.data.data;
 
-  if (isLoading || !fb) return <FeedbackDetailSkeleton insets={insets} />;
+  if (isLoading || !fb)
+    return <FeedbackDetailSkeleton insets={insets} />;
 
   const date = new Date(fb.createdAt).toLocaleDateString('en-GB', {
     year: 'numeric',
@@ -57,7 +58,7 @@ export default function FeedbackDetailScreen() {
         {fb.replies.length > 0 && (
           <>
             <Text style={styles.sectionTitle}>{t('feedback.reply')}</Text>
-            {fb.replies.map((reply) => (
+            {fb.replies.map(reply => (
               <ReplyCard key={reply.id} reply={reply} />
             ))}
           </>

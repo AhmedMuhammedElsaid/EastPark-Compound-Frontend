@@ -1,12 +1,12 @@
+import type { Election, Poll } from '@/services/api/governance';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Election, Poll } from '@/services/api/governance';
 import { governanceApi } from '@/services/api/governance';
 import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
@@ -38,7 +38,7 @@ export default function GovernanceScreen() {
       </View>
 
       <View style={styles.tabBar}>
-        {(['polls', 'elections'] as const).map((key) => (
+        {(['polls', 'elections'] as const).map(key => (
           <Pressable
             key={key}
             style={[styles.tab, tab === key && styles.tabActive]}
@@ -61,7 +61,7 @@ export default function GovernanceScreen() {
             empty={!polls.length}
             emptyText={t('governance.no_polls')}
           >
-            {polls.map((poll) => <PollCard key={poll.id} poll={poll} />)}
+            {polls.map(poll => <PollCard key={poll.id} poll={poll} />)}
           </GovernanceList>
         )}
         {tab === 'elections' && (
@@ -70,7 +70,7 @@ export default function GovernanceScreen() {
             empty={!elections.length}
             emptyText={t('governance.no_elections')}
           >
-            {elections.map((el) => <ElectionCard key={el.id} election={el} />)}
+            {elections.map(el => <ElectionCard key={el.id} election={el} />)}
           </GovernanceList>
         )}
       </ScrollView>
@@ -135,7 +135,11 @@ function PollCard({ poll }: { poll: Poll }) {
       </View>
       <Text style={styles.cardQuestion} numberOfLines={3}>{question}</Text>
       <View style={styles.cardMeta}>
-        <Text style={styles.metaText}>{poll.totalVotes} votes</Text>
+        <Text style={styles.metaText}>
+          {poll.totalVotes}
+          {' '}
+          votes
+        </Text>
         <Text style={styles.metaDot}>·</Text>
         <Text style={styles.metaText}>{t('governance.expires', { date: expiry })}</Text>
       </View>
@@ -167,7 +171,11 @@ function ElectionCard({ election }: { election: Election }) {
       </View>
       <Text style={styles.cardQuestion} numberOfLines={2}>{title}</Text>
       <View style={styles.cardMeta}>
-        <Text style={styles.metaText}>{election.candidates.length} {t('governance.candidates').toLowerCase()}</Text>
+        <Text style={styles.metaText}>
+          {election.candidates.length}
+          {' '}
+          {t('governance.candidates').toLowerCase()}
+        </Text>
         <Text style={styles.metaDot}>·</Text>
         <Text style={styles.metaText}>{t('governance.expires', { date: expiry })}</Text>
       </View>

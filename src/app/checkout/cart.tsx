@@ -1,21 +1,22 @@
+import type { CartItem } from '@/store/slices/cartSlice';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { clearCart, removeItem, updateQuantity } from '@/store/slices/cartSlice';
+import { clearCart, updateQuantity } from '@/store/slices/cartSlice';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 export default function CartScreen() {
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const dispatch = useAppDispatch();
-  const { items, shopName } = useAppSelector((s) => s.cart);
+  const { items, shopName } = useAppSelector(s => s.cart);
   const isAr = i18n.language === 'ar';
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = items.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
 
   if (!items.length) {
     return (
@@ -41,14 +42,13 @@ export default function CartScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 120 }]}
       >
-        {items.map((item) => (
+        {items.map((item: CartItem) => (
           <CartItemRow
             key={item.productId}
             item={item}
             isAr={isAr}
             onIncrease={() => dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity + 1 }))}
             onDecrease={() => dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity - 1 }))}
-            onRemove={() => dispatch(removeItem(item.productId))}
           />
         ))}
       </ScrollView>
@@ -56,7 +56,10 @@ export default function CartScreen() {
       <View style={[styles.footer, { paddingBottom: insets.bottom + SPACING.md }]}>
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>{t('cart.total')}</Text>
-          <Text style={styles.totalValue}>EGP {total.toFixed(2)}</Text>
+          <Text style={styles.totalValue}>
+            EGP
+            {total.toFixed(2)}
+          </Text>
         </View>
         <Pressable
           style={styles.checkoutBtn}
@@ -78,7 +81,7 @@ function CartNav({ shopName, onClear }: { shopName?: string; onClear?: () => voi
       <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
         <Text style={styles.backIcon}>←</Text>
       </Pressable>
-      <Text style={styles.navTitle}>{shopName ? shopName : t('cart.title')}</Text>
+      <Text style={styles.navTitle}>{shopName || t('cart.title')}</Text>
       {onClear && (
         <Pressable onPress={onClear} hitSlop={8}>
           <Text style={styles.clearText}>{t('common.clear')}</Text>
@@ -93,13 +96,11 @@ function CartItemRow({
   isAr,
   onIncrease,
   onDecrease,
-  onRemove,
 }: {
   item: any;
   isAr: boolean;
   onIncrease: () => void;
   onDecrease: () => void;
-  onRemove: () => void;
 }) {
   const name = isAr ? item.nameAr : item.name;
   const subtotal = (item.price * item.quantity).toFixed(2);
@@ -112,7 +113,10 @@ function CartItemRow({
 
       <View style={styles.itemInfo}>
         <Text style={styles.itemName} numberOfLines={2}>{name}</Text>
-        <Text style={styles.itemPrice}>EGP {item.price.toFixed(2)}</Text>
+        <Text style={styles.itemPrice}>
+          EGP
+          {item.price.toFixed(2)}
+        </Text>
       </View>
 
       <View style={styles.qtyControls}>
@@ -123,7 +127,10 @@ function CartItemRow({
         <Pressable style={styles.qtyBtn} onPress={onIncrease} hitSlop={8}>
           <Text style={styles.qtyBtnText}>+</Text>
         </Pressable>
-        <Text style={styles.itemSubtotal}>EGP {subtotal}</Text>
+        <Text style={styles.itemSubtotal}>
+          EGP
+          {subtotal}
+        </Text>
       </View>
     </View>
   );

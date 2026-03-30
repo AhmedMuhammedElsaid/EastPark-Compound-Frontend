@@ -1,31 +1,32 @@
+import type { PaymentMethod } from '@/services/api/orders';
+import type { CartItem } from '@/store/slices/cartSlice';
 import { useMutation } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+import { ordersApi } from '@/services/api/orders';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { clearCart } from '@/store/slices/cartSlice';
-import type { PaymentMethod } from '@/services/api/orders';
-import { ordersApi } from '@/services/api/orders';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
 export default function PaymentScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const dispatch = useAppDispatch();
   const { notes } = useLocalSearchParams<{ notes?: string }>();
-  const { items, shopId } = useAppSelector((s) => s.cart);
+  const { items, shopId } = useAppSelector(s => s.cart);
   const [paymentMethod, setPaymentMethod] = React.useState<PaymentMethod>('CASH');
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = items.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
 
   const { mutate, isPending } = useMutation({
     mutationFn: () =>
       ordersApi.placeOrder({
         shopId: shopId!,
-        items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
+        items: items.map((item: CartItem) => ({ productId: item.productId, quantity: item.quantity })),
         paymentMethod,
         notes: notes || undefined,
       }),
@@ -63,7 +64,10 @@ export default function PaymentScreen() {
 
         <View style={styles.summary}>
           <Text style={styles.summaryLabel}>{t('cart.total')}</Text>
-          <Text style={styles.summaryValue}>EGP {total.toFixed(2)}</Text>
+          <Text style={styles.summaryValue}>
+            EGP
+            {total.toFixed(2)}
+          </Text>
         </View>
 
         <Pressable

@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
 import { governanceApi } from '@/services/api/governance';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
 export default function PollDetailScreen() {
   const { pollId } = useLocalSearchParams<{ pollId: string }>();
@@ -47,11 +47,12 @@ export default function PollDetailScreen() {
     });
   }
 
-  if (isLoading || !poll) return <PollSkeleton insets={insets} />;
+  if (isLoading || !poll)
+    return <PollSkeleton insets={insets} />;
 
   const question = isAr ? poll.questionAr : poll.question;
   const showResults = poll.resultsOpen && poll.myVote !== null;
-  const maxVotes = Math.max(...(poll.options.map((o) => o.votes ?? 0)), 1);
+  const maxVotes = Math.max(...(poll.options.map(o => o.votes ?? 0)), 1);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -84,7 +85,10 @@ export default function PollDetailScreen() {
         />
 
         <Text style={styles.meta}>
-          {poll.totalVotes} votes ·{' '}
+          {poll.totalVotes}
+          {' '}
+          votes ·
+          {' '}
           {t('governance.expires', {
             date: new Date(poll.expiresAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-GB', {
               month: 'short',
@@ -131,7 +135,10 @@ function OptionsList({
               isSelected && styles.optionSelected,
               poll.myVote !== null && styles.optionDisabled,
             ]}
-            onPress={() => { if (!poll.myVote) onVote(option.id, text); }}
+            onPress={() => {
+              if (!poll.myVote)
+                onVote(option.id, text);
+            }}
             disabled={!!poll.myVote || isPending}
           >
             {showResults && (
@@ -142,7 +149,13 @@ function OptionsList({
                 {text}
               </Text>
               {showResults && option.votes !== undefined && (
-                <Text style={styles.optionVotes}>{option.votes} ({pct}%)</Text>
+                <Text style={styles.optionVotes}>
+                  {option.votes}
+                  {' '}
+                  (
+                  {pct}
+                  %)
+                </Text>
               )}
             </View>
           </Pressable>

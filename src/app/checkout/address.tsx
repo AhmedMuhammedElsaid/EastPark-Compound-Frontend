@@ -19,7 +19,7 @@ import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
 export default function AddressScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const user = useAppSelector((s) => s.auth.user);
+  const user = useAppSelector(s => s.auth.user);
   const [notes, setNotes] = React.useState('');
 
   function handleNext() {
@@ -49,12 +49,23 @@ export default function AddressScreen() {
           <View style={styles.unitBox}>
             <Text style={styles.unitLabel}>{t('checkout.unit', { number: user?.unitNumber ?? '' })}</Text>
           </View>
-          <Text style={styles.unitHint}>{t('auth.unit_number')}: {user?.unitNumber}</Text>
+          <Text style={styles.unitHint}>
+            {t('auth.unit_number')}
+            :
+            {' '}
+            {user?.unitNumber}
+          </Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.label}>
-            {t('checkout.notes')} <Text style={styles.optional}>({t('common.optional')})</Text>
+            {t('checkout.notes')}
+            {' '}
+            <Text style={styles.optional}>
+              (
+              {t('common.optional')}
+              )
+            </Text>
           </Text>
           <TextInput
             value={notes}

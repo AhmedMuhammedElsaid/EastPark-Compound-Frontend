@@ -1,17 +1,17 @@
+import type { AxiosResponse } from 'axios';
+import type { CursorPage, Shop, ShopCategory } from '@/services/api/shops';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import type { AxiosResponse } from 'axios';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CategoryChips } from '@/components/directory/category-chips';
 import { ShopCard } from '@/components/directory/shop-card';
 import { ShopCardSkeleton } from '@/components/ui/skeleton';
-import type { CursorPage, Shop, ShopCategory } from '@/services/api/shops';
 import { shopsApi } from '@/services/api/shops';
-import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
 type Category = ShopCategory | 'ALL';
 
@@ -31,8 +31,8 @@ export default function DirectoryScreen() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } =
-    useInfiniteQuery<
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
+    = useInfiniteQuery<
       AxiosResponse<{ data: CursorPage<Shop> }>,
       Error,
       { pages: AxiosResponse<{ data: CursorPage<Shop> }>[] },
@@ -47,11 +47,11 @@ export default function DirectoryScreen() {
           category: category === 'ALL' ? undefined : category,
           search: debouncedSearch || undefined,
         }),
-      getNextPageParam: (last) => last.data.data.nextCursor ?? undefined,
+      getNextPageParam: last => last.data.data.nextCursor ?? undefined,
       initialPageParam: undefined,
     });
 
-  const shops = data?.pages.flatMap((p) => p.data.data.data) ?? [];
+  const shops = data?.pages.flatMap(p => p.data.data.data) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -89,9 +89,12 @@ export default function DirectoryScreen() {
         : (
             <FlashList
               data={shops}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
               renderItem={({ item }) => <ShopCard shop={item} />}
-              onEndReached={() => { if (hasNextPage && !isFetchingNextPage) fetchNextPage(); }}
+              onEndReached={() => {
+                if (hasNextPage && !isFetchingNextPage)
+                  fetchNextPage();
+              }}
               onEndReachedThreshold={0.5}
               contentContainerStyle={styles.listContent}
               onRefresh={refetch}

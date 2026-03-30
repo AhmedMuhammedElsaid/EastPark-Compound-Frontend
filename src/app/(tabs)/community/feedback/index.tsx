@@ -1,14 +1,14 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
 import type { AxiosResponse } from 'axios';
+import type { Feedback, FeedbackStatus } from '@/services/api/community';
+import { FlashList } from '@shopify/flash-list';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlashList } from '@shopify/flash-list';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Feedback, FeedbackStatus } from '@/services/api/community';
 import { communityApi } from '@/services/api/community';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -23,8 +23,8 @@ export default function FeedbackListScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } =
-    useInfiniteQuery<
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
+    = useInfiniteQuery<
       AxiosResponse<{ data: { data: Feedback[]; nextCursor: string | null } }>,
       Error,
       { pages: AxiosResponse<{ data: { data: Feedback[]; nextCursor: string | null } }>[] },
@@ -33,11 +33,11 @@ export default function FeedbackListScreen() {
     >({
       queryKey: ['my-feedback'],
       queryFn: ({ pageParam }) => communityApi.getFeedback({ cursor: pageParam, limit: 20 }),
-      getNextPageParam: (last) => last.data.data.nextCursor ?? undefined,
+      getNextPageParam: last => last.data.data.nextCursor ?? undefined,
       initialPageParam: undefined,
     });
 
-  const items = data?.pages.flatMap((p) => p.data.data.data) ?? [];
+  const items = data?.pages.flatMap(p => p.data.data.data) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -62,9 +62,12 @@ export default function FeedbackListScreen() {
         : (
             <FlashList
               data={items}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
               renderItem={({ item }) => <FeedbackRow feedback={item} />}
-              onEndReached={() => { if (hasNextPage && !isFetchingNextPage) fetchNextPage(); }}
+              onEndReached={() => {
+                if (hasNextPage && !isFetchingNextPage)
+                  fetchNextPage();
+              }}
               onEndReachedThreshold={0.5}
               contentContainerStyle={styles.listContent}
               onRefresh={refetch}
@@ -103,7 +106,10 @@ function FeedbackRow({ feedback }: { feedback: Feedback }) {
       <View style={styles.rowMeta}>
         <Text style={styles.rowDate}>{date}</Text>
         {feedback.replies.length > 0 && (
-          <Text style={styles.replyBadge}>💬 {feedback.replies.length}</Text>
+          <Text style={styles.replyBadge}>
+            💬
+            {feedback.replies.length}
+          </Text>
         )}
       </View>
     </Pressable>

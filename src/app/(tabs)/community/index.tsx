@@ -1,15 +1,15 @@
+import type { AxiosResponse } from 'axios';
+import type { Announcement, AnnouncementCategory } from '@/services/api/community';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import type { AxiosResponse } from 'axios';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
-import type { Announcement, AnnouncementCategory } from '@/services/api/community';
 import { communityApi } from '@/services/api/community';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -33,13 +33,12 @@ const CATEGORY_COLOR: Record<string, string> = {
 };
 
 export default function CommunityScreen() {
-  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { requireAuthNavigation } = useAuthGuard();
   const [filter, setFilter] = React.useState<Filter>('ALL');
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } =
-    useInfiniteQuery<
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
+    = useInfiniteQuery<
       AxiosResponse<{ data: { data: Announcement[]; nextCursor: string | null } }>,
       Error,
       { pages: AxiosResponse<{ data: { data: Announcement[]; nextCursor: string | null } }>[] },
@@ -53,11 +52,11 @@ export default function CommunityScreen() {
           limit: 15,
           category: filter === 'ALL' ? undefined : filter,
         }),
-      getNextPageParam: (last) => last.data.data.nextCursor ?? undefined,
+      getNextPageParam: last => last.data.data.nextCursor ?? undefined,
       initialPageParam: undefined,
     });
 
-  const announcements = data?.pages.flatMap((p) => p.data.data.data) ?? [];
+  const announcements = data?.pages.flatMap(p => p.data.data.data) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -161,19 +160,22 @@ function AnnouncementList({ announcements, isLoading, isFetchingNextPage, hasNex
   return (
     <FlashList
       data={announcements}
-      keyExtractor={(item) => item.id}
+      keyExtractor={item => item.id}
       renderItem={({ item }) => <AnnouncementCard announcement={item} />}
-      onEndReached={() => { if (hasNextPage && !isFetchingNextPage) fetchNextPage(); }}
+      onEndReached={() => {
+        if (hasNextPage && !isFetchingNextPage)
+          fetchNextPage();
+      }}
       onEndReachedThreshold={0.5}
       contentContainerStyle={styles.listContent}
       onRefresh={refetch}
       refreshing={false}
-      ListEmptyComponent={
+      ListEmptyComponent={(
         <View style={styles.empty}>
           <Text style={styles.emptyIcon}>📢</Text>
           <Text style={styles.emptyTitle}>{t('community.no_announcements')}</Text>
         </View>
-      }
+      )}
       ListFooterComponent={
         isFetchingNextPage
           ? <Skeleton width="100%" height={120} borderRadius={RADIUS.md} />

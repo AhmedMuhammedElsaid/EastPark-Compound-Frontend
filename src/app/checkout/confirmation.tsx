@@ -47,7 +47,8 @@ export default function ConfirmationScreen() {
         <Pressable
           style={styles.viewOrderBtn}
           onPress={() => {
-            if (orderId) router.replace(`/(tabs)/orders/${orderId}` as any);
+            if (orderId)
+              router.replace(`/(tabs)/orders/${orderId}` as any);
           }}
         >
           <Text style={styles.viewOrderBtnText}>{t('home.my_orders')}</Text>

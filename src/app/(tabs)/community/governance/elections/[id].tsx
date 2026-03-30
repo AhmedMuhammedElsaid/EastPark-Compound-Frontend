@@ -1,15 +1,15 @@
+import type { Candidate } from '@/services/api/governance';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
-import type { Candidate } from '@/services/api/governance';
 import { governanceApi } from '@/services/api/governance';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
 export default function ElectionScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -48,12 +48,13 @@ export default function ElectionScreen() {
     });
   }
 
-  if (isLoading || !election) return <ElectionSkeleton insets={insets} />;
+  if (isLoading || !election)
+    return <ElectionSkeleton insets={insets} />;
 
   const title = isAr ? election.titleAr : election.title;
   const description = isAr ? election.descriptionAr : election.description;
   const showVotes = election.resultsOpen && election.myVote !== null;
-  const maxVotes = Math.max(...election.candidates.map((c) => c.votes ?? 0), 1);
+  const maxVotes = Math.max(...election.candidates.map(c => c.votes ?? 0), 1);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -90,10 +91,14 @@ export default function ElectionScreen() {
         />
 
         <Text style={styles.meta}>
-          {election.totalVotes} votes ·{' '}
+          {election.totalVotes}
+          {' '}
+          votes ·
+          {' '}
           {t('governance.expires', {
             date: new Date(election.expiresAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-GB', {
-              month: 'short', day: 'numeric',
+              month: 'short',
+              day: 'numeric',
             }),
           })}
         </Text>
@@ -142,7 +147,10 @@ function CandidateList({
             showVotes={showVotes}
             votes={candidate.votes}
             pct={pct}
-            onVote={() => { if (!myVote && !isPending) onVote(candidate.id, name); }}
+            onVote={() => {
+              if (!myVote && !isPending)
+                onVote(candidate.id, name);
+            }}
           />
         );
       })}
@@ -191,7 +199,13 @@ function CandidateCard({
       {showVotes && votes !== undefined && (
         <View style={styles.voteBar}>
           <View style={[styles.voteBarFill, { width: `${pct}%` }]} />
-          <Text style={styles.voteBarText}>{votes} ({pct}%)</Text>
+          <Text style={styles.voteBarText}>
+            {votes}
+            {' '}
+            (
+            {pct}
+            %)
+          </Text>
         </View>
       )}
 

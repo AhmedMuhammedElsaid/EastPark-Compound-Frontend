@@ -1,12 +1,12 @@
+import type { MerchantOrder } from '@/services/api/merchant';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { MerchantOrder } from '@/services/api/merchant';
 import { merchantApi } from '@/services/api/merchant';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -23,7 +23,6 @@ const NEXT_STATUS: Record<string, string | null> = {
 
 export default function MerchantOrderDetailScreen() {
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
-  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
 
@@ -53,7 +52,8 @@ export default function MerchantOrderDetailScreen() {
     },
   });
 
-  if (isLoading || !order) return <OrderDetailSkeleton insets={insets} />;
+  if (isLoading || !order)
+    return <OrderDetailSkeleton insets={insets} />;
 
   const nextStatus = NEXT_STATUS[order.status];
   const isActive = order.status !== 'DELIVERED' && order.status !== 'CANCELLED';
@@ -66,7 +66,10 @@ export default function MerchantOrderDetailScreen() {
           <Text style={styles.backIcon}>←</Text>
         </Pressable>
         <View style={styles.navInfo}>
-          <Text style={styles.navUnit}>Unit {order.user.unitNumber}</Text>
+          <Text style={styles.navUnit}>
+            Unit
+            {order.user.unitNumber}
+          </Text>
           <Text style={styles.navName}>{order.user.name}</Text>
         </View>
         <Text style={styles.navTime}>{time}</Text>
@@ -84,7 +87,10 @@ export default function MerchantOrderDetailScreen() {
           <ActionButtons
             status={order.status}
             nextStatus={nextStatus}
-            onAdvance={() => { if (nextStatus) updateStatus(nextStatus); }}
+            onAdvance={() => {
+              if (nextStatus)
+                updateStatus(nextStatus);
+            }}
             onReject={() => rejectOrder()}
             isPending={isPending}
             isRejecting={rejecting}
@@ -118,16 +124,25 @@ function OrderStatusBadge({ status }: { status: string }) {
 function OrderItemsList({ order }: { order: MerchantOrder }) {
   return (
     <View style={styles.itemsCard}>
-      {order.items.map((item) => (
+      {order.items.map(item => (
         <View key={item.id} style={styles.itemRow}>
-          <Text style={styles.itemQty}>{item.quantity}×</Text>
+          <Text style={styles.itemQty}>
+            {item.quantity}
+            ×
+          </Text>
           <Text style={styles.itemName} numberOfLines={1}>{item.productNameSnapshot}</Text>
-          <Text style={styles.itemPrice}>EGP {item.totalPrice.toFixed(2)}</Text>
+          <Text style={styles.itemPrice}>
+            EGP
+            {item.totalPrice.toFixed(2)}
+          </Text>
         </View>
       ))}
       <View style={styles.totalRow}>
         <Text style={styles.totalLabel}>Total</Text>
-        <Text style={styles.totalValue}>EGP {order.totalAmount.toFixed(2)}</Text>
+        <Text style={styles.totalValue}>
+          EGP
+          {order.totalAmount.toFixed(2)}
+        </Text>
       </View>
     </View>
   );
