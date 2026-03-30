@@ -1,0 +1,81 @@
+import * as React from 'react';
+import { StyleSheet, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
+
+import { DARK, RADIUS } from '@/theme/tokens';
+
+type Props = {
+  width?: number | string;
+  height?: number;
+  borderRadius?: number;
+  style?: object;
+};
+
+/**
+ * Skeleton shimmer — pulsing opacity animation.
+ * Used on all list screens instead of spinners (per DESIGN.md).
+ * Colors: dark-card (#221f1c) → dark-elevated (#2e2a26) — warm, never grey.
+ */
+export function Skeleton({ width = '100%', height = 16, borderRadius = RADIUS.sm, style }: Props) {
+  const opacity = useSharedValue(0.5);
+
+  React.useEffect(() => {
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 700 }),
+        withTiming(0.5, { duration: 700 }),
+      ),
+      -1,
+      false,
+    );
+  }, [opacity]);
+
+  const animStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
+  return (
+    <Animated.View
+      style={[
+        styles.base,
+        { width: width as any, height, borderRadius },
+        animStyle,
+        style,
+      ]}
+    />
+  );
+}
+
+/** Skeleton preset for a shop card */
+export function ShopCardSkeleton() {
+  return (
+    <View style={styles.cardSkeleton}>
+      <Skeleton width="100%" height={160} borderRadius={RADIUS.md} />
+      <View style={styles.cardBody}>
+        <Skeleton width="70%" height={18} />
+        <Skeleton width="50%" height={14} style={styles.mt8} />
+        <Skeleton width="40%" height={12} style={styles.mt8} />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  base: {
+    backgroundColor: DARK.card,
+  },
+  cardSkeleton: {
+    marginBottom: 16,
+    borderRadius: RADIUS.md,
+    overflow: 'hidden',
+  },
+  cardBody: {
+    padding: 12,
+    gap: 4,
+  },
+  mt8: { marginTop: 8 },
+});
