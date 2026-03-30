@@ -1,138 +1,612 @@
-<p align="center">
-    <img alt="React Native Template Obytes" src="https://github.com/obytes/react-native-template-obytes/assets/11137944/a8163d23-897a-4efe-91ce-b9bf7348c18f" width="200" />
-</p>
+# EastPark Frontend
 
-<h1 align="center">
-  React Native Template Obytes
-</h1>
+**EastPark** is a residential compound super-app for the MENA region — a local marketplace (shops, ordering, real-time tracking) combined with a community governance hub (announcements, polls, elections, feedback). Arabic RTL is a first-class experience throughout.
 
-![expo](https://img.shields.io/github/package-json/dependency-version/obytes/react-native-template-obytes/expo?label=expo) ![react-native](https://img.shields.io/github/package-json/dependency-version/obytes/react-native-template-obytes/react-native?label=react-native) ![GitHub Repo stars](https://img.shields.io/github/stars/obytes/react-native-template-obytes) ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/obytes/react-native-template-obytes) ![GitHub issues](https://img.shields.io/github/issues/obytes/react-native-template-obytes) ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/obytes/react-native-template-obytes)
+---
 
-📱 A template for your next React Native project 🚀, Made with developer experience and performance first: Expo, TypeScript, TailwindCSS, Husky, Lint-Staged, expo-router, react-query, TanStack Form, I18n.
+## Table of Contents
 
-> Welcome to the Obytes Mobile Tribe's Expo / React Native Starter Kit!
+1. [Tech Stack](#tech-stack)
+2. [Architecture Overview](#architecture-overview)
+3. [Navigation Structure](#navigation-structure)
+4. [Design System](#design-system)
+5. [Features by Module](#features-by-module)
+6. [State Management](#state-management)
+7. [API Services](#api-services)
+8. [Authentication Flow](#authentication-flow)
+9. [Internationalisation & RTL](#internationalisation--rtl)
+10. [Environment Setup](#environment-setup)
+11. [Development Commands](#development-commands)
+12. [EAS Build](#eas-build)
+13. [Code Quality](#code-quality)
+14. [Commit Convention](#commit-convention)
+15. [Build History](#build-history)
 
-## 🚀 Motivation
+---
 
-Our goal with this starter kit was to streamline the process of building React Native apps, both for our own team and for our clients. We wanted to create a resource that would allow us to create high-quality apps faster and with less effort, while ensuring that all of our projects adhere to the same code standards and architectural principles.
+## Tech Stack
 
-The benefits of using this starter kit are numerous. It helps our team easily switch between projects, as we can rely on a consistent foundation of code. It also allows us to focus on the business logic of each project rather than getting bogged down in boilerplate code. And, because it promotes consistency across projects, it makes it easier to maintain and scale our apps, as well as share code between teams.
+| Layer | Library | Version |
+|---|---|---|
+| Framework | Expo | ~54.0.32 |
+| Runtime | React Native | 0.81.5 |
+| Language | TypeScript strict | ^5.9.3 |
+| JS Engine | Hermes + New Architecture | enabled |
+| Navigation | Expo Router | ~6.0.22 |
+| Server State | TanStack React Query v5 | ^5.90.19 |
+| Global State | Redux Toolkit | ^2.5.0 |
+| State Persist | redux-persist | ^6.0.0 |
+| Forms | React Hook Form | ^7.56.0 |
+| Validation | Zod | ^4.3.5 |
+| Styling | Tailwind / Uniwind + NativeWind | ^1.2.4 |
+| Lists | @shopify/flash-list | 2.0.2 |
+| Bottom Sheet | @gorhom/bottom-sheet | ^5.2.8 |
+| Carousel | react-native-reanimated-carousel | ^4.0.3 |
+| Animations | react-native-reanimated + Moti | ~4.1.6 / ^0.30.0 |
+| Lottie | lottie-react-native | ^7.2.2 |
+| Icons | phosphor-react-native | ^3.0.4 |
+| Gradients | expo-linear-gradient | ^55.0.9 |
+| Auth Tokens | expo-secure-store | ~15.0.8 |
+| Local Storage | react-native-mmkv | ~4.1.1 |
+| HTTP Client | axios | ^1.13.2 |
+| Real-time | socket.io-client | ^4.8.1 |
+| Push | expo-notifications | ~0.29.14 |
+| i18n | i18next + react-i18next | ^25.8.0 / ^16.5.3 |
+| OTP Input | react-native-otp-textinput | ^1.1.5 |
+| PDF Viewer | react-native-pdf | ^6.7.6 |
+| Skeleton | react-native-shimmer-placeholder | ^2.0.9 |
+| Image Viewer | react-native-image-viewing | ^0.2.2 |
+| Flash Messages | react-native-flash-message | ^0.4.2 |
+| Testing | Jest + React Native Testing Library | ^29.7.0 / ^13.3.3 |
 
-Overall, our starter kit is designed to facilitate efficient and effective app development, helping us to bring the best possible products to our clients
+---
 
-## ✍️ Philosophy
+## Architecture Overview
 
-When creating this starter kit, we had several guiding principles in mind::
+### Root Provider Stack
 
-- **🚀 Production-ready**: We wanted to ensure that this starter was ready for real-world use, providing a solid foundation for building production-grade apps.
-- **🥷 Developer experience and productivity**: Our focus was on creating a starter that would enhance the developer experience and increase productivity.
-- **🧩 Minimal code and dependencies**: We aimed to keep the codebase and dependencies as small as possible.
-- **💪 Well-maintained third-party libraries**: We included only well-maintained and reliable third-party libraries, to provide stability and support for our projects.
+```
+ReduxProvider
+  └── PersistGate
+        └── PersistQueryClientProvider   ← TanStack Query + AsyncStorage offline cache
+              └── GestureHandlerRootView
+                    └── KeyboardProvider
+                          └── ThemeProvider
+                                └── BottomSheetModalProvider
+                                      └── Stack (Expo Router)
+                                            ├── <AuthWallSheet />      ← global auth gate
+                                            ├── <CartConflictSheet />  ← multi-shop cart guard
+                                            └── <FlashMessage />       ← global toast
+```
 
-## ⭐ Key Features
+### Key Patterns
 
-- ✅ Latest Expo SDK with Custom Dev Client: Leverage the best of the Expo ecosystem while maintaining full control over your app.
-- 🎉 [TypeScript](https://www.typescriptlang.org/) for enhanced code quality and bug prevention through static type checking.
-- 💅 Minimal UI kit built with [TailwindCSS](https://www.nativewind.dev/), featuring common components essential for your app.
-- ⚙️ Multi-environment build support (Production, Staging, Development) using Expo configuration.
-- 🦊 Husky for Git Hooks: Automate your git hooks and enforce code standards.
-- 💡 Clean project structure with Absolute Imports for easier code navigation and management.
-- 🚫 Lint-staged: Run Eslint and TypeScript checks on Git staged files to maintain code quality.
-- 🗂 VSCode recommended extensions, settings, and snippets for an enhanced developer experience.
-- ☂️ Pre-installed [Expo Router](https://docs.expo.dev/router/introduction/) with examples for comprehensive app navigation.
-- 💫 Auth flow implementation using [Zustand](https://github.com/pmndrs/zustand) for state management and [react-native-mmkv](https://github.com/mrousavy/react-native-mmkv) for secure data storage.
-- 🛠 10+ [Github Actions](https://github.com/features/actions) workflows for building, releasing, testing, and distributing your app.
-- 🔥 [React Query](https://react-query.tanstack.com/) and [axios](https://github.com/axios/axios) for efficient data fetching and state management.
-- 🧵 Robust form handling with [TanStack Form](https://tanstack.com/form/latest) and [zod](https://github.com/colinhacks/zod) for validation, plus keyboard handling.
-- 🎯 Localization support with [i18next](https://www.i18next.com/), including Eslint for validation.
-- 🧪 Unit testing setup with [Jest](https://jestjs.io/) and [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/).
-- 🔍 E2E testing capabilities with [Maestro](https://maestro.mobile.dev/) for comprehensive app testing.
+**Auth-Wall** — Guests browse freely. Any auth-required action calls `dispatch(showAuthWall({ redirectAction }))`, which slides up a bottom-sheet login/register prompt. After successful auth, the original action auto-replays.
 
-## Is this starter for me?
+**Cursor Pagination** — Every list screen uses `useInfiniteQuery` with cursor-based pagination:
 
-Yes 😀
+```ts
+useInfiniteQuery({
+  queryFn: ({ pageParam }) => api.getShops({ cursor: pageParam, limit: 20 }),
+  getNextPageParam: (last) => last.nextCursor ?? undefined,
+  initialPageParam: undefined,
+})
+// FlashList onEndReached → fetchNextPage()
+```
 
-This starter kit is designed to benefit a wide range of React Native developers, from beginners to experienced professionals. Here's why it might be a good fit for you:
+**Offline Cache** — TanStack Query + AsyncStorage persister. Directory and announcements are readable offline. The cart is persisted locally via redux-persist.
 
-1. **For beginners:** It provides a solid foundation with best practices and common solutions, helping you learn industry-standard approaches to React Native development.
+**Push Token Registration** — After every login, the app immediately calls `PATCH /users/me/push-token`. Re-registers on foreground resume if the token changed.
 
-2. **For experienced developers:** It offers a well-structured, production-ready setup that can save you time and effort in project initialization and configuration.
+---
 
-3. **For teams:** It ensures consistency across projects and team members, making it easier to onboard new developers and maintain code quality.
+## Navigation Structure
 
-4. **For explorers:** Even if you prefer not to use starter kits, this project can serve as a valuable reference. You can explore the codebase, documentation, and architectural decisions to gain insights and potentially adopt specific solutions for your projects.
+All routes live under `src/app/` (Expo Router file-based routing):
 
-5. **For learners:** The starter kit incorporates up-to-date libraries and patterns, allowing you to familiarize yourself with current best practices in the React Native ecosystem.
+```
+src/app/
+├── _layout.tsx                         Root provider stack + global sheets
+│
+├── (auth)/                             Public auth screens (no tab bar)
+│   ├── login.tsx                       Email + password login
+│   ├── register.tsx                    Name / email / phone / unit / password
+│   ├── verify-otp.tsx                  6-digit email OTP + resend button
+│   ├── forgot-password.tsx             Request password reset email
+│   ├── reset-password.tsx              New password (token via deep link)
+│   └── accept-invitation.tsx           Merchant/Admin invite → name + password setup
+│
+├── (tabs)/                             Main 5-tab navigation shell
+│   ├── _layout.tsx                     Tab bar: Home / Directory / Orders* / Community / Profile*
+│   ├── index.tsx                       Home feed — greeting, quick actions, announcements preview, shops preview
+│   │
+│   ├── directory/
+│   │   ├── index.tsx                   Shop list — FlashList, category chips, search, cursor pagination
+│   │   └── [shopId]/
+│   │       └── index.tsx               Shop detail — photo hero, menu tab, reviews tab, CartBar
+│   │
+│   ├── orders/                         [auth guard]
+│   │   ├── index.tsx                   Order history — FlashList with status badges
+│   │   └── [orderId].tsx              Order detail + real-time status via Socket.io
+│   │
+│   ├── community/
+│   │   ├── index.tsx                   Announcements feed + Reports section
+│   │   ├── [announcementId].tsx        Announcement detail + comments
+│   │   ├── reports/
+│   │   │   └── index.tsx               Official PDF compound reports list
+│   │   ├── governance/
+│   │   │   ├── index.tsx               Polls + Elections overview
+│   │   │   ├── polls/[pollId].tsx      Poll detail + vote + live results
+│   │   │   └── elections/[id].tsx      Election + candidates + vote
+│   │   └── feedback/                   [auth guard]
+│   │       ├── index.tsx               My submitted feedback list
+│   │       ├── new.tsx                 Submit new feedback form
+│   │       └── [feedbackId].tsx        Feedback detail + admin reply thread
+│   │
+│   └── profile/
+│       └── index.tsx                   Auth: account info, language/theme toggles, logout / Guest: sign-in CTA
+│
+├── notifications/
+│   └── index.tsx                       [auth guard] In-app notification feed, mark read/all
+│
+├── (merchant)/                         [merchant role guard]
+│   ├── dashboard.tsx                   Shop open/close toggle, pending orders banner, quick actions, stats
+│   ├── menu/
+│   │   ├── index.tsx                   Product list with availability toggle + pull-to-refresh
+│   │   └── [productId].tsx             Create/edit product form (EN + AR fields, price, image URL)
+│   └── orders/
+│       ├── index.tsx                   Incoming orders filtered by status (30s polling)
+│       └── [orderId].tsx               Order detail — Accept / Reject / Advance status
+│
+└── checkout/
+    ├── cart.tsx                        Review items, quantities, totals
+    ├── address.tsx                     Delivery address + free-text notes
+    ├── payment.tsx                     Cash on Delivery or Paymob
+    └── confirmation.tsx                Lottie success animation + order summary
+```
 
-6. **For AI-assisted development:** This starter kit works well with AI coding tools. It provides a solid structure and best practices that can guide AI-generated code. This helps ensure that AI assistance leads to high-quality, maintainable code that fits well within your project.
+> `*` = auth-guarded tab (redirects guests to login)
 
-Remember, you don't have to use the entire starter kit as-is. Feel free to cherry-pick ideas, configurations, or code snippets that align with your project needs. Whether you're building a new app from scratch or looking to improve your existing development process, this starter kit can provide valuable insights and practical solutions.
+---
 
-## Why Expo and not React Native CLI?
+## Design System
 
-We have been using Expo as our main framework since the introduction of [Continuous Native Generation (CNG)](https://docs.expo.dev/workflow/continuous-native-generation/) concept and we are happy with the experience.
+Color palette derived from the EastPark brand logo (`eastpark.jpg`). Full specification in `DESIGN.md`.
 
-I think this question is not valid anymore, especially after the last React conference when the core React native team recommended using Expo for new projects.
+### Color Tokens (`src/theme/tokens.ts`)
 
-> "As of today, the only recommended community framework for React Native is Expo. Folks at Expo have been investing in the React Native ecosystem since the early days of React Native and as of today, we believe the developer experience offered by Expo is best in class." React native core team
+```ts
+BRAND.gold       = '#b8966a'  // Primary accent — use sparingly
+BRAND.goldDark   = '#7a5e38'  // Gold on light backgrounds (WCAG AA)
 
-Still hesitating? Check out this [article](https://reactnative.dev/blog/2024/06/25/use-a-framework-to-build-react-native-apps) or this [video](https://www.youtube.com/watch?v=lifGTznLBcw), maybe this one [video](https://www.youtube.com/watch?v=ek_IdGC0G80) too.
+DARK.bg          = '#0d0c0b'  // Warm near-black — flagship surface
+DARK.card        = '#221f1c'  // Card surface
+DARK.elevated    = '#2e2a26'  // Modals, sheets
+DARK.border      = '#3d3830'  // Dividers
+DARK.text        = '#f5f0e8'  // Primary text
+DARK.textMuted   = '#9e9488'  // Secondary / placeholder text
 
-## 🧑‍💻 Stay up to date
+SEMANTIC.success = '#5A7A52'  // Muted olive
+SEMANTIC.warning = '#C48B2F'  // Deep amber
+SEMANTIC.error   = '#B03A2E'  // Deep muted red
+SEMANTIC.info    = '#4A6B8A'  // Slate blue
+```
 
-We are committed to continually improving our starter kit and providing the best possible resources for building React Native apps. To that end, we regularly add new features and fix any bugs that are discovered.
+### Typography
 
-If you want to stay up to date with the latest developments in our starter kit, you can either watch the repository or hit the "star" button. This will allow you to receive notifications whenever new updates are available.
+| Font | Role | Weights |
+|---|---|---|
+| Cairo | All UI text — both English and Arabic | 400 · 500 · 600 · 700 |
+| Cormorant Garamond | English display/hero text only — never functional UI, never Arabic | 400 · 600 · 700 |
 
-We value the feedback and contributions of our users, and we encourage you to let us know if you have any suggestions for improving our starter kit. We are always looking for ways to make it even more effective and useful for our community. So, please do not hesitate to reach out and share your thoughts with us.
+Both fonts are embedded via the `expo-font` plugin at build time — no runtime load flash.
 
-<!-- add a gif image here  -->
+### Spacing & Radius
 
-## 💎 Libraries used
+```ts
+SPACING = { xs: 4, sm: 8, md: 12, base: 16, lg: 20, xl: 24, '2xl': 32, '3xl': 48 }
+RADIUS  = { sm: 8, md: 12, lg: 16, xl: 24, full: 9999 }
+```
 
-- [Expo](https://docs.expo.io/)
-- [Expo Router](https://docs.expo.dev/router/introduction/)
-- [Nativewind](https://www.nativewind.dev/v4/overview)
-- [Flash list](https://github.com/Shopify/flash-list)
-- [React Query](https://tanstack.com/query/v4)
-- [Axios](https://axios-http.com/docs/intro)
-- [TanStack Form](https://tanstack.com/form/latest)
-- [i18next](https://www.i18next.com/)
-- [zustand](https://github.com/pmndrs/zustand)
-- [React Native MMKV](https://github.com/mrousavy/react-native-mmkv)
-- [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/)
-- [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/)
-- [React Native Svg](https://github.com/software-mansion/react-native-svg)
-- [React Error Boundaries](https://github.com/bvaughn/react-error-boundary)
-- [Expo Image](https://docs.expo.dev/versions/unversioned/sdk/image/)
-- [React Native Keyboard Controller](https://github.com/kirillzyusko/react-native-keyboard-controller)
-- [Moti](https://moti.fyi/)
-- [React Native Safe Area Context](https://github.com/th3rdwave/react-native-safe-area-context)
-- [React Native Screens](https://github.com/software-mansion/react-native-screens)
-- [Tailwind Variants](https://www.tailwind-variants.org/)
-- [Zod](https://zod.dev/)
+### Motion Rules
 
-## Contributors
+- Spring physics via `react-native-reanimated` — no linear easing
+- Lottie animations on key moments: order placed, vote submitted, payment success, registration complete
+- Skeleton shimmer (never spinners) for all loading states via `react-native-shimmer-placeholder`
+- Haptic feedback on every interactive tap
+- Respects `prefers-reduced-motion`
 
-This starter is maintained by [Obytes mobile tribe team](https://www.obytes.com/team) and we welcome new contributors to join us in improving it. If you are interested in getting involved in the project, please don't hesitate to open an issue or submit a pull request.
+### Accessibility
 
-In addition to maintaining this starter kit, we are also available to work on custom projects and help you build your dream app. If you are looking for experienced and reliable developers to bring your app vision to life, please visit our website at [obytes.com/contact](https://www.obytes.com/contact) to get in touch with us. We would be happy to discuss your project in more detail and explore how we can help you achieve your goals.
+- WCAG AA contrast: ≥ 4.5:1 text, ≥ 3:1 large text
+- Touch targets: minimum 44dp, preferred 48dp
+- Never: pure `#000`/`#fff` · cold zinc grays · bright emerald green · neon colors
 
-## 🔥 How to contribute?
+---
 
-Thank you for your interest in contributing to our project. Your involvement is greatly appreciated and we welcome your contributions. Here are some ways you can help us improve this project:
+## Features by Module
 
-1. Show your support for the project by giving it a 🌟 on Github. This helps us increase visibility and attract more contributors.
-2. Share your thoughts and ideas with us by opening an issue. If you have any suggestions or feedback about any aspect of the project, we are always eager to hear from you and have a discussion.
-3. If you have any questions about the project, please don't hesitate to ask. Simply open an issue and our team will do our best to provide a helpful and informative response.
-4. If you encounter a bug or typo while using the starter kit or reading the documentation, we would be grateful if you could bring it to our attention. You can open an issue to report the issue, or even better, submit a pull request with a fix.
+### Home
+- Time-based personalised greeting (morning / afternoon / evening)
+- Unit number shown for authenticated residents
+- 6-item quick-actions grid linking to all major features
+- Latest 3 announcements preview with "See All" link
+- Latest 6 shops grid with "See All" link
 
-We value the input and contributions of our community and look forward to working with you to improve this project.
+### Business Directory
+- Shop list with FlashList, cursor pagination, category filter chips, and search
+- Shop detail: cover photo hero, back/save navigation, open/closed badge, rating, description, phone/WhatsApp CTA buttons
+- Tabbed interface: **Menu** (products with image, EN/AR name, price, Add to Cart) and **Reviews** (name, stars, comment)
+- CartBar: sticky bottom bar shows item count + total when the cart has items from this shop
+- Multi-shop conflict guard: adding from a different shop shows a bottom sheet asking to clear or keep the current cart
 
-## ❓ FAQ
+### Orders
+- Order history list with status chips: PLACED → CONFIRMED → ON_THE_WAY → DELIVERED / CANCELLED
+- Real-time status updates via Socket.io `/orders` namespace
+- Cancel button visible and active only while status is `PLACED`
+- Order detail with product snapshots (name at time of order) and total breakdown
 
-If you have any questions about the starter and want answers, please check out the [Discussions](https://github.com/obytes/react-native-template-obytes/discussions) page.
+### Community Hub
+- **Announcements**: Feed with category badges (GENERAL / PROMOTION / EVENT / MAINTENANCE / NEWS), tap to full detail, in-app PDF viewer for attachments
+- **Reports**: Official compound PDF reports list with in-app viewer
+- **Polls**: Vote on active polls, view live or sealed results, expiry countdown
+- **Elections**: Candidate list with EN/AR name and statement, single-vote guarantee, three visibility modes (SEALED_UNTIL_DEADLINE / LIVE_COUNT / ADMIN_CONTROLLED)
+- **Feedback**: Category chips (MAINTENANCE / SECURITY / CLEANLINESS / NOISE / SUGGESTION / OTHER), anonymous toggle, title + body; view submissions and admin reply thread
 
-## 🔖 License
+### Profile
+- **Authenticated**: avatar initial, name, email, unit number; language toggle (EN ↔ AR with RTL flip + restart); theme segmented control (Dark / Light / System); logout; delete account with confirmation
+- **Guest**: illustration + sign-in CTA
 
-This project is MIT licensed.
+### Notifications
+- Infinite-scroll feed with FlashList and cursor pagination
+- Color-coded type indicator dots: ORDER_UPDATE (gold), ANNOUNCEMENT (info), POLL (success), ELECTION (warning)
+- Tap to mark individual notification as read
+- "Mark All Read" header button with unread count badge
+- Relative timestamps (e.g. "2h ago", "3d ago", "Just now")
+
+### Merchant Tools
+- **Dashboard**: Open/close toggle switch with instant mutation, pending-order count alert banner linking to orders, quick-action cards, stat cards
+- **Menu management**: Product list with per-item availability toggle, pull-to-refresh, FAB to add new product
+- **Product form**: EN name, AR name, price (EGP), EN description, AR description, image URL; Zod validation with field-level error messages
+- **Order management**: Incoming orders filtered by status, 30-second polling; per-order actions to accept, reject, or advance status
+
+### Checkout Flow
+1. **Cart** — item list, adjust quantities (decrease to 0 removes item), remove, subtotal
+2. **Address** — delivery address pre-filled from profile + free-text notes field
+3. **Payment** — Cash on Delivery or Paymob (card/wallet)
+4. **Confirmation** — Lottie success animation, order number, estimated delivery
+
+---
+
+## State Management
+
+Three Redux Toolkit slices, all persisted via redux-persist + MMKV:
+
+### `authSlice`
+
+```ts
+{
+  user: { id, name, email, unitNumber, role, pushToken } | null,
+  tokens: { access: string, refresh: string } | null,
+  isAuthenticated: boolean,
+  showAuthWall: boolean,
+  authWallRedirectAction: SerializedAction | null,
+}
+```
+
+Actions: `setCredentials`, `clearCredentials`, `showAuthWall`, `hideAuthWall`, `updatePushToken`
+
+### `cartSlice`
+
+```ts
+{
+  items: CartItem[],              // { productId, name, nameAr, price, quantity, imageUrl }
+  shopId: string | null,          // enforces single-shop constraint
+  shopName: string | null,
+  showConflictSheet: boolean,     // true when adding from a different shop
+  pendingItem: PendingCartItem | null,
+}
+```
+
+Actions: `addItem` (guards multi-shop conflict), `updateQuantity`, `removeItem`, `clearCart`, `clearAndAdd` (clears old cart + adds pending), `dismissConflict`
+
+### `preferencesSlice`
+
+```ts
+{
+  language: 'en' | 'ar',
+  theme: 'dark' | 'light' | 'system',
+}
+```
+
+Actions: `setLanguage`, `setTheme`
+
+---
+
+## API Services
+
+All HTTP calls go through a shared Axios instance (`src/services/api/client.ts`) with:
+
+- Base URL from `EXPO_PUBLIC_API_URL`
+- JWT access token injected via request interceptor (from expo-secure-store)
+- 401 → silent token refresh via `POST /auth/refresh`, then request retried automatically
+- On refresh failure → `dispatch(clearCredentials())` + redirect to login
+
+| File | Endpoints |
+|---|---|
+| `users.ts` | `GET/PATCH /users/me` · `PATCH /users/me/push-token` · `DELETE /users/me` |
+| `shops.ts` | `GET /shops` · `GET /shops/:id` · `GET /shops/:id/products` · `GET /shops/:id/reviews` · `POST/DELETE /shops/:id/save` |
+| `orders.ts` | `GET /orders` · `GET /orders/:id` · `POST /orders` · `PATCH /orders/:id/cancel` |
+| `community.ts` | announcements CRUD · reports · comments · feedback CRUD · feedback replies |
+| `merchant.ts` | shop management · `toggle-open` · products CRUD · orders + status changes |
+| `notifications.ts` | `GET /notifications` · `PATCH /notifications/:id/read` · `PATCH /notifications/read-all` |
+
+---
+
+## Authentication Flow
+
+```
+Register
+  POST /auth/register  (name, email, phone, unitNumber, password)
+  → verify-otp screen (6-digit email code, resend button)
+  POST /auth/verify-otp
+  → dispatch(setCredentials) → tokens stored in expo-secure-store
+  → PATCH /users/me/push-token
+  → home
+
+Login
+  POST /auth/login  (email, password)
+  → dispatch(setCredentials) → tokens stored in expo-secure-store
+  → PATCH /users/me/push-token
+  → home (or replay pending auth-wall action)
+
+Forgot Password
+  POST /auth/forgot-password  (email)
+  → reset link email → deep link → reset-password screen
+  POST /auth/reset-password  (token, newPassword)
+
+Merchant / Admin Invite
+  Admin creates invitation → signed one-time token emailed
+  → deep link → accept-invitation screen
+  POST /auth/accept-invitation  (token, name, password)
+
+Token Lifecycle
+  Access token  : 15-min TTL · expo-secure-store
+  Refresh token : 7-day TTL · expo-secure-store (never AsyncStorage)
+  Silent refresh: Axios interceptor catches 401, refreshes, retries original request
+  Logout        : POST /auth/logout (blacklists refresh in Redis) + clearCredentials
+```
+
+### User Roles
+
+| Role | Access |
+|---|---|
+| Guest | Read-only: directory, announcements, reports, governance |
+| Resident | All guest access + orders, feedback, voting, profile |
+| Merchant | Resident access + merchant dashboard, menu CRUD, order management |
+| Admin | Full access (admin web panel is separate) |
+
+---
+
+## Internationalisation & RTL
+
+- **Languages**: English (LTR) and Arabic (RTL)
+- **Library**: i18next + react-i18next
+- **Locale detection**: expo-localization on first launch
+- **RTL switch**: `I18nManager.forceRTL(true/false)` on language change + restart prompt via `react-native-restart`
+- **Translation files**: `src/translations/en.json` and `src/translations/ar.json`
+- **Namespaces**: `auth` · `cart` · `checkout` · `common` · `community` · `directory` · `errors` · `feedback` · `governance` · `home` · `merchant` · `notifications` · `orders` · `profile`
+
+Rules enforced in code:
+- No hardcoded strings — always `t('namespace.key')`
+- All API data exposes `name`/`nameAr` and `description`/`descriptionAr` — always display the active language variant
+- Cairo handles both Latin and Arabic scripts; Cormorant Garamond is English-only
+
+---
+
+## Environment Setup
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm 9+
+- Expo CLI: `pnpm add -g expo-cli`
+- EAS CLI (for builds): `pnpm add -g eas-cli`
+
+### Installation
+
+```bash
+git clone <repo>
+cd eastpark-frontend
+pnpm install
+```
+
+### Environment Variables
+
+Create `.env` (local dev). Copy `.env.example` as a starting point.
+
+```env
+# App identity
+EXPO_PUBLIC_NAME=EastPark
+EXPO_PUBLIC_SCHEME=eastpark
+EXPO_PUBLIC_VERSION=1.0.0
+EXPO_PUBLIC_APP_ENV=development        # development | preview | production
+
+# iOS / Android identifiers
+EXPO_PUBLIC_BUNDLE_ID=com.eastpark.app.development
+EXPO_PUBLIC_PACKAGE=com.eastpark.app.development
+
+# Backend
+EXPO_PUBLIC_API_URL=http://localhost:3000
+EXPO_PUBLIC_SOCKET_URL=ws://localhost:3000
+
+# Analytics / monitoring
+EXPO_PUBLIC_POSTHOG_KEY=phc_xxxxx
+```
+
+All variables are validated at build time by `env.ts` using Zod — the build fails immediately if a required variable is missing or malformed.
+
+---
+
+## Development Commands
+
+```bash
+pnpm start              # Start Expo dev server (Metro bundler)
+pnpm ios                # Run on iOS simulator
+pnpm android            # Run on Android emulator
+
+pnpm lint               # ESLint check
+pnpm lint --fix         # Auto-fix ESLint errors
+pnpm type-check         # tsc --noEmit
+pnpm test               # Jest unit tests
+pnpm check-all          # lint + type-check + test in one pass
+
+pnpm start:preview      # Start with preview environment
+pnpm ios:production     # Run on iOS simulator with production env
+```
+
+---
+
+## EAS Build
+
+Three build profiles defined in `eas.json`:
+
+| Profile | App label | Bundle ID suffix | Icon badge |
+|---|---|---|---|
+| `development` | EastPark (dev) | `.development` | `dev` banner |
+| `preview` | EastPark (preview) | `.preview` | `preview` banner |
+| `production` | EastPark | — | none |
+
+```bash
+# Development build (installable on device with dev menu)
+eas build --profile development --platform ios
+eas build --profile development --platform android
+
+# Preview / internal testing
+eas build --profile preview --platform all
+
+# Production (App Store / Play Store)
+eas build --profile production --platform all
+
+# Submit to stores
+eas submit --platform ios
+eas submit --platform android
+
+# OTA update (no store review required)
+eas update --branch production --message "Fix: cart total calculation"
+```
+
+---
+
+## Code Quality
+
+### ESLint
+
+Base: `@antfu/eslint-config`. Additional plugins:
+
+- `eslint-plugin-react-hooks` — enforces Rules of Hooks
+- `eslint-plugin-react-compiler` — React compiler compatibility
+- `eslint-plugin-unicorn` — extra code quality rules
+- `eslint-plugin-import` — import ordering and resolution
+- `eslint-plugin-testing-library` — correct Testing Library usage
+- `eslint-plugin-better-tailwindcss` — validates Tailwind class names
+
+Key enforced rules:
+
+| Rule | Requirement |
+|---|---|
+| `perfectionist/sort-imports` | Type imports before value imports; external before internal; alphabetical within groups |
+| `unicorn/filename-case` | kebab-case (exception regex for Expo Router dynamic segments, e.g. `[shopId].tsx`) |
+| `max-lines-per-function` | 110 lines max — extract sub-components when exceeded |
+| `max-statements-per-line` | No multi-statement inline callbacks |
+| `react-hooks/rules-of-hooks` | All hooks called before any early `return` |
+
+### TypeScript
+
+`tsconfig.json` uses strict mode:
+
+```json
+{
+  "strict": true,
+  "noUncheckedIndexedAccess": true,
+  "exactOptionalPropertyTypes": true
+}
+```
+
+Path alias: `@/*` → `src/*` for all imports (never relative paths).
+
+### Pre-commit Hooks
+
+`husky` + `lint-staged` runs on every commit:
+1. ESLint auto-fix on staged `.ts`/`.tsx` files
+2. TypeScript type-check on changed files
+3. `commitlint` validates the commit message format
+
+---
+
+## Commit Convention
+
+```
+[AhmedMuhammedElsaid][type]: short description
+
+Types: feat | fix | chore | refactor | test | docs | style
+```
+
+Examples:
+```
+[AhmedMuhammedElsaid][feat]: phase 3 - business directory
+[AhmedMuhammedElsaid][fix]: cart total CartItem type annotation
+[AhmedMuhammedElsaid][chore]: fix eslint import order in merchant screens
+```
+
+---
+
+## Build History
+
+| Commit | Phase | Description |
+|---|---|---|
+| `2caa0e6` | Phase 1 | Foundation — obytes template, Redux Toolkit, i18n, RTL, providers, theme tokens |
+| `17e53b8` | Phase 2 | Auth & Core Shell — register, OTP verify, login, JWT tokens, auth-wall, push token |
+| `824a16a` | Phase 3 | Business Directory — shop list, shop detail, menu, reviews, CartBar, CartConflictSheet |
+| `e59cd02` | Phase 4 | Community Hub — announcements, reports, PDF viewer, governance (polls + elections), feedback |
+| `47eaf4b` | Phase 5 | Ordering & Payments — cart, address, COD/Paymob checkout, real-time tracking, cancel |
+| `4ea2f31` | Phase 6 | Merchant Tools — dashboard, menu CRUD, incoming order management |
+| `379b195` | Phase 7 | Polish & Launch — home feed, profile, notifications, TypeScript + ESLint clean across all phases |
+| `723ed15` | Chore | ESLint fixes in obytes template scaffold files |
+
+---
+
+## Project Structure Reference
+
+```
+eastpark-frontend/
+├── src/
+│   ├── app/                        All Expo Router screens (see Navigation Structure above)
+│   ├── components/
+│   │   ├── auth/                   AuthInput, AuthWallSheet, BrandMark, GoldButton, AuthScreenWrapper
+│   │   ├── cart/                   CartConflictSheet
+│   │   ├── directory/              CategoryChips, ShopCard
+│   │   └── ui/                     Skeleton, Button, Input, Modal, Select, Text, Checkbox, ProgressBar, …
+│   ├── lib/
+│   │   ├── hooks/                  use-auth-guard, use-selected-theme, use-selected-language
+│   │   ├── i18n.ts                 i18next + expo-localization setup
+│   │   └── storage.ts              MMKV wrapper (typed get/set/remove)
+│   ├── services/
+│   │   └── api/                    client.ts (Axios + interceptors) + per-domain service files
+│   ├── store/
+│   │   ├── slices/                 authSlice.ts, cartSlice.ts, preferencesSlice.ts
+│   │   └── index.ts                Redux store + persist config (MMKV storage adapter)
+│   ├── theme/
+│   │   └── tokens.ts               BRAND, DARK, SEMANTIC, SPACING, RADIUS, FONT constants
+│   └── translations/
+│       ├── en.json
+│       └── ar.json
+├── assets/                         icon.png, splash-icon.png, adaptive-icon.png
+├── app.config.ts                   Expo config (name, bundle IDs, plugins, font embedding)
+├── env.ts                          Environment variable schema with Zod validation
+├── eslint.config.mjs               ESLint flat config
+├── tsconfig.json                   TypeScript strict config + @/* path alias
+├── tailwind.config.ts              Tailwind / NativeWind config
+├── commitlint.config.ts            Commit message format rules
+└── eas.json                        EAS Build profiles (development / preview / production)
+```
