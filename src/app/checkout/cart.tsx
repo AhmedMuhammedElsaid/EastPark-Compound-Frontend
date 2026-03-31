@@ -1,8 +1,10 @@
 import type { CartItem } from '@/store/slices/cartSlice';
 import { router } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Trash } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppDispatch, useAppSelector } from '@/store';
@@ -63,7 +65,10 @@ export default function CartScreen() {
         </View>
         <Pressable
           style={styles.checkoutBtn}
-          onPress={() => router.push('/checkout/address' as any)}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            router.push('/checkout/address' as any);
+          }}
         >
           <Text style={styles.checkoutBtnText}>{t('cart.checkout')}</Text>
         </Pressable>

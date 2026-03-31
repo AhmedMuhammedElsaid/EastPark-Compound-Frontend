@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
@@ -159,7 +159,7 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
       <View style={styles.ctaRow}>
         {shop.phone
           ? (
-              <Pressable style={styles.ctaBtn}>
+              <Pressable style={styles.ctaBtn} onPress={() => { if (shop?.phone) Linking.openURL(`tel:${shop.phone}`); }}>
                 <Text style={styles.ctaBtnText}>
                   📞
                   {t('directory.call')}
@@ -169,7 +169,10 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
           : null}
         {shop.whatsapp
           ? (
-              <Pressable style={[styles.ctaBtn, styles.ctaBtnWhatsapp]}>
+              <Pressable
+                style={[styles.ctaBtn, styles.ctaBtnWhatsapp]}
+                onPress={() => Linking.openURL(`https://wa.me/${shop.whatsapp}`)}
+              >
                 <Text style={styles.ctaBtnText}>💬 WhatsApp</Text>
               </Pressable>
             )

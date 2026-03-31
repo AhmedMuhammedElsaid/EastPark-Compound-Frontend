@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ErrorState } from '@/components/ui/error-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ordersApi } from '@/services/api/orders';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
@@ -27,7 +28,7 @@ export default function OrdersScreen() {
   const insets = useSafeAreaInsets();
   const isAr = i18n.language === 'ar';
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
       AxiosResponse<{ data: { data: Order[]; nextCursor: string | null } }>,
       Error,
@@ -49,7 +50,9 @@ export default function OrdersScreen() {
         <Text style={styles.headerTitle}>{t('orders.title')}</Text>
       </View>
 
-      {isLoading
+      {isError
+        ? <ErrorState onRetry={refetch} />
+        : isLoading
         ? (
             <View style={styles.loadingPad}>
               {Array.from({ length: 5 }).map((_, i) => (
@@ -69,7 +72,7 @@ export default function OrdersScreen() {
               onEndReachedThreshold={0.5}
               contentContainerStyle={styles.listContent}
               onRefresh={refetch}
-              refreshing={false}
+              refreshing={isRefetching}
               ListEmptyComponent={<EmptyOrders />}
               ListFooterComponent={
                 isFetchingNextPage

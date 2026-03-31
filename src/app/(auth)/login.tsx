@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
@@ -15,27 +14,16 @@ import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
 import { authApi } from '@/services/api/auth';
 import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
-import { usersApi } from '@/services/api/users';
+import { registerPushToken } from '@/services/push';
 import { useAppDispatch } from '@/store';
 import { login } from '@/store/slices/authSlice';
-import { BRAND, DARK, FONT, SPACING } from '@/theme/tokens';
+import { BRAND, DARK, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const schema = z.object({
   email: z.string().email('auth.errors.invalid_email'),
   password: z.string().min(8, 'auth.errors.password_too_short'),
 });
 type FormData = z.infer<typeof schema>;
-
-async function registerPushToken() {
-  try {
-    const { status } = await Notifications.getPermissionsAsync();
-    if (status === 'granted') {
-      const token = await Notifications.getExpoPushTokenAsync();
-      await usersApi.updatePushToken(token.data);
-    }
-  }
-  catch {}
-}
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -57,7 +45,7 @@ export default function LoginScreen() {
       router.replace('/(tabs)');
     }
     catch {
-      showMessage({ message: t('auth.errors.login_failed'), type: 'danger', backgroundColor: '#B03A2E' });
+      showMessage({ message: t('auth.errors.login_failed'), type: 'danger', backgroundColor: SEMANTIC.error });
     }
   }
 

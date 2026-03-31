@@ -4,7 +4,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -51,10 +51,10 @@ export default function AnnouncementDetailScreen() {
         <Text style={styles.body}>{body}</Text>
 
         {ann.pdfUrl && (
-          <View style={styles.pdfRow}>
+          <Pressable style={styles.pdfRow} onPress={() => Linking.openURL(ann.pdfUrl!)}>
             <Text style={styles.pdfIcon}>📄</Text>
             <Text style={styles.pdfLabel}>{t('community.view_pdf')}</Text>
-          </View>
+          </Pressable>
         )}
 
         <View style={styles.divider} />

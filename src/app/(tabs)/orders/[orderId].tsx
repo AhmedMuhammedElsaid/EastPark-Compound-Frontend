@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 6,
     left: '50%',
-    right: '-50%',
+    right: -40,
     height: 2,
     backgroundColor: DARK.border,
     zIndex: -1,

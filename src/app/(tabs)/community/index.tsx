@@ -5,7 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -37,7 +37,7 @@ export default function CommunityScreen() {
   const { requireAuthNavigation } = useAuthGuard();
   const [filter, setFilter] = React.useState<Filter>('ALL');
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
       AxiosResponse<{ data: { data: Announcement[]; nextCursor: string | null } }>,
       Error,
@@ -70,6 +70,7 @@ export default function CommunityScreen() {
         announcements={announcements}
         isLoading={isLoading}
         isFetchingNextPage={isFetchingNextPage}
+        isRefetching={isRefetching}
         hasNextPage={hasNextPage}
         fetchNextPage={fetchNextPage}
         refetch={refetch}
@@ -141,12 +142,13 @@ type ListProps = {
   announcements: Announcement[];
   isLoading: boolean;
   isFetchingNextPage: boolean;
+  isRefetching: boolean;
   hasNextPage: boolean;
   fetchNextPage: () => void;
   refetch: () => void;
 };
 
-function AnnouncementList({ announcements, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, refetch }: ListProps) {
+function AnnouncementList({ announcements, isLoading, isFetchingNextPage, isRefetching, hasNextPage, fetchNextPage, refetch }: ListProps) {
   const { t } = useTranslation();
   if (isLoading) {
     return (
@@ -169,7 +171,7 @@ function AnnouncementList({ announcements, isLoading, isFetchingNextPage, hasNex
       onEndReachedThreshold={0.5}
       contentContainerStyle={styles.listContent}
       onRefresh={refetch}
-      refreshing={false}
+      refreshing={isRefetching}
       ListEmptyComponent={(
         <View style={styles.empty}>
           <Text style={styles.emptyIcon}>📢</Text>
@@ -208,7 +210,9 @@ function AnnouncementCard({ announcement }: { announcement: Announcement }) {
       <Text style={styles.cardTitle} numberOfLines={2}>{title}</Text>
       <Text style={styles.cardBody} numberOfLines={3}>{body}</Text>
       {announcement.pdfUrl && (
-        <Text style={styles.pdfLink}>{t('community.view_pdf')}</Text>
+        <Pressable onPress={() => Linking.openURL(announcement.pdfUrl!)}>
+          <Text style={styles.pdfLink}>{t('community.view_pdf')}</Text>
+        </Pressable>
       )}
     </Pressable>
   );

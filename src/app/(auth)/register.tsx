@@ -12,7 +12,7 @@ import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
 import { authApi } from '@/services/api/auth';
-import { BRAND, DARK, FONT, SPACING } from '@/theme/tokens';
+import { BRAND, DARK, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const schema = z.object({
   name: z.string().min(2, 'auth.errors.name_too_short'),
@@ -39,7 +39,7 @@ export default function RegisterScreen() {
     }
     catch (err: any) {
       const msg = err?.response?.data?.message === 'EMAIL_TAKEN' ? t('auth.errors.email_taken') : t('common.error');
-      showMessage({ message: msg, type: 'danger', backgroundColor: '#B03A2E' });
+      showMessage({ message: msg, type: 'danger', backgroundColor: SEMANTIC.error });
     }
   }
 

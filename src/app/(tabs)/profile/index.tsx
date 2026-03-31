@@ -13,7 +13,7 @@ import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
 import { usersApi } from '@/services/api/users';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { logout } from '@/store/slices/authSlice';
-import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   rowDanger: {},
   rowIcon: { fontSize: 18, width: 28, textAlign: 'center' },
   rowLabel: { flex: 1, fontFamily: FONT.sans, fontSize: 15, color: DARK.text, fontWeight: '500' },
-  rowLabelDanger: { flex: 1, fontFamily: FONT.sans, fontSize: 15, color: '#B03A2E', fontWeight: '500' },
+  rowLabelDanger: { flex: 1, fontFamily: FONT.sans, fontSize: 15, color: SEMANTIC.error, fontWeight: '500' },
   rowChevron: { fontSize: 18, color: DARK.textMuted },
   segmentRow: {
     flexDirection: 'row',

@@ -5,7 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,7 +17,7 @@ export default function ReportsScreen() {
   const insets = useSafeAreaInsets();
   const isAr = i18n.language === 'ar';
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
       AxiosResponse<{ data: { data: Report[]; nextCursor: string | null } }>,
       Error,
@@ -62,7 +62,7 @@ export default function ReportsScreen() {
               onEndReachedThreshold={0.5}
               contentContainerStyle={styles.listContent}
               onRefresh={refetch}
-              refreshing={false}
+              refreshing={isRefetching}
               ListEmptyComponent={(
                 <View style={styles.empty}>
                   <Text style={styles.emptyIcon}>📋</Text>
@@ -90,7 +90,7 @@ function ReportRow({ report, isAr }: { report: Report; isAr: boolean }) {
   });
 
   return (
-    <Pressable style={styles.row}>
+    <Pressable style={styles.row} onPress={() => Linking.openURL(report.pdfUrl)}>
       <View style={styles.rowIcon}>
         <Text style={styles.pdfIcon}>📄</Text>
       </View>

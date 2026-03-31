@@ -9,6 +9,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CategoryChips } from '@/components/directory/category-chips';
 import { ShopCard } from '@/components/directory/shop-card';
+import { ErrorState } from '@/components/ui/error-state';
 import { ShopCardSkeleton } from '@/components/ui/skeleton';
 import { shopsApi } from '@/services/api/shops';
 import { DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
@@ -31,7 +32,7 @@ export default function DirectoryScreen() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
       AxiosResponse<{ data: CursorPage<Shop> }>,
       Error,
@@ -78,7 +79,9 @@ export default function DirectoryScreen() {
       <CategoryChips selected={category} onSelect={setCategory} />
 
       {/* Shop list */}
-      {isLoading
+      {isError
+        ? <ErrorState onRetry={refetch} />
+        : isLoading
         ? (
             <View style={styles.listPad}>
               {Array.from({ length: 5 }).map((_, i) => (
@@ -98,7 +101,7 @@ export default function DirectoryScreen() {
               onEndReachedThreshold={0.5}
               contentContainerStyle={styles.listContent}
               onRefresh={refetch}
-              refreshing={false}
+              refreshing={isRefetching}
               ListEmptyComponent={<EmptyState search={debouncedSearch} />}
               ListFooterComponent={isFetchingNextPage ? <ShopCardSkeleton /> : null}
             />

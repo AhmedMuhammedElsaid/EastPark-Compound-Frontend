@@ -23,7 +23,7 @@ export default function FeedbackListScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
       AxiosResponse<{ data: { data: Feedback[]; nextCursor: string | null } }>,
       Error,
@@ -71,7 +71,7 @@ export default function FeedbackListScreen() {
               onEndReachedThreshold={0.5}
               contentContainerStyle={styles.listContent}
               onRefresh={refetch}
-              refreshing={false}
+              refreshing={isRefetching}
               ListEmptyComponent={<FeedbackEmpty />}
               ListFooterComponent={
                 isFetchingNextPage
