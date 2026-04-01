@@ -79,7 +79,7 @@ export default function NotificationsScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
+        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
           <Text style={styles.backIcon}>←</Text>
         </Pressable>
         <View style={styles.headerCenter}>
@@ -95,6 +95,8 @@ export default function NotificationsScreen() {
             style={[styles.markAllBtn, markingAll && styles.markAllBtnDisabled]}
             onPress={() => markAllRead()}
             disabled={markingAll}
+            accessibilityRole="button"
+            accessibilityLabel={t('notifications.mark_all_read')}
           >
             <Text style={styles.markAllText}>{t('notifications.mark_all_read')}</Text>
           </Pressable>
@@ -146,6 +148,8 @@ function NotificationItem({
     <Pressable
       style={[styles.card, !notification.isRead && styles.cardUnread]}
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={notification.title}
     >
       <View style={[styles.typeDot, { backgroundColor: typeColor }]} />
       <View style={styles.cardContent}>

@@ -49,7 +49,7 @@ export default function GovernanceScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
-        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
+        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
           <Text style={styles.backIcon}>←</Text>
         </Pressable>
         <Text style={styles.navTitle}>{t('governance.title')}</Text>
@@ -61,6 +61,8 @@ export default function GovernanceScreen() {
             key={key}
             style={[styles.tab, tab === key && styles.tabActive]}
             onPress={() => setTab(key)}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: tab === key }}
           >
             <Text style={[styles.tabText, tab === key && styles.tabTextActive]}>
               {t(`governance.${key}`)}
@@ -159,6 +161,8 @@ function PollCard({ poll }: { poll: Poll }) {
     <Pressable
       style={[styles.card, poll.myVote && styles.cardVoted]}
       onPress={() => router.push(`/(tabs)/community/governance/polls/${poll.id}` as any)}
+      accessibilityRole="button"
+      accessibilityLabel={question}
     >
       <View style={styles.cardHeader}>
         <View style={styles.pollBadge}>
@@ -195,6 +199,8 @@ function ElectionCard({ election }: { election: Election }) {
     <Pressable
       style={[styles.card, election.myVote && styles.cardVoted]}
       onPress={() => router.push(`/(tabs)/community/governance/elections/${election.id}` as any)}
+      accessibilityRole="button"
+      accessibilityLabel={title}
     >
       <View style={styles.cardHeader}>
         <View style={[styles.pollBadge, styles.electionBadge]}>

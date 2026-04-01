@@ -55,7 +55,11 @@ export default function CartScreen() {
               dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity + 1 }));
             }}
             onDecrease={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              if (item.quantity === 1) {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              } else {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
               dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity - 1 }));
             }}
           />

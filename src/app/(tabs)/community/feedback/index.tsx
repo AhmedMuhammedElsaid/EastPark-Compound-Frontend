@@ -43,11 +43,11 @@ export default function FeedbackListScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
-        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
+        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
           <Text style={styles.backIcon}>←</Text>
         </Pressable>
         <Text style={styles.navTitle}>{t('feedback.title')}</Text>
-        <Pressable style={styles.newBtn} onPress={() => router.push('/(tabs)/community/feedback/new' as any)}>
+        <Pressable style={styles.newBtn} onPress={() => router.push('/(tabs)/community/feedback/new' as any)} accessibilityRole="button" accessibilityLabel={t('feedback.new')}>
           <Plus size={22} color={DARK.bg} />
         </Pressable>
       </View>
@@ -95,6 +95,8 @@ function FeedbackRow({ feedback }: { feedback: Feedback }) {
     <Pressable
       style={styles.row}
       onPress={() => router.push(`/(tabs)/community/feedback/${feedback.id}` as any)}
+      accessibilityRole="button"
+      accessibilityLabel={feedback.title}
     >
       <View style={styles.rowTop}>
         <View style={[styles.catBadge, { backgroundColor: DARK.elevated }]}>

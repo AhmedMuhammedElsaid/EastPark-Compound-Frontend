@@ -36,7 +36,7 @@ export default function ReportsScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
-        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
+        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
           <Text style={styles.backIcon}>←</Text>
         </Pressable>
         <Text style={styles.title}>{t('community.reports')}</Text>
@@ -90,7 +90,7 @@ function ReportRow({ report, isAr }: { report: Report; isAr: boolean }) {
   });
 
   return (
-    <Pressable style={styles.row} onPress={() => Linking.openURL(report.pdfUrl)}>
+    <Pressable style={styles.row} onPress={() => Linking.openURL(report.pdfUrl)} accessibilityRole="button" accessibilityLabel={title}>
       <View style={styles.rowIcon}>
         <Text style={styles.pdfIcon}>📄</Text>
       </View>
