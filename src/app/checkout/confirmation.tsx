@@ -37,9 +37,8 @@ export default function ConfirmationScreen() {
     <View style={[styles.container, { paddingBottom: insets.bottom + SPACING.xl, paddingTop: insets.top }]}>
       <View style={styles.body}>
         <Animated.View style={[styles.iconWrap, iconStyle]}>
-          {/* Asset: add assets/lottie/order-confirmed.json to the project root before building */}
           <LottieView
-            source={require('../../../assets/lottie/order-confirmed.json')}
+            source={require('../../../assets/animations/success.json')}
             autoPlay
             loop={false}
             style={{ width: 200, height: 200 }}
