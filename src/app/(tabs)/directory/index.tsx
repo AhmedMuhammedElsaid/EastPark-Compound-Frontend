@@ -2,6 +2,7 @@ import type { AxiosResponse } from 'axios';
 import type { CursorPage, Shop, ShopCategory } from '@/services/api/shops';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { MagnifyingGlass, Storefront, X } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -58,7 +59,7 @@ export default function DirectoryScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Search bar */}
       <View style={styles.searchBar}>
-        <Text style={styles.searchIcon}>🔍</Text>
+        <MagnifyingGlass size={18} color={DARK.textMuted} />
         <TextInput
           value={search}
           onChangeText={setSearch}
@@ -75,7 +76,7 @@ export default function DirectoryScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('common.clear')}
           >
-            <Text style={styles.clearBtn}>✕</Text>
+            <X size={16} color={DARK.textMuted} />
           </Pressable>
         )}
       </View>
@@ -119,7 +120,9 @@ function EmptyState({ search }: { search: string }) {
   const { t } = useTranslation();
   return (
     <View style={styles.empty}>
-      <Text style={styles.emptyIcon}>🏪</Text>
+      <View style={{ alignItems: 'center' }}>
+        <Storefront size={48} color={DARK.textMuted} />
+      </View>
       <Text style={styles.emptyTitle}>
         {search ? t('common.no_results') : t('directory.no_shops')}
       </Text>
@@ -144,7 +147,6 @@ const styles = StyleSheet.create({
     height: 48,
     gap: SPACING.sm,
   },
-  searchIcon: { fontSize: 16 },
   searchInput: {
     flex: 1,
     fontFamily: FONT.sans,
@@ -152,7 +154,6 @@ const styles = StyleSheet.create({
     color: DARK.text,
     height: '100%',
   },
-  clearBtn: { fontSize: 14, color: DARK.textMuted },
   listPad: { paddingHorizontal: SPACING.base, paddingTop: SPACING.sm },
   listContent: { paddingHorizontal: SPACING.base, paddingTop: SPACING.sm },
   empty: {
@@ -162,7 +163,6 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
     paddingHorizontal: SPACING.xl,
   },
-  emptyIcon: { fontSize: 56 },
   emptyTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text, textAlign: 'center' },
   emptyBody: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, textAlign: 'center', lineHeight: 22 },
 });

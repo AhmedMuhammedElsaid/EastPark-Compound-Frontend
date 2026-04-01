@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     marginBottom: SPACING.md,
     overflow: 'hidden',
-    shadowColor: '#b8966a',
+    shadowColor: BRAND.gold,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.10,
     shadowRadius: 8,

@@ -7,6 +7,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatCurrency } from '@/lib/formatCurrency';
 import { merchantApi } from '@/services/api/merchant';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -23,6 +24,7 @@ const NEXT_STATUS: Record<string, string | null> = {
 
 export default function MerchantOrderDetailScreen() {
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
 
@@ -66,10 +68,7 @@ export default function MerchantOrderDetailScreen() {
           <Text style={styles.backIcon}>←</Text>
         </Pressable>
         <View style={styles.navInfo}>
-          <Text style={styles.navUnit}>
-            Unit
-            {order.user.unitNumber}
-          </Text>
+          <Text style={styles.navUnit}>{t('checkout.unit', { number: order.user.unitNumber })}</Text>
           <Text style={styles.navName}>{order.user.name}</Text>
         </View>
         <Text style={styles.navTime}>{time}</Text>
@@ -122,6 +121,7 @@ function OrderStatusBadge({ status }: { status: string }) {
 }
 
 function OrderItemsList({ order }: { order: MerchantOrder }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.itemsCard}>
       {order.items.map(item => (
@@ -131,18 +131,12 @@ function OrderItemsList({ order }: { order: MerchantOrder }) {
             ×
           </Text>
           <Text style={styles.itemName} numberOfLines={1}>{item.productNameSnapshot}</Text>
-          <Text style={styles.itemPrice}>
-            EGP
-            {item.totalPrice.toFixed(2)}
-          </Text>
+          <Text style={styles.itemPrice}>{formatCurrency(item.totalPrice)}</Text>
         </View>
       ))}
       <View style={styles.totalRow}>
-        <Text style={styles.totalLabel}>Total</Text>
-        <Text style={styles.totalValue}>
-          EGP
-          {order.totalAmount.toFixed(2)}
-        </Text>
+        <Text style={styles.totalLabel}>{t('cart.total')}</Text>
+        <Text style={styles.totalValue}>{formatCurrency(order.totalAmount)}</Text>
       </View>
     </View>
   );

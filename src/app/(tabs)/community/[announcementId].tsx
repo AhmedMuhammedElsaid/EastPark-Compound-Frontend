@@ -70,6 +70,7 @@ export default function AnnouncementDetailScreen() {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function CommentsSection({ announcementId }: { announcementId: string }) {
+  const { t } = useTranslation();
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage }
     = useInfiniteQuery<
       AxiosResponse<{ data: { data: Comment[]; nextCursor: string | null } }>,
@@ -108,7 +109,7 @@ function CommentsSection({ announcementId }: { announcementId: string }) {
               fetchNextPage();
           }}
         >
-          <Text style={styles.loadMoreText}>Load more</Text>
+          <Text style={styles.loadMoreText}>{t('common.load_more')}</Text>
         </Pressable>
       )}
     </View>

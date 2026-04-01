@@ -1,15 +1,38 @@
 {
   "admin": {
+    "add_option": "Add option",
+    "announcement_created": "Announcement published",
+    "body_ar": "Body (Arabic)",
+    "body_en": "Body (English)",
+    "category": "Category",
+    "description_ar": "Description (Arabic)",
+    "description_en": "Description (English)",
+    "election_created": "Election created",
     "email": "Email address",
+    "expires_at": "Expires at",
     "expired": "Expired",
     "invite_sent": "Invitation sent successfully",
     "invitations": "Invitations",
+    "new_announcement": "New Announcement",
+    "new_election": "New Election",
+    "new_poll": "New Poll",
+    "option": "Option",
+    "options": "Options",
     "pending": "Pending",
+    "poll_created": "Poll created",
+    "question_ar": "Question (Arabic)",
+    "question_en": "Question (English)",
     "role": "Role",
     "send_invite": "Send Invitation",
     "title": "Admin Portal",
+    "title_ar": "Title (Arabic)",
+    "title_en": "Title (English)",
     "tools": "Admin Tools",
-    "used": "Used"
+    "used": "Used",
+    "visibility_admin_controlled": "Admin controlled",
+    "visibility_live_count": "Live count",
+    "visibility_mode": "Results visibility",
+    "visibility_sealed_until_deadline": "Sealed until deadline"
   },
   "auth": {
     "accept_invitation": "You've been invited",
@@ -108,7 +131,8 @@
     "save": "Save",
     "search": "Search",
     "see_all": "See all",
-    "submit": "Submit"
+    "submit": "Submit",
+    "admin": "Admin"
   },
   "community": {
     "EVENT": "Event",
@@ -218,12 +242,24 @@
   },
   "merchant": {
     "accept": "Accept",
+    "confirm_delete": "Are you sure you want to delete this?",
     "dashboard": "Dashboard",
+    "field_description_ar": "Description (Arabic)",
+    "field_description_en": "Description (English)",
+    "field_image_url": "Image URL",
+    "field_name_ar": "Name (Arabic)",
+    "field_name_en": "Name (English)",
+    "field_price": "Price (EGP)",
     "menu": "Menu",
     "new_order": "New order",
+    "new_product": "New Product",
     "orders": "Incoming orders",
+    "pending": "Pending",
+    "pending_orders_waiting": "new orders waiting",
     "reject": "Reject",
     "shop_profile": "Shop profile",
+    "status_open": "Open",
+    "total": "Total",
     "update_status": "Update status"
   },
   "notifications": {
@@ -251,6 +287,7 @@
     "unpaid": "Unpaid"
   },
   "profile": {
+    "account": "Account",
     "arabic": "Arabic",
     "dark": "Dark",
     "delete_account": "Delete account",

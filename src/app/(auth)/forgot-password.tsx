@@ -12,7 +12,7 @@ import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
 import { authApi } from '@/services/api/auth';
-import { DARK, FONT, SPACING } from '@/theme/tokens';
+import { DARK, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const schema = z.object({
   email: z.string().email('auth.errors.invalid_email'),
@@ -44,7 +44,7 @@ export default function ForgotPasswordScreen() {
       showMessage({
         message: t('common.error'),
         type: 'danger',
-        backgroundColor: '#B03A2E',
+        backgroundColor: SEMANTIC.error,
       });
     }
   }

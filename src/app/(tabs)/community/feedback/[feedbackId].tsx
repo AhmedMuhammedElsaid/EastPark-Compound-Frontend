@@ -19,8 +19,9 @@ const STATUS_COLOR: Record<FeedbackStatus, string> = {
 
 export default function FeedbackDetailScreen() {
   const { feedbackId } = useLocalSearchParams<{ feedbackId: string }>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
+  const isAr = i18n.language === 'ar';
 
   const { data, isLoading } = useQuery({
     queryKey: ['feedback', feedbackId],
@@ -33,7 +34,7 @@ export default function FeedbackDetailScreen() {
   if (isLoading || !fb)
     return <FeedbackDetailSkeleton insets={insets} />;
 
-  const date = new Date(fb.createdAt).toLocaleDateString('en-GB', {
+  const date = new Date(fb.createdAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-GB', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -97,7 +98,9 @@ function FeedbackMeta({ feedback, date }: { feedback: any; date: string }) {
 }
 
 function ReplyCard({ reply }: { reply: any }) {
-  const date = new Date(reply.createdAt).toLocaleDateString('en-GB', {
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language === 'ar';
+  const date = new Date(reply.createdAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-GB', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -107,7 +110,7 @@ function ReplyCard({ reply }: { reply: any }) {
     <View style={styles.replyCard}>
       <View style={styles.replyHeader}>
         <View style={styles.adminBadge}>
-          <Text style={styles.adminBadgeText}>Admin</Text>
+          <Text style={styles.adminBadgeText}>{t('auth.role_admin')}</Text>
         </View>
         {reply.author && (
           <Text style={styles.replyAuthor}>{reply.author.name}</Text>

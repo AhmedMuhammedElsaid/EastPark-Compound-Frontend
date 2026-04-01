@@ -93,8 +93,8 @@ export default function ElectionScreen() {
         <Text style={styles.meta}>
           {election.totalVotes}
           {' '}
-          votes ·
-          {' '}
+          {t('governance.votes_label')}
+          {' · '}
           {t('governance.expires', {
             date: new Date(election.expiresAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-GB', {
               month: 'short',
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: `${BRAND.gold}33`,
+    backgroundColor: 'rgba(184, 150, 106, 0.20)',
   },
   voteBarText: { fontFamily: FONT.sans, fontSize: 12, color: DARK.text, fontWeight: '600' },
   voteBtn: {

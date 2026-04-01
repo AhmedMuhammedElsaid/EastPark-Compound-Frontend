@@ -88,7 +88,7 @@ export default function ProductFormScreen() {
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
           <Text style={styles.backIcon}>←</Text>
         </Pressable>
-        <Text style={styles.navTitle}>{isNew ? 'New Product' : t('common.save')}</Text>
+        <Text style={styles.navTitle}>{isNew ? t('merchant.new_product') : t('common.save')}</Text>
       </View>
 
       <ScrollView
@@ -113,14 +113,15 @@ export default function ProductFormScreen() {
 // ─── Form fields sub-component ────────────────────────────────────────────────
 
 function ProductFields({ control, errors }: { control: any; errors: any }) {
+  const { t } = useTranslation();
   return (
     <>
-      <PField control={control} name="name" label="Name (EN)" error={errors.name?.message} />
-      <PField control={control} name="nameAr" label="Name (AR)" error={errors.nameAr?.message} rtl />
-      <PField control={control} name="price" label="Price (EGP)" error={errors.price?.message} keyboardType="decimal-pad" />
-      <PField control={control} name="description" label="Description (EN)" error={errors.description?.message} multiline />
-      <PField control={control} name="descriptionAr" label="Description (AR)" error={errors.descriptionAr?.message} multiline rtl />
-      <PField control={control} name="imageUrl" label="Image URL" error={errors.imageUrl?.message} keyboardType="url" />
+      <PField control={control} name="name" label={t('merchant.field_name_en')} error={errors.name?.message} />
+      <PField control={control} name="nameAr" label={t('merchant.field_name_ar')} error={errors.nameAr?.message} rtl />
+      <PField control={control} name="price" label={t('merchant.field_price')} error={errors.price?.message} keyboardType="decimal-pad" />
+      <PField control={control} name="description" label={t('merchant.field_description_en')} error={errors.description?.message} multiline />
+      <PField control={control} name="descriptionAr" label={t('merchant.field_description_ar')} error={errors.descriptionAr?.message} multiline rtl />
+      <PField control={control} name="imageUrl" label={t('merchant.field_image_url')} error={errors.imageUrl?.message} keyboardType="url" />
     </>
   );
 }

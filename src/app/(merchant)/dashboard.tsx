@@ -69,10 +69,7 @@ export default function MerchantDashboard() {
             <Text style={styles.alertText}>
               {pendingCount}
               {' '}
-              new
-              {pendingCount === 1 ? 'order' : 'orders'}
-              {' '}
-              waiting
+              {t('merchant.pending_orders_waiting')}
             </Text>
             <Text style={styles.alertChevron}>›</Text>
           </Pressable>
@@ -97,8 +94,8 @@ export default function MerchantDashboard() {
         </View>
 
         <View style={styles.statsRow}>
-          <StatCard label="Open" value={shop.isOpen ? t('common.open') : t('common.closed')} accent={shop.isOpen ? SEMANTIC.success : DARK.textMuted} />
-          <StatCard label="Pending" value={String(pendingCount)} accent={pendingCount > 0 ? SEMANTIC.warning : DARK.textMuted} />
+          <StatCard label={t('merchant.status_open')} value={shop.isOpen ? t('common.open') : t('common.closed')} accent={shop.isOpen ? SEMANTIC.success : DARK.textMuted} />
+          <StatCard label={t('merchant.pending')} value={String(pendingCount)} accent={pendingCount > 0 ? SEMANTIC.warning : DARK.textMuted} />
         </View>
       </ScrollView>
     </View>
@@ -163,7 +160,7 @@ const styles = StyleSheet.create({
   alertBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: `${SEMANTIC.warning}22`,
+    backgroundColor: 'rgba(196, 139, 47, 0.13)',
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     borderWidth: 1,

@@ -7,6 +7,7 @@ import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text,
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatCurrency } from '@/lib/formatCurrency';
 import { merchantApi } from '@/services/api/merchant';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -38,7 +39,7 @@ export default function MerchantMenuScreen() {
     const name = isAr ? product.nameAr : product.name;
     Alert.alert(
       t('common.delete'),
-      `Delete "${name}"?`,
+      t('merchant.confirm_delete'),
       [
         { text: t('common.cancel'), style: 'cancel' },
         { text: t('common.delete'), style: 'destructive', onPress: () => deleteProduct(product.id) },
@@ -113,10 +114,7 @@ function ProductRow({
     <View style={[styles.row, !product.isAvailable && styles.rowUnavailable]}>
       <View style={styles.rowInfo}>
         <Text style={styles.rowName} numberOfLines={1}>{name}</Text>
-        <Text style={styles.rowPrice}>
-          EGP
-          {product.price.toFixed(2)}
-        </Text>
+        <Text style={styles.rowPrice}>{formatCurrency(product.price)}</Text>
       </View>
       <View style={styles.rowActions}>
         <Switch

@@ -3,6 +3,7 @@ import type { Feedback, FeedbackStatus } from '@/services/api/community';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { Plus } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -47,7 +48,7 @@ export default function FeedbackListScreen() {
         </Pressable>
         <Text style={styles.navTitle}>{t('feedback.title')}</Text>
         <Pressable style={styles.newBtn} onPress={() => router.push('/(tabs)/community/feedback/new' as any)}>
-          <Text style={styles.newBtnText}>+</Text>
+          <Plus size={22} color={DARK.bg} />
         </Pressable>
       </View>
 
@@ -85,9 +86,10 @@ export default function FeedbackListScreen() {
 }
 
 function FeedbackRow({ feedback }: { feedback: Feedback }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language === 'ar';
   const statusColor = STATUS_COLOR[feedback.status] ?? DARK.elevated;
-  const date = new Date(feedback.createdAt).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+  const date = new Date(feedback.createdAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-GB', { month: 'short', day: 'numeric' });
 
   return (
     <Pressable

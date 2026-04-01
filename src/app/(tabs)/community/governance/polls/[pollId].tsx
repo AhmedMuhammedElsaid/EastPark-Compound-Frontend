@@ -87,8 +87,8 @@ export default function PollDetailScreen() {
         <Text style={styles.meta}>
           {poll.totalVotes}
           {' '}
-          votes ·
-          {' '}
+          {t('governance.votes_label')}
+          {' · '}
           {t('governance.expires', {
             date: new Date(poll.expiresAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-GB', {
               month: 'short',
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: `${BRAND.gold}22`,
+    backgroundColor: 'rgba(184, 150, 106, 0.13)',
   },
   optionContent: {
     flexDirection: 'row',

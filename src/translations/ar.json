@@ -1,15 +1,38 @@
 {
   "admin": {
+    "add_option": "إضافة خيار",
+    "announcement_created": "تم نشر الإعلان",
+    "body_ar": "المحتوى (عربي)",
+    "body_en": "المحتوى (إنجليزي)",
+    "category": "التصنيف",
+    "description_ar": "الوصف (عربي)",
+    "description_en": "الوصف (إنجليزي)",
+    "election_created": "تم إنشاء الانتخابات",
     "email": "البريد الإلكتروني",
+    "expires_at": "تاريخ الانتهاء",
     "expired": "منتهية",
     "invite_sent": "تم إرسال الدعوة بنجاح",
     "invitations": "الدعوات",
+    "new_announcement": "إعلان جديد",
+    "new_election": "انتخابات جديدة",
+    "new_poll": "استطلاع جديد",
+    "option": "خيار",
+    "options": "الخيارات",
     "pending": "معلقة",
+    "poll_created": "تم إنشاء الاستطلاع",
+    "question_ar": "السؤال (عربي)",
+    "question_en": "السؤال (إنجليزي)",
     "role": "الدور",
     "send_invite": "إرسال دعوة",
     "title": "لوحة المشرف",
+    "title_ar": "العنوان (عربي)",
+    "title_en": "العنوان (إنجليزي)",
     "tools": "أدوات الإدارة",
-    "used": "مستخدمة"
+    "used": "مستخدمة",
+    "visibility_admin_controlled": "بتحكم المدير",
+    "visibility_live_count": "عدد حي",
+    "visibility_mode": "ظهور النتائج",
+    "visibility_sealed_until_deadline": "مخفية حتى الموعد النهائي"
   },
   "auth": {
     "accept_invitation": "تمت دعوتك",
@@ -108,7 +131,8 @@
     "save": "حفظ",
     "search": "بحث",
     "see_all": "عرض الكل",
-    "submit": "إرسال"
+    "submit": "إرسال",
+    "admin": "مدير"
   },
   "community": {
     "EVENT": "فعاليات",
@@ -218,12 +242,24 @@
   },
   "merchant": {
     "accept": "قبول",
+    "confirm_delete": "هل أنت متأكد من الحذف؟",
     "dashboard": "لوحة التحكم",
+    "field_description_ar": "الوصف (عربي)",
+    "field_description_en": "الوصف (إنجليزي)",
+    "field_image_url": "رابط الصورة",
+    "field_name_ar": "الاسم (عربي)",
+    "field_name_en": "الاسم (إنجليزي)",
+    "field_price": "السعر (جنيه)",
     "menu": "القائمة",
     "new_order": "طلب جديد",
+    "new_product": "منتج جديد",
     "orders": "الطلبات الواردة",
+    "pending": "معلّق",
+    "pending_orders_waiting": "طلبات جديدة بانتظارك",
     "reject": "رفض",
     "shop_profile": "ملف المحل",
+    "status_open": "مفتوح",
+    "total": "الإجمالي",
     "update_status": "تحديث الحالة"
   },
   "notifications": {
@@ -251,6 +287,7 @@
     "unpaid": "غير مدفوع"
   },
   "profile": {
+    "account": "الحساب",
     "arabic": "العربية",
     "dark": "داكن",
     "delete_account": "حذف الحساب",

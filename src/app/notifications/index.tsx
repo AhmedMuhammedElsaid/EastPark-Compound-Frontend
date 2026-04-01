@@ -138,7 +138,8 @@ function NotificationItem({
   notification: AppNotification;
   onPress: () => void;
 }) {
-  const timeAgo = formatRelativeTime(notification.createdAt);
+  const { i18n } = useTranslation();
+  const timeAgo = formatRelativeTime(notification.createdAt, i18n.language);
   const typeColor = TYPE_COLOR[notification.type] ?? DARK.textMuted;
 
   return (
@@ -190,21 +191,15 @@ const TYPE_COLOR: Record<string, string> = {
   GENERAL: DARK.textMuted,
 };
 
-function formatRelativeTime(iso: string): string {
+function formatRelativeTime(iso: string, locale: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) {
-    return 'now';
-  }
-  if (mins < 60) {
-    return `${mins}m`;
-  }
+  if (mins < 1) return locale === 'ar' ? 'الآن' : 'now';
+  if (mins < 60) return locale === 'ar' ? `${mins} د` : `${mins}m`;
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) {
-    return `${hrs}h`;
-  }
+  if (hrs < 24) return locale === 'ar' ? `${hrs} س` : `${hrs}h`;
   const days = Math.floor(hrs / 24);
-  return `${days}d`;
+  return locale === 'ar' ? `${days} ي` : `${days}d`;
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
