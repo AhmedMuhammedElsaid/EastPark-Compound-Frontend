@@ -1,11 +1,12 @@
 import type { AxiosResponse } from 'axios';
 import type { CursorPage, Product, Shop } from '@/services/api/shops';
 import type { CartItem } from '@/store/slices/cartSlice';
+import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ChatCircle, Heart, HeartStraight, Phone } from 'phosphor-react-native';
+import { ArrowLeft, ChatCircle, Heart, HeartStraight, Phone, Plus, Star } from 'phosphor-react-native';
 
 import { Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -87,17 +88,18 @@ type ShopHeroProps = {
 };
 
 function ShopHero({ shop, saved, onBack, onSave, topInset }: ShopHeroProps) {
-  const coverPhoto = shop.photos.find(p => p.isPrimary) ?? shop.photos[0];
+  const { t } = useTranslation();
+  const coverPhoto = shop.photos[0];
   return (
     <View style={styles.hero}>
       {coverPhoto
         ? <Image source={{ uri: coverPhoto.url }} style={styles.heroImage} resizeMode="cover" />
         : <View style={[styles.heroImage, styles.heroPlaceholder]} />}
       <View style={[styles.heroNav, { top: topInset + SPACING.sm }]}>
-        <Pressable style={styles.navBtn} onPress={onBack} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable style={styles.navBtn} onPress={onBack} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
           <ArrowLeft size={20} color={DARK.text} />
         </Pressable>
-        <Pressable style={styles.navBtn} onPress={onSave} hitSlop={8} accessibilityRole="button" accessibilityLabel={saved ? 'Remove from saved' : 'Save shop'}>
+        <Pressable style={styles.navBtn} onPress={onSave} hitSlop={8} accessibilityRole="button" accessibilityLabel={saved ? t('directory.saved') : t('directory.save')}>
           {saved ? <Heart size={20} color={DARK.text} weight="fill" /> : <HeartStraight size={20} color={DARK.text} />}
         </Pressable>
       </View>
@@ -149,17 +151,18 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
         </View>
       </View>
       {shop.averageRating !== null && (
-        <Text style={styles.rating}>
-          ⭐
-          {' '}
-          {shop.averageRating.toFixed(1)}
-          {' '}
-          ·
-          {' '}
-          {shop.reviewCount}
-          {' '}
-          {t('directory.reviews_tab').toLowerCase()}
-        </Text>
+        <View style={styles.ratingRow}>
+          <Star size={14} weight="fill" color={BRAND.gold} />
+          <Text style={styles.rating}>
+            {shop.averageRating.toFixed(1)}
+            {' '}
+            ·
+            {' '}
+            {shop.reviewCount}
+            {' '}
+            {t('directory.reviews_tab').toLowerCase()}
+          </Text>
+        </View>
       )}
       {description ? <Text style={styles.description}>{description}</Text> : null}
       <View style={styles.ctaRow}>
@@ -221,30 +224,28 @@ function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string
     );
   }
 
-  if (!products.length) {
-    return (
-      <View style={styles.emptyTab}>
-        <Text style={styles.emptyText}>{t('common.no_results')}</Text>
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.tabContent}>
-      {products.map((product: any) => (
-        <ProductRow key={product.id} product={product} isAr={isAr} shopId={shopId} shopName={shopName} />
-      ))}
-      {hasNextPage && (
-        <Pressable
-          style={styles.loadMoreBtn}
-          onPress={() => { if (!isFetchingNextPage) fetchNextPage(); }}
-        >
-          {isFetchingNextPage
-            ? <Skeleton width="100%" height={48} borderRadius={8} />
-            : <Text style={styles.loadMoreText}>{t('common.load_more')}</Text>}
-        </Pressable>
+    <FlashList
+      data={products}
+      keyExtractor={(item: any) => item.id}
+      estimatedItemSize={80}
+      contentContainerStyle={{ padding: SPACING.base }}
+      renderItem={({ item }: { item: any }) => (
+        <ProductRow product={item} isAr={isAr} shopId={shopId} shopName={shopName} />
       )}
-    </View>
+      onEndReached={() => { if (hasNextPage && !isFetchingNextPage) fetchNextPage(); }}
+      onEndReachedThreshold={0.5}
+      ListEmptyComponent={
+        <View style={styles.emptyTab}>
+          <Text style={styles.emptyText}>{t('common.no_results')}</Text>
+        </View>
+      }
+      ListFooterComponent={
+        isFetchingNextPage
+          ? <Skeleton width="100%" height={48} borderRadius={8} style={{ marginTop: SPACING.sm }} />
+          : null
+      }
+    />
   );
 }
 
@@ -259,6 +260,7 @@ function ProductRow({
   shopId: string;
   shopName: string;
 }) {
+  const { t } = useTranslation();
   const { requireAuth } = useAuthGuard();
   const dispatch = useAppDispatch();
   const name = isAr ? product.nameAr : product.name;
@@ -287,8 +289,8 @@ function ProductRow({
               <Image source={{ uri: product.imageUrl }} style={styles.productImage} resizeMode="cover" />
             )
           : null}
-        <Pressable style={styles.addBtn} onPress={handleAddToCart} hitSlop={8} accessibilityRole="button" accessibilityLabel={`Add ${name} to cart`}>
-          <Text style={styles.addBtnText}>+</Text>
+        <Pressable style={styles.addBtn} onPress={handleAddToCart} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('directory.add_to_cart')}>
+          <Plus size={20} color={DARK.bg} />
         </Pressable>
       </View>
     </View>
@@ -297,12 +299,20 @@ function ProductRow({
 
 function ReviewsTabContent({ shopId }: { shopId: string }) {
   const { t } = useTranslation();
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery<
+    any,
+    Error,
+    any,
+    string[],
+    string | undefined
+  >({
     queryKey: ['shop-reviews', shopId],
-    queryFn: () => shopsApi.getReviews(shopId, { limit: 20 }),
+    queryFn: ({ pageParam }) => shopsApi.getReviews(shopId, { cursor: pageParam, limit: 20 }),
+    getNextPageParam: (last: any) => last.data.data.nextCursor ?? undefined,
+    initialPageParam: undefined,
   });
 
-  const reviews = data?.data.data.data ?? [];
+  const reviews = data?.pages.flatMap((p: any) => p.data.data.data) ?? [];
 
   if (isLoading) {
     return (
@@ -314,26 +324,38 @@ function ReviewsTabContent({ shopId }: { shopId: string }) {
     );
   }
 
-  if (!reviews.length) {
-    return (
-      <View style={styles.emptyTab}>
-        <Text style={styles.emptyText}>{t('common.no_results')}</Text>
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.tabContent}>
-      {reviews.map(r => (
-        <View key={r.id} style={styles.reviewCard}>
+    <FlashList
+      data={reviews}
+      keyExtractor={(item: any) => item.id}
+      estimatedItemSize={80}
+      contentContainerStyle={{ padding: SPACING.base }}
+      renderItem={({ item: r }: { item: any }) => (
+        <View style={styles.reviewCard}>
           <View style={styles.reviewHeader}>
             <Text style={styles.reviewerName}>{r.user.name}</Text>
-            <Text style={styles.reviewRating}>{'⭐'.repeat(r.rating)}</Text>
+            <View style={styles.reviewStars}>
+              {Array.from({ length: r.rating }).map((_, i) => (
+                <Star key={i} size={12} weight="fill" color={BRAND.gold} />
+              ))}
+            </View>
           </View>
           {r.comment ? <Text style={styles.reviewComment}>{r.comment}</Text> : null}
         </View>
-      ))}
-    </View>
+      )}
+      onEndReached={() => { if (hasNextPage && !isFetchingNextPage) fetchNextPage(); }}
+      onEndReachedThreshold={0.5}
+      ListEmptyComponent={
+        <View style={styles.emptyTab}>
+          <Text style={styles.emptyText}>{t('common.no_results')}</Text>
+        </View>
+      }
+      ListFooterComponent={
+        isFetchingNextPage
+          ? <Skeleton width="100%" height={48} borderRadius={8} style={{ marginTop: SPACING.sm }} />
+          : null
+      }
+    />
   );
 }
 
@@ -400,7 +422,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  navIcon: { fontSize: 18, color: DARK.text },
   tabBar: {
     flexDirection: 'row',
     backgroundColor: DARK.card,
@@ -425,6 +446,7 @@ const styles = StyleSheet.create({
   badgeOpen: { backgroundColor: SEMANTIC.success },
   badgeClosed: { backgroundColor: DARK.elevated, borderWidth: 1, borderColor: DARK.border },
   statusText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: DARK.text },
+  ratingRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
   rating: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted },
   description: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, lineHeight: 22 },
   ctaRow: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.xs },
@@ -438,7 +460,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  ctaBtnWhatsapp: { borderColor: '#25D366' },
+  ctaBtnWhatsapp: { borderColor: '#25D366' }, // WhatsApp brand green — intentional
   ctaBtnText: { fontFamily: FONT.sans, fontSize: 14, color: DARK.text, fontWeight: '500' },
   tabContent: { padding: SPACING.base, gap: SPACING.sm },
   emptyTab: { padding: SPACING['3xl'], alignItems: 'center' },
@@ -465,7 +487,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  addBtnText: { fontSize: 20, color: DARK.bg, lineHeight: 24, fontWeight: '700' },
   reviewCard: {
     backgroundColor: DARK.card,
     borderRadius: RADIUS.sm,
@@ -475,7 +496,7 @@ const styles = StyleSheet.create({
   },
   reviewHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   reviewerName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text },
-  reviewRating: { fontSize: 12 },
+  reviewStars: { flexDirection: 'row', gap: 2 },
   reviewComment: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, lineHeight: 22 },
   cartBar: {
     position: 'absolute',
@@ -500,6 +521,4 @@ const styles = StyleSheet.create({
   cartBarBadgeText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 13, color: DARK.text },
   cartBarLabel: { flex: 1, fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: DARK.bg },
   cartBarTotal: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: DARK.bg },
-  loadMoreBtn: { alignItems: 'center', paddingVertical: SPACING.sm },
-  loadMoreText: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: '600' },
 });

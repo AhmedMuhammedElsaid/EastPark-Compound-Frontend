@@ -10,6 +10,11 @@ export interface AppNotification {
   createdAt: string;
 }
 
+export interface NotificationPreference {
+  type: string;
+  enabled: boolean;
+}
+
 export const notificationsApi = {
   getNotifications: (params?: { cursor?: string; limit?: number }) =>
     client.get<{ data: { data: AppNotification[]; nextCursor: string | null } }>('/notifications', { params }),
@@ -19,4 +24,10 @@ export const notificationsApi = {
 
   markAllRead: () =>
     client.patch<{ data: { success: boolean } }>('/notifications/read-all'),
+
+  getPreferences: () =>
+    client.get<{ data: NotificationPreference[] }>('/notifications/preferences'),
+
+  updatePreference: (type: string, enabled: boolean) =>
+    client.put<{ data: NotificationPreference }>(`/notifications/preferences/${type}`, { enabled }),
 };
