@@ -6,11 +6,13 @@ import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Package } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ErrorState } from '@/components/ui/error-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ordersApi } from '@/services/api/orders';
+import { formatCurrency } from '@/lib/formatCurrency';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const STATUS_COLOR: Record<OrderStatus, string> = {
@@ -112,8 +114,7 @@ function OrderCard({ order, isAr }: { order: Order; isAr: boolean }) {
       </Text>
       <View style={styles.cardBottom}>
         <Text style={styles.total}>
-          EGP
-          {order.totalAmount.toFixed(2)}
+          {formatCurrency(order.totalAmount)}
         </Text>
         <Text style={styles.date}>{date}</Text>
       </View>
@@ -125,7 +126,7 @@ function EmptyOrders() {
   const { t } = useTranslation();
   return (
     <View style={styles.empty}>
-      <Text style={styles.emptyIcon}>📦</Text>
+      <Package size={56} color={DARK.textMuted} />
       <Text style={styles.emptyTitle}>{t('orders.empty')}</Text>
       <Text style={styles.emptyBody}>{t('orders.empty_subtitle')}</Text>
     </View>
@@ -154,7 +155,6 @@ const styles = StyleSheet.create({
   total: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: BRAND.gold },
   date: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted },
   empty: { alignItems: 'center', paddingTop: 80, gap: SPACING.md, paddingHorizontal: SPACING.xl },
-  emptyIcon: { fontSize: 56 },
   emptyTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text, textAlign: 'center' },
   emptyBody: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, textAlign: 'center', lineHeight: 22 },
 });

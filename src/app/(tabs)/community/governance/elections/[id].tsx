@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ArrowLeft } from 'phosphor-react-native';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
 import { governanceApi } from '@/services/api/governance';
@@ -60,7 +61,7 @@ export default function ElectionScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('governance.elections')}</Text>
       </View>
@@ -258,7 +259,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   scroll: { padding: SPACING.base },
   title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 22, color: DARK.text, lineHeight: 30, marginBottom: SPACING.sm },
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: 'rgba(184, 150, 106, 0.20)',
+    backgroundColor: `${BRAND.gold}33`,
   },
   voteBarText: { fontFamily: FONT.sans, fontSize: 12, color: DARK.text, fontWeight: '600' },
   voteBtn: {

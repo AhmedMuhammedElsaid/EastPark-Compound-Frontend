@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { WarningCircle } from 'phosphor-react-native';
+import { useTranslation } from 'react-i18next';
 import { Text } from './text';
 import { DARK, SEMANTIC, SPACING, RADIUS, FONT } from '@/theme/tokens';
 
@@ -10,20 +11,21 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({ onRetry, message }: ErrorStateProps) {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
       <WarningCircle size={48} color={SEMANTIC.error} />
       <Text style={styles.message}>
-        {message ?? 'Something went wrong'}
+        {message ?? t('common.error')}
       </Text>
       {onRetry && (
         <Pressable
           style={styles.retryButton}
           onPress={onRetry}
           accessibilityRole="button"
-          accessibilityLabel="Retry"
+          accessibilityLabel={t('common.retry')}
         >
-          <Text style={styles.retryText}>Try again</Text>
+          <Text style={styles.retryText}>{t('common.retry')}</Text>
         </Pressable>
       )}
     </View>

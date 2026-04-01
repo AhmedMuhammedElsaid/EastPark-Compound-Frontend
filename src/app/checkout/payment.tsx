@@ -5,9 +5,12 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { ArrowLeft, CreditCard, Money } from 'phosphor-react-native';
+import { showMessage } from 'react-native-flash-message';
 
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { formatCurrency } from '@/lib/formatCurrency';
 import { ordersApi } from '@/services/api/orders';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { clearCart } from '@/store/slices/cartSlice';
@@ -31,8 +34,16 @@ export default function PaymentScreen() {
         paymentMethod,
         notes: notes || undefined,
       }),
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       const orderId = res.data.data.id;
+      if (paymentMethod === 'PAYMOB') {
+        try {
+          const payRes = await ordersApi.initiatePaymobPayment(orderId);
+          await Linking.openURL(payRes.data.data.iframeUrl);
+        } catch {
+          showMessage({ message: t('common.error'), type: 'danger' });
+        }
+      }
       dispatch(clearCart());
       router.replace({ pathname: '/checkout/confirmation' as any, params: { orderId } });
     },
@@ -41,8 +52,8 @@ export default function PaymentScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
-        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.backIcon}>←</Text>
+        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('checkout.payment')}</Text>
       </View>
@@ -52,23 +63,20 @@ export default function PaymentScreen() {
 
         <PaymentOption
           label={t('checkout.cash')}
-          icon="💵"
+          icon={<Money size={24} color={DARK.textMuted} />}
           selected={paymentMethod === 'CASH'}
           onPress={() => setPaymentMethod('CASH')}
         />
         <PaymentOption
           label={t('checkout.card')}
-          icon="💳"
+          icon={<CreditCard size={24} color={DARK.textMuted} />}
           selected={paymentMethod === 'PAYMOB'}
           onPress={() => setPaymentMethod('PAYMOB')}
         />
 
         <View style={styles.summary}>
           <Text style={styles.summaryLabel}>{t('cart.total')}</Text>
-          <Text style={styles.summaryValue}>
-            EGP
-            {total.toFixed(2)}
-          </Text>
+          <Text style={styles.summaryValue}>{formatCurrency(total)}</Text>
         </View>
 
         <Pressable
@@ -97,7 +105,7 @@ function PaymentOption({
   onPress,
 }: {
   label: string;
-  icon: string;
+  icon: React.ReactNode;
   selected: boolean;
   onPress: () => void;
 }) {
@@ -109,7 +117,7 @@ function PaymentOption({
       accessibilityLabel={label}
       accessibilityState={{ checked: selected }}
     >
-      <Text style={styles.optionIcon}>{icon}</Text>
+      <View style={styles.optionIcon}>{icon}</View>
       <Text style={[styles.optionLabel, selected && styles.optionLabelSelected]}>{label}</Text>
       <View style={[styles.radio, selected && styles.radioSelected]}>
         {selected && <View style={styles.radioInner} />}
@@ -138,7 +146,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   content: { padding: SPACING.base, gap: SPACING.md },
   sectionLabel: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.text },
@@ -153,7 +160,7 @@ const styles = StyleSheet.create({
     borderColor: DARK.border,
   },
   optionSelected: { borderColor: BRAND.gold },
-  optionIcon: { fontSize: 24 },
+  optionIcon: { width: 24, height: 24, justifyContent: 'center', alignItems: 'center' },
   optionLabel: { flex: 1, fontFamily: FONT.sans, fontWeight: '500', fontSize: 15, color: DARK.textMuted },
   optionLabelSelected: { color: DARK.text },
   radio: {

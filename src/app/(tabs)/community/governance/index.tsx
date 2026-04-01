@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ArrowLeft, CheckSquare } from 'phosphor-react-native';
 import { Skeleton } from '@/components/ui/skeleton';
 import { governanceApi } from '@/services/api/governance';
 import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
@@ -50,7 +51,7 @@ export default function GovernanceScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('governance.title')}</Text>
       </View>
@@ -95,7 +96,7 @@ export default function GovernanceScreen() {
                     contentContainerStyle={styles.listContent}
                     ListEmptyComponent={(
                       <View style={styles.empty}>
-                        <Text style={styles.emptyIcon}>🗳️</Text>
+                        <CheckSquare size={48} color={DARK.textMuted} />
                         <Text style={styles.emptyText}>{t('governance.no_polls')}</Text>
                       </View>
                     )}
@@ -130,7 +131,7 @@ export default function GovernanceScreen() {
                     contentContainerStyle={styles.listContent}
                     ListEmptyComponent={(
                       <View style={styles.empty}>
-                        <Text style={styles.emptyIcon}>🗳️</Text>
+                        <CheckSquare size={48} color={DARK.textMuted} />
                         <Text style={styles.emptyText}>{t('governance.no_elections')}</Text>
                       </View>
                     )}
@@ -246,7 +247,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   tabBar: {
     flexDirection: 'row',
@@ -268,7 +268,6 @@ const styles = StyleSheet.create({
   loadingPad: { padding: SPACING.base },
   listContent: { padding: SPACING.base },
   empty: { alignItems: 'center', paddingTop: 80, gap: SPACING.md },
-  emptyIcon: { fontSize: 48 },
   emptyText: { fontFamily: FONT.sans, fontSize: 15, color: DARK.textMuted },
   card: {
     backgroundColor: DARK.card,

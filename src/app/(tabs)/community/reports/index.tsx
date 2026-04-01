@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ArrowLeft, ClipboardText, FilePdf } from 'phosphor-react-native';
 import { Skeleton } from '@/components/ui/skeleton';
 import { communityApi } from '@/services/api/community';
 import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
@@ -37,7 +38,7 @@ export default function ReportsScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <Text style={styles.title}>{t('community.reports')}</Text>
       </View>
@@ -65,7 +66,7 @@ export default function ReportsScreen() {
               refreshing={isRefetching}
               ListEmptyComponent={(
                 <View style={styles.empty}>
-                  <Text style={styles.emptyIcon}>📋</Text>
+                  <ClipboardText size={48} color={DARK.textMuted} />
                   <Text style={styles.emptyText}>{t('community.no_reports')}</Text>
                 </View>
               )}
@@ -92,7 +93,7 @@ function ReportRow({ report, isAr }: { report: Report; isAr: boolean }) {
   return (
     <Pressable style={styles.row} onPress={() => Linking.openURL(report.pdfUrl)} accessibilityRole="button" accessibilityLabel={title}>
       <View style={styles.rowIcon}>
-        <Text style={styles.pdfIcon}>📄</Text>
+        <FilePdf size={24} color={BRAND.gold} />
       </View>
       <View style={styles.rowContent}>
         <Text style={styles.rowTitle} numberOfLines={2}>{title}</Text>
@@ -123,12 +124,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   loadingPad: { padding: SPACING.base },
   listContent: { padding: SPACING.base },
   empty: { alignItems: 'center', paddingTop: 80, gap: SPACING.md },
-  emptyIcon: { fontSize: 48 },
   emptyText: { fontFamily: FONT.sans, fontSize: 15, color: DARK.textMuted },
   row: {
     flexDirection: 'row',
@@ -147,7 +146,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  pdfIcon: { fontSize: 22 },
   rowContent: { flex: 1, gap: 4 },
   rowTitle: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text, lineHeight: 20 },
   rowDate: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted },

@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { Star } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -55,7 +56,10 @@ export function ShopCard({ shop }: Props) {
           {shop.averageRating !== null && (
             <>
               <Text style={styles.dot}> · </Text>
-              <Text style={styles.rating}>⭐ {shop.averageRating.toFixed(1)}</Text>
+              <View style={styles.ratingRow}>
+                <Star size={12} weight="fill" color={BRAND.gold} />
+                <Text style={styles.ratingText}>{shop.averageRating.toFixed(1)}</Text>
+              </View>
               <Text style={styles.reviewCount}> ({shop.reviewCount})</Text>
             </>
           )}
@@ -132,7 +136,8 @@ const styles = StyleSheet.create({
     color: DARK.textMuted,
   },
   dot: { color: DARK.textMuted, fontSize: 13 },
-  rating: {
+  ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  ratingText: {
     fontFamily: FONT.sans,
     fontSize: 13,
     color: DARK.text,

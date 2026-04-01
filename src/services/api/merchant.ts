@@ -80,5 +80,5 @@ export const merchantApi = {
     client.get<{ data: MerchantOrder }>(`/merchant/orders/${orderId}`),
 
   updateOrderStatus: (orderId: string, status: string) =>
-    client.patch<{ data: MerchantOrder }>(`/orders/${orderId}/status`, { status }),
+    client.patch<{ data: MerchantOrder }>(`/merchant/orders/${orderId}/status`, { status }),
 };

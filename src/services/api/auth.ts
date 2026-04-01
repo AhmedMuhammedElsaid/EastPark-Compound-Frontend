@@ -50,4 +50,7 @@ export const authApi = {
 
   acceptInvitation: (token: string, name: string, password: string) =>
     client.post<{ data: AuthResponse }>('/auth/accept-invitation', { token, name, password }),
+
+  updatePushToken: (pushToken: string) =>
+    client.patch<{ data: { success: boolean } }>('/auth/push-token', { pushToken }),
 };

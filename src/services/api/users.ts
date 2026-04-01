@@ -9,9 +9,6 @@ export const usersApi = {
   updateProfile: (data: Partial<Pick<AuthUser, 'name' | 'phone' | 'unitNumber' | 'avatarUrl'>>) =>
     client.put<{ data: AuthUser }>('/user', data),
 
-  updatePushToken: (pushToken: string) =>
-    client.patch<{ data: { success: boolean } }>('/auth/push-token', { pushToken }),
-
   deleteAccount: () =>
     client.delete<{ data: { success: boolean } }>('/user'),
 };

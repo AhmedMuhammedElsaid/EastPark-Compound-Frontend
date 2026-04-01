@@ -3,6 +3,7 @@ import type { AppNotification } from '@/services/api/notifications';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Redirect, router } from 'expo-router';
+import { ArrowLeft, Bell } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -19,7 +20,7 @@ export default function NotificationsScreen() {
   const isAuthenticated = useAppSelector(s => s.auth.isAuthenticated);
   const queryClient = useQueryClient();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading }
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
       AxiosResponse<{ data: { data: AppNotification[]; nextCursor: string | null } }>,
       Error,
@@ -80,7 +81,7 @@ export default function NotificationsScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{t('notifications.title')}</Text>
@@ -118,6 +119,8 @@ export default function NotificationsScreen() {
                 }
               }}
               onEndReachedThreshold={0.5}
+              onRefresh={refetch}
+              refreshing={isRefetching}
               contentContainerStyle={styles.listContent}
               ListEmptyComponent={<EmptyState />}
               ListFooterComponent={
@@ -140,8 +143,8 @@ function NotificationItem({
   notification: AppNotification;
   onPress: () => void;
 }) {
-  const { i18n } = useTranslation();
-  const timeAgo = formatRelativeTime(notification.createdAt, i18n.language);
+  const { t } = useTranslation();
+  const timeAgo = formatRelativeTime(notification.createdAt, t);
   const typeColor = TYPE_COLOR[notification.type] ?? DARK.textMuted;
 
   return (
@@ -168,7 +171,7 @@ function EmptyState() {
   const { t } = useTranslation();
   return (
     <View style={styles.empty}>
-      <Text style={styles.emptyIcon}>🔔</Text>
+      <Bell size={48} color={DARK.textMuted} />
       <Text style={styles.emptyText}>{t('notifications.empty')}</Text>
     </View>
   );
@@ -195,15 +198,15 @@ const TYPE_COLOR: Record<string, string> = {
   GENERAL: DARK.textMuted,
 };
 
-function formatRelativeTime(iso: string, locale: string): string {
+function formatRelativeTime(iso: string, t: (key: string, opts?: object) => string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return locale === 'ar' ? 'الآن' : 'now';
-  if (mins < 60) return locale === 'ar' ? `${mins} د` : `${mins}m`;
+  if (mins < 1) return t('notifications.time_now');
+  if (mins < 60) return t('notifications.time_minutes', { count: mins });
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return locale === 'ar' ? `${hrs} س` : `${hrs}h`;
+  if (hrs < 24) return t('notifications.time_hours', { count: hrs });
   const days = Math.floor(hrs / 24);
-  return locale === 'ar' ? `${days} ي` : `${days}d`;
+  return t('notifications.time_days', { count: days });
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
@@ -228,7 +231,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   headerCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
   headerTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   unreadBadge: {
@@ -273,7 +275,6 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   empty: { alignItems: 'center', paddingTop: 100, gap: SPACING.md },
-  emptyIcon: { fontSize: 48 },
   emptyText: { fontFamily: FONT.sans, fontSize: 15, color: DARK.textMuted },
   skeletonPad: { padding: SPACING.base },
 });

@@ -266,6 +266,10 @@
     "empty": "No notifications yet",
     "empty_subtitle": "You'll see order updates, announcements, and more here",
     "mark_all_read": "Mark all as read",
+    "time_now": "now",
+    "time_minutes": "{{count}}m",
+    "time_hours": "{{count}}h",
+    "time_days": "{{count}}d",
     "title": "Notifications"
   },
   "orders": {

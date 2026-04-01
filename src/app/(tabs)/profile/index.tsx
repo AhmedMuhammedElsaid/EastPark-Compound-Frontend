@@ -2,6 +2,7 @@ import type { ColorSchemeType } from '@/lib/hooks/use-selected-theme';
 import { useMutation } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
+import { BookmarkSimple, CaretRight, ChatCircle, Package, SignOut, Storefront, User, WarningOctagon } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -45,7 +46,7 @@ function GuestProfile() {
   return (
     <>
       <View style={styles.guestCard}>
-        <Text style={styles.guestIcon}>👤</Text>
+        <User size={32} color={DARK.textMuted} />
         <Text style={styles.guestPrompt}>{t('profile.guest_prompt')}</Text>
         <Text style={styles.guestSubtitle}>{t('profile.guest_subtitle')}</Text>
         <Pressable style={styles.signInBtn} onPress={() => router.push('/(auth)/login' as any)} accessibilityRole="button" accessibilityLabel={t('auth.login')}>
@@ -125,11 +126,11 @@ function AccountSection({ role }: { role: string }) {
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{t('profile.account')}</Text>
       {role === 'MERCHANT' && (
-        <ProfileRow icon="🏪" label={t('profile.manage_shop')} onPress={() => router.push('/(merchant)/dashboard' as any)} />
+        <ProfileRow icon={<Storefront size={20} color={DARK.text} />} label={t('profile.manage_shop')} onPress={() => router.push('/(merchant)/dashboard' as any)} />
       )}
-      <ProfileRow icon="📦" label={t('profile.my_orders')} onPress={() => router.push('/(tabs)/orders' as any)} />
-      <ProfileRow icon="💬" label={t('profile.my_feedback')} onPress={() => router.push('/(tabs)/community/feedback' as any)} />
-      <ProfileRow icon="🔖" label={t('profile.saved_shops')} onPress={() => router.push('/(tabs)/directory' as any)} />
+      <ProfileRow icon={<Package size={20} color={DARK.text} />} label={t('profile.my_orders')} onPress={() => router.push('/(tabs)/orders' as any)} />
+      <ProfileRow icon={<ChatCircle size={20} color={DARK.text} />} label={t('profile.my_feedback')} onPress={() => router.push('/(tabs)/community/feedback' as any)} />
+      <ProfileRow icon={<BookmarkSimple size={20} color={DARK.text} />} label={t('profile.saved_shops')} onPress={() => router.push('/(tabs)/directory' as any)} />
     </View>
   );
 }
@@ -191,23 +192,23 @@ function DangerSection({ onLogout, onDeleteAccount }: { onLogout: () => void; on
   return (
     <View style={styles.section}>
       <Pressable style={[styles.row, styles.rowDanger]} onPress={onLogout} accessibilityRole="button" accessibilityLabel={t('auth.logout')}>
-        <Text style={styles.rowIcon}>🚪</Text>
+        <SignOut size={20} color={SEMANTIC.error} />
         <Text style={styles.rowLabelDanger}>{t('auth.logout')}</Text>
       </Pressable>
       <Pressable style={[styles.row, styles.rowDanger]} onPress={onDeleteAccount} accessibilityRole="button" accessibilityLabel={t('profile.delete_account')}>
-        <Text style={styles.rowIcon}>⚠️</Text>
+        <WarningOctagon size={20} color={SEMANTIC.error} />
         <Text style={styles.rowLabelDanger}>{t('profile.delete_account')}</Text>
       </Pressable>
     </View>
   );
 }
 
-function ProfileRow({ icon, label, onPress }: { icon: string; label: string; onPress: () => void }) {
+function ProfileRow({ icon, label, onPress }: { icon: React.ReactNode; label: string; onPress: () => void }) {
   return (
     <Pressable style={styles.row} onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
-      <Text style={styles.rowIcon}>{icon}</Text>
+      <View style={styles.rowIconWrap}>{icon}</View>
       <Text style={styles.rowLabel}>{label}</Text>
-      <Text style={styles.rowChevron}>›</Text>
+      <CaretRight size={16} color={DARK.textMuted} />
     </Pressable>
   );
 }
@@ -226,7 +227,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.sm,
   },
-  guestIcon: { fontSize: 56 },
   guestPrompt: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text, textAlign: 'center' },
   guestSubtitle: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, textAlign: 'center', lineHeight: 22 },
   signInBtn: {
@@ -273,10 +273,9 @@ const styles = StyleSheet.create({
     borderTopColor: DARK.border,
   },
   rowDanger: {},
-  rowIcon: { fontSize: 18, width: 28, textAlign: 'center' },
+  rowIconWrap: { width: 28, alignItems: 'center' },
   rowLabel: { flex: 1, fontFamily: FONT.sans, fontSize: 15, color: DARK.text, fontWeight: '500' },
   rowLabelDanger: { flex: 1, fontFamily: FONT.sans, fontSize: 15, color: SEMANTIC.error, fontWeight: '500' },
-  rowChevron: { fontSize: 18, color: DARK.textMuted },
   segmentRow: {
     flexDirection: 'row',
     backgroundColor: DARK.elevated,

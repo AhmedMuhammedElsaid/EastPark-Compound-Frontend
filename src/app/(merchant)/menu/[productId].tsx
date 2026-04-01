@@ -1,4 +1,6 @@
 import type { Resolver } from 'react-hook-form';
+import type { AxiosResponse } from 'axios';
+import type { Product } from '@/services/api/merchant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -7,6 +9,7 @@ import { useController, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ArrowLeft } from 'phosphor-react-native';
 import { z } from 'zod';
 
 import { merchantApi } from '@/services/api/merchant';
@@ -35,6 +38,10 @@ export default function ProductFormScreen() {
     queryFn: () => merchantApi.getMyProducts({ limit: 100, includeUnavailable: true }),
     enabled: !isNew,
     select: res => res.data.data.data.find(p => p.id === productId),
+    initialData: () =>
+      queryClient.getQueryData<AxiosResponse<{ data: { data: Product[]; nextCursor: string | null } }>>(['merchant-products']),
+    initialDataUpdatedAt: () =>
+      queryClient.getQueryState(['merchant-products'])?.dataUpdatedAt,
   });
 
   const { control, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
@@ -86,7 +93,7 @@ export default function ProductFormScreen() {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={[styles.nav, { paddingTop: insets.top + SPACING.sm }]}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <Text style={styles.navTitle}>{isNew ? t('merchant.new_product') : t('common.save')}</Text>
       </View>
@@ -194,7 +201,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   scroll: { padding: SPACING.base, gap: SPACING.md },
   section: { gap: SPACING.xs },

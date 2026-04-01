@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Bell, CaretRight, ForkKnife, Package, Storefront } from 'phosphor-react-native';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { merchantApi } from '@/services/api/merchant';
@@ -65,29 +66,29 @@ export default function MerchantDashboard() {
       >
         {pendingCount > 0 && (
           <Pressable style={styles.alertBanner} onPress={() => router.push('/(merchant)/orders' as any)}>
-            <Text style={styles.alertIcon}>🔔</Text>
+            <Bell size={20} color={SEMANTIC.warning} />
             <Text style={styles.alertText}>
               {pendingCount}
               {' '}
               {t('merchant.pending_orders_waiting')}
             </Text>
-            <Text style={styles.alertChevron}>›</Text>
+            <CaretRight size={18} color={DARK.textMuted} />
           </Pressable>
         )}
 
         <View style={styles.quickActions}>
           <QuickActionCard
-            icon="📋"
+            icon={<Package size={28} color={DARK.textMuted} />}
             label={t('merchant.orders')}
             onPress={() => router.push('/(merchant)/orders' as any)}
           />
           <QuickActionCard
-            icon="🍽"
+            icon={<ForkKnife size={28} color={DARK.textMuted} />}
             label={t('merchant.menu')}
             onPress={() => router.push('/(merchant)/menu' as any)}
           />
           <QuickActionCard
-            icon="🏪"
+            icon={<Storefront size={28} color={DARK.textMuted} />}
             label={t('merchant.shop_profile')}
             onPress={() => router.push('/(merchant)/shop-profile' as any)}
           />
@@ -104,10 +105,10 @@ export default function MerchantDashboard() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function QuickActionCard({ icon, label, onPress }: { icon: string; label: string; onPress: () => void }) {
+function QuickActionCard({ icon, label, onPress }: { icon: React.ReactNode; label: string; onPress: () => void }) {
   return (
     <Pressable style={styles.quickCard} onPress={onPress}>
-      <Text style={styles.quickIcon}>{icon}</Text>
+      {icon}
       <Text style={styles.quickLabel}>{label}</Text>
     </Pressable>
   );
@@ -160,16 +161,14 @@ const styles = StyleSheet.create({
   alertBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(196, 139, 47, 0.13)',
+    backgroundColor: `${SEMANTIC.warning}22`,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     borderWidth: 1,
     borderColor: SEMANTIC.warning,
     gap: SPACING.sm,
   },
-  alertIcon: { fontSize: 20 },
   alertText: { flex: 1, fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text },
-  alertChevron: { fontSize: 20, color: DARK.textMuted },
   quickActions: { flexDirection: 'row', gap: SPACING.md },
   quickCard: {
     flex: 1,
@@ -179,7 +178,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.sm,
   },
-  quickIcon: { fontSize: 28 },
   quickLabel: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted, textAlign: 'center', fontWeight: '500' },
   statsRow: { flexDirection: 'row', gap: SPACING.md },
   statCard: {

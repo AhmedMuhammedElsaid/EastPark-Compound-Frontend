@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { ArrowLeft, ForkKnife, Pencil, Plus, Trash } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -51,11 +52,11 @@ export default function MerchantMenuScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('merchant.menu')}</Text>
         <Pressable style={styles.addBtn} onPress={() => router.push('/(merchant)/menu/new' as any)}>
-          <Text style={styles.addBtnText}>+</Text>
+          <Plus size={20} color={DARK.bg} />
         </Pressable>
       </View>
 
@@ -75,7 +76,7 @@ export default function MerchantMenuScreen() {
             >
               {products.length === 0 && (
                 <View style={styles.empty}>
-                  <Text style={styles.emptyIcon}>🍽</Text>
+                  <ForkKnife size={48} color={DARK.textMuted} />
                   <Text style={styles.emptyText}>{t('common.no_results')}</Text>
                 </View>
               )}
@@ -124,10 +125,10 @@ function ProductRow({
           thumbColor={DARK.text}
         />
         <Pressable style={styles.editBtn} onPress={onEdit} hitSlop={8}>
-          <Text style={styles.editBtnText}>✏️</Text>
+          <Pencil size={18} color={DARK.textMuted} />
         </Pressable>
         <Pressable style={styles.deleteBtn} onPress={onDelete} hitSlop={8}>
-          <Text style={styles.deleteBtnText}>🗑</Text>
+          <Trash size={18} color={SEMANTIC.error} />
         </Pressable>
       </View>
     </View>
@@ -154,7 +155,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   addBtn: {
     width: 36,
@@ -164,11 +164,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  addBtnText: { fontSize: 22, color: DARK.bg, lineHeight: 26 },
   loadingPad: { padding: SPACING.base },
   listContent: { padding: SPACING.base, gap: SPACING.sm },
   empty: { alignItems: 'center', paddingTop: 80, gap: SPACING.md },
-  emptyIcon: { fontSize: 48 },
   emptyText: { fontFamily: FONT.sans, fontSize: 15, color: DARK.textMuted },
   row: {
     flexDirection: 'row',
@@ -184,7 +182,5 @@ const styles = StyleSheet.create({
   rowPrice: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold },
   rowActions: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   editBtn: { width: 32, height: 32, justifyContent: 'center', alignItems: 'center' },
-  editBtnText: { fontSize: 18 },
   deleteBtn: { width: 32, height: 32, justifyContent: 'center', alignItems: 'center' },
-  deleteBtnText: { fontSize: 18 },
 });

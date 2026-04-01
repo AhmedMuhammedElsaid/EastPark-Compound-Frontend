@@ -55,5 +55,5 @@ export const ordersApi = {
     client.patch<{ data: Order }>(`/orders/${orderId}/cancel`),
 
   initiatePaymobPayment: (orderId: string) =>
-    client.post<{ data: { paymentKey: string; orderId: string } }>(`/orders/${orderId}/pay`),
+    client.post<{ data: { paymentKey: string; iframeUrl: string } }>(`/orders/${orderId}/pay/paymob`),
 };

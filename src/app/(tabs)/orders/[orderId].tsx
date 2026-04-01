@@ -4,10 +4,12 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ArrowLeft } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ordersApi } from '@/services/api/orders';
+import { formatCurrency } from '@/lib/formatCurrency';
 import { getOrdersSocket, joinOrderRoom, leaveOrderRoom } from '@/services/socket/client';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -120,7 +122,7 @@ function OrderNav({ order, isAr }: { order: Order; isAr: boolean }) {
   return (
     <View style={styles.nav}>
       <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-        <Text style={styles.backIcon}>←</Text>
+        <ArrowLeft size={18} color={DARK.text} />
       </Pressable>
       <View style={styles.navInfo}>
         <Text style={styles.navShop} numberOfLines={1}>{shopName}</Text>
@@ -170,8 +172,7 @@ function OrderItems({ order, isAr }: { order: Order; isAr: boolean }) {
             {isAr ? item.productNameArSnapshot : item.productNameSnapshot}
           </Text>
           <Text style={styles.itemPrice}>
-            EGP
-            {item.totalPrice.toFixed(2)}
+            {formatCurrency(item.totalPrice)}
           </Text>
         </View>
       ))}
@@ -198,8 +199,7 @@ function OrderSummary({ order }: { order: Order }) {
       <View style={[styles.summaryRow, styles.totalRow]}>
         <Text style={styles.totalLabel}>{t('cart.total')}</Text>
         <Text style={styles.totalValue}>
-          EGP
-          {order.totalAmount.toFixed(2)}
+          {formatCurrency(order.totalAmount)}
         </Text>
       </View>
     </View>
@@ -241,7 +241,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navInfo: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SPACING.sm },
   navShop: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.text, flex: 1 },
   statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.full },

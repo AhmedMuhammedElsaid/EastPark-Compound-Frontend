@@ -43,7 +43,13 @@ export default function AcceptInvitationScreen() {
       await SecureStore.setItemAsync(SECURE_KEY_ACCESS, accessToken);
       await SecureStore.setItemAsync(SECURE_KEY_REFRESH, refreshToken);
       dispatch(login({ user, accessToken, refreshToken }));
-      router.replace(user.role === 'MERCHANT' ? '/(merchant)/dashboard' : '/(tabs)');
+      router.replace(
+        user.role === 'MERCHANT'
+          ? '/(merchant)/dashboard'
+          : user.role === 'ADMIN'
+            ? '/(admin)'
+            : '/(tabs)'
+      );
     }
     catch {
       showMessage({ message: t('common.error'), type: 'danger', backgroundColor: SEMANTIC.error });

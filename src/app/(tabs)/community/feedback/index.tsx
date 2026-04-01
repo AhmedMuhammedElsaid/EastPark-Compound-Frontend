@@ -3,7 +3,7 @@ import type { Feedback, FeedbackStatus } from '@/services/api/community';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { Plus } from 'phosphor-react-native';
+import { ArrowLeft, ChatCircle, EnvelopeSimple, Plus } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -44,7 +44,7 @@ export default function FeedbackListScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('feedback.title')}</Text>
         <Pressable style={styles.newBtn} onPress={() => router.push('/(tabs)/community/feedback/new' as any)} accessibilityRole="button" accessibilityLabel={t('feedback.new')}>
@@ -110,10 +110,10 @@ function FeedbackRow({ feedback }: { feedback: Feedback }) {
       <View style={styles.rowMeta}>
         <Text style={styles.rowDate}>{date}</Text>
         {feedback.replies.length > 0 && (
-          <Text style={styles.replyBadge}>
-            💬
-            {feedback.replies.length}
-          </Text>
+          <View style={styles.replyBadge}>
+            <ChatCircle size={14} color={DARK.textMuted} />
+            <Text style={styles.replyBadgeText}>{feedback.replies.length}</Text>
+          </View>
         )}
       </View>
     </Pressable>
@@ -124,7 +124,7 @@ function FeedbackEmpty() {
   const { t } = useTranslation();
   return (
     <View style={styles.empty}>
-      <Text style={styles.emptyIcon}>📩</Text>
+      <EnvelopeSimple size={48} color={DARK.textMuted} />
       <Text style={styles.emptyTitle}>{t('feedback.empty')}</Text>
       <Text style={styles.emptyBody}>{t('feedback.empty_subtitle')}</Text>
     </View>
@@ -151,7 +151,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   newBtn: {
     width: 36,
@@ -161,7 +160,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  newBtnText: { fontSize: 22, color: DARK.bg, lineHeight: 26 },
   loadingPad: { padding: SPACING.base },
   listContent: { padding: SPACING.base },
   row: {
@@ -179,9 +177,9 @@ const styles = StyleSheet.create({
   rowTitle: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text },
   rowMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 },
   rowDate: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted },
-  replyBadge: { fontFamily: FONT.sans, fontSize: 12, color: BRAND.gold },
+  replyBadge: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  replyBadgeText: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted },
   empty: { alignItems: 'center', paddingTop: 80, gap: SPACING.md, paddingHorizontal: SPACING.xl },
-  emptyIcon: { fontSize: 48 },
   emptyTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.text, textAlign: 'center' },
   emptyBody: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, textAlign: 'center', lineHeight: 22 },
 });

@@ -266,6 +266,10 @@
     "empty": "لا توجد إشعارات بعد",
     "empty_subtitle": "ستظهر هنا تحديثات الطلبات والإعلانات وغيرها",
     "mark_all_read": "تحديد الكل كمقروء",
+    "time_now": "الآن",
+    "time_minutes": "{{count}} د",
+    "time_hours": "{{count}} س",
+    "time_days": "{{count}} ي",
     "title": "الإشعارات"
   },
   "orders": {

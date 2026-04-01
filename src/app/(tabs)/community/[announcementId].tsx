@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ArrowLeft, FilePdf, PaperPlaneTilt } from 'phosphor-react-native';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
 import { communityApi } from '@/services/api/community';
@@ -38,7 +39,7 @@ export default function AnnouncementDetailScreen() {
     >
       <View style={[styles.nav, { paddingTop: insets.top + SPACING.sm }]}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <Text style={styles.navTitle} numberOfLines={1}>{title}</Text>
       </View>
@@ -52,7 +53,7 @@ export default function AnnouncementDetailScreen() {
 
         {ann.pdfUrl && (
           <Pressable style={styles.pdfRow} onPress={() => Linking.openURL(ann.pdfUrl!)}>
-            <Text style={styles.pdfIcon}>📄</Text>
+            <FilePdf size={24} color={BRAND.gold} />
             <Text style={styles.pdfLabel}>{t('community.view_pdf')}</Text>
           </Pressable>
         )}
@@ -166,7 +167,7 @@ function AddCommentBar({ announcementId, bottomInset }: { announcementId: string
         onPress={handleSubmit}
         disabled={!text.trim() || isPending}
       >
-        <Text style={styles.sendIcon}>➤</Text>
+        <PaperPlaneTilt size={20} color={DARK.bg} />
       </Pressable>
     </View>
   );
@@ -208,7 +209,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: '600', fontSize: 16, color: DARK.text },
   scroll: { padding: SPACING.base },
   title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 22, color: DARK.text, lineHeight: 32, marginBottom: SPACING.md },
@@ -222,7 +222,6 @@ const styles = StyleSheet.create({
     backgroundColor: DARK.card,
     borderRadius: RADIUS.md,
   },
-  pdfIcon: { fontSize: 20 },
   pdfLabel: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: '600' },
   divider: { height: 1, backgroundColor: DARK.border, marginVertical: SPACING.lg },
   sectionTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.text, marginBottom: SPACING.md },
@@ -274,5 +273,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sendBtnDisabled: { opacity: 0.4 },
-  sendIcon: { fontSize: 16, color: DARK.bg },
 });

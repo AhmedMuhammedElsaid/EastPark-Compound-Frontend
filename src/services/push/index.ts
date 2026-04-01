@@ -1,10 +1,11 @@
+import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 
-import { usersApi } from '@/services/api/users';
+import { authApi } from '@/services/api/auth';
 
 /**
  * Requests push notification permission (if not yet granted) then registers
- * the Expo push token with the backend.
+ * the Expo push token with the backend via PATCH /auth/push-token.
  * Called after every successful login or OTP verification.
  */
 export async function registerPushToken() {
@@ -15,8 +16,11 @@ export async function registerPushToken() {
       status = result.status;
     }
     if (status === 'granted') {
-      const token = await Notifications.getExpoPushTokenAsync();
-      await usersApi.updatePushToken(token.data);
+      const projectId = Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
+      const token = await Notifications.getExpoPushTokenAsync(
+        projectId ? { projectId } : undefined
+      );
+      await authApi.updatePushToken(token.data);
     }
   }
   catch {}
