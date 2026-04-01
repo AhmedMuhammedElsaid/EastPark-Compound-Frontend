@@ -57,4 +57,21 @@ export const governanceApi = {
 
   voteElection: (electionId: string, candidateId: string) =>
     client.post<{ data: Election }>(`/elections/${electionId}/vote`, { candidateId }),
+
+  // Admin
+  createPoll: (data: {
+    question: string;
+    questionAr: string;
+    options: Array<{ text: string; textAr: string }>;
+    expiresAt: string;
+  }) => client.post<{ data: Poll }>('/polls', data),
+
+  createElection: (data: {
+    title: string;
+    titleAr: string;
+    description?: string;
+    descriptionAr?: string;
+    expiresAt: string;
+    visibilityMode: ElectionVisibilityMode;
+  }) => client.post<{ data: Election }>('/elections', data),
 };

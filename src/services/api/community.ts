@@ -81,4 +81,13 @@ export const communityApi = {
     isAnonymous?: boolean;
     attachments?: string[];
   }) => client.post<{ data: Feedback }>('/feedback', data),
+
+  // Admin
+  createAnnouncement: (data: {
+    title: string;
+    titleAr: string;
+    body: string;
+    bodyAr: string;
+    category: AnnouncementCategory;
+  }) => client.post<{ data: Announcement }>('/announcements', data),
 };
