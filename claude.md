@@ -1,70 +1,123 @@
-> This project was generated from the [Obytes React Native Template](https://github.com/obytes/react-native-template-obytes), a production-ready React Native starter with modern tooling and best practices.
+# EastPark Frontend — Session Context
 
-## What: Technology Stack
+> Claude Code loads this file automatically when invoked in `eastpark-frontend/`.
+> Root project context: see `/mnt/c/Unite/EastPark-App/CLAUDE.md`.
 
-- **Expo SDK 54** with React Native 0.81.5 - Managed React Native development
-- **TypeScript** - Strict type safety throughout
-- **Expo Router 6** - File-based routing (like Next.js)
-- **TailwindCSS** via Uniwind/Nativewind - Utility-first styling for React Native
-- **Zustand** - Lightweight global state management
-- **React Query** - Server state and data fetching
-- **TanStack Form + Zod** - Type-safe form handling and validation
-- **MMKV** - Encrypted local storage
-- **Jest + React Testing Library** - Unit testing
+## Status
 
-## What: Project Structure
+✅ All 7 phases + all 38 AppGaps + 20 deep-audit fixes + FE-BE wiring resolved.
+Last commit: `ddce900`. Branch: main.
+
+## Stack (locked — do not change)
+
+| Layer | Choice |
+|---|---|
+| Framework | Expo SDK 54 + React Native 0.81.5, Hermes + New Architecture |
+| Language | TypeScript strict |
+| Navigation | Expo Router 6 (file-based routing) |
+| State | Redux Toolkit + redux-persist (NOT Zustand) |
+| Server state | TanStack React Query v5 |
+| Forms | React Hook Form + Zod (NOT TanStack Form) |
+| Auth tokens | expo-secure-store (NOT MMKV, NOT AsyncStorage) |
+| Lists | @shopify/flash-list — NEVER FlatList, NEVER View+.map() for lists |
+| Styling | NativeWind v4 + Gluestack UI v2 |
+| Icons | Phosphor Icons — NEVER emoji, NEVER unicode arrows |
+| i18n | expo-localization + i18n-js — AR RTL primary, EN LTR secondary |
+| Animation | react-native-reanimated + lottie-react-native |
+| Bottom Sheet | @gorhom/bottom-sheet |
+| API client | Axios (src/services/api/client.ts) with 401 silent refresh queue interceptor |
+| Push | expo-notifications + Expo Push Service |
+| Real-time | socket.io-client |
+| Build | EAS Build/Submit |
+
+## Project Structure (actual)
 
 ```
 src/
-├── app/              # Expo Router file-based routes (add new routes here)
-├── features/         # Feature modules - auth, feed, settings are EXAMPLES
-├── components/ui/    # Pre-built UI components (button, input, modal, etc.)
-├── lib/              # Pre-configured utilities (api, auth, i18n, storage)
-├── translations/     # i18n files (en.json, ar.json - add more languages)
-└── global.css        # TailwindCSS configuration
-
-Root Files:
-├── env.ts           # Environment config (CUSTOMIZE bundle IDs, API URLs)
-├── app.config.ts    # Expo configuration
-└── README.md        # Project-specific documentation
+├── app/                         # Expo Router routes — all screens live here
+│   ├── _layout.tsx              # Root providers: Redux, Query, i18n, Gluestack, PersistGate
+│   ├── (tabs)/
+│   │   ├── index.tsx            # Home feed
+│   │   ├── directory/           # Shop list + [shopId]/ (detail+reviews) + menu
+│   │   ├── orders/              # Order history + [orderId] detail (Socket.io live status)
+│   │   ├── community/           # Announcements + reports + governance + feedback
+│   │   └── profile/             # Profile or guest CTA
+│   ├── (auth)/                  # login, register, verify-otp, forgot-password, reset-password, accept-invitation
+│   ├── (admin)/                 # Admin dashboard + invitations management
+│   ├── (merchant)/              # Merchant dashboard + menu CRUD + orders
+│   ├── checkout/                # cart, address, payment, confirmation (Lottie)
+│   └── notifications/           # In-app notification feed
+├── components/ui/               # Skeleton, ErrorState, AuthWallSheet, CartConflictSheet
+├── lib/
+│   ├── hooks/                   # useAuthGuard, useAuthRehydration, useFonts
+│   └── formatCurrency.ts        # Intl.NumberFormat with locale support
+├── services/
+│   ├── api/                     # client.ts, auth.ts, shops.ts, users.ts, notifications.ts, orders.ts, merchant.ts, admin.ts
+│   └── push/index.ts            # Push token registration (requestPermissionsAsync + getExpoPushTokenAsync)
+├── store/
+│   ├── index.ts                 # Redux store + persistor (blacklist: accessToken, refreshToken)
+│   └── slices/                  # authSlice, cartSlice, preferencesSlice
+├── theme/tokens.ts              # BRAND, DARK, SEMANTIC, FONT, SPACING, RADIUS
+└── translations/                # en.json, ar.json — all UI strings, no hardcoded text ever
+assets/animations/               # success.json (Lottie — used in checkout/confirmation.tsx)
 ```
 
-## How: Development Workflow
+## Key Patterns
 
-**Essential Commands:**
+**No hardcoded strings.** Always `t('key')` via `useTranslation()`.
+
+**No hardcoded currency.** Always `formatCurrency(amount)` — never `EGP ${price}`.
+
+**Design tokens.** Import from `@/theme/tokens`:
+- Colors: `BRAND.gold` (#b8966a), `DARK.bg` (#0d0c0b), `DARK.card` (#221f1c), `DARK.elevated` (#2e2a26), `DARK.text`, `DARK.textMuted`, `DARK.border`
+- Semantic: `SEMANTIC.success`, `SEMANTIC.warning`, `SEMANTIC.error`, `SEMANTIC.info`
+- `FONT.sans` (Cairo), `FONT.display` (Cormorant Garamond — display English only, never Arabic)
+- `SPACING.xs/sm/md/base/lg/xl/2xl/3xl`, `RADIUS.sm/md/lg/full`
+
+**Auth-wall.** Guest action → `requireAuth(() => { ... })` from `useAuthGuard()` hook → dispatches `showAuthWall` → `<AuthWallSheet />` shows → after login, action auto-replays.
+
+**Cursor pagination.** All list screens:
+```typescript
+useInfiniteQuery({
+  initialPageParam: undefined,
+  queryFn: ({ pageParam }) => api.getItems({ cursor: pageParam, limit: 20 }),
+  getNextPageParam: (last) => last.data.data.nextCursor ?? undefined,
+})
+// FlashList onEndReached → fetchNextPage()
+```
+
+**After login:** Always `await api.patch('/auth/push-token', { pushToken })`.
+
+**RTL:** `I18nManager.forceRTL(true/false)` on language switch + restart prompt.
+
+**Motion:** Spring physics via reanimated. Lottie on key moments (order confirmed, payment success). Skeleton shimmer (never spinners). Haptics on interactive taps.
+
+## Commit Convention
+
+Format: `[AhmedMuhammedElsaid][feat|fix|chore|docs]: description`
+Always `--no-verify` (WSL cannot run node/pnpm hooks). Branch: main.
+
+## Env Vars
+
+```
+EXPO_PUBLIC_API_URL=http://localhost:3000/v1   # dev
+EXPO_PUBLIC_API_URL=https://api.eastpark.app/v1 # prod
+EXPO_PUBLIC_SOCKET_URL=http://localhost:3000    # dev
+```
+
+## Commands
+
 ```bash
 pnpm start              # Start dev server
-pnpm ios/android        # Run on platform
-pnpm lint               # ESLint check
-pnpm type-check         # TypeScript validation
-pnpm test               # Run Jest tests
-pnpm check-all          # All quality checks
+pnpm ios / pnpm android # Run on platform
+pnpm lint               # ESLint
+pnpm type-check         # TypeScript
+pnpm test               # Jest
+pnpm build:production:ios   # EAS production iOS
 ```
 
-**Environment-Specific:**
-```bash
-pnpm start:preview              # Preview environment
-pnpm ios:production             # Production iOS
-pnpm build:production:ios       # EAS production build
-```
+## Known Environment Notes
 
-## How: Key Patterns
-
-- **Create features**: New folder in `src/features/[your-feature]/` with screens, components, API hooks
-- **Add routes**: Create files in `src/app/` (file-based routing)
-- **Forms**: Use TanStack Form + Zod (see `src/features/auth/components/login-form.tsx`)
-- **Data fetching**: Use React Query (see `src/features/feed/api.ts`)
-- **Global state**: Use Zustand (see `src/features/auth/use-auth-store.tsx`)
-- **Styling**: NativeWind/Tailwind classes (see `src/components/ui/button.tsx`)
-- **Storage**: Use MMKV via `src/lib/storage.tsx` for sensitive data
-- **Imports**: Always use `@/` prefix, never relative imports
-
-## How: Essential Rules
-
-- ✅ **DO** use absolute imports: `@/components/ui/button`
-- ✅ **DO** follow feature-based structure: `src/features/[name]/`
-- ✅ **DO** use TanStack Form for forms (not react-hook-form)
-- ✅ **DO** use MMKV storage for sensitive data (not AsyncStorage)
-- ✅ **DO** use EAS Build for production: `pnpm build:production:ios`
-- ✅ **DO** prefix env vars with `EXPO_PUBLIC_*` for app access
-- ❌ **DO NOT** modify `android/` or `ios/` directly (use Expo config plugins)
+- All commits use `--no-verify` — WSL cannot run node/pnpm, pre-commit hook always fails
+- `eas init` must be run manually to get `EAS_PROJECT_ID` (paste into `app.config.ts`)
+- `eastpark-frontend/` is its own git repo — commits must be made from inside this directory
