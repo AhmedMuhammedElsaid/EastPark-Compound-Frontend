@@ -88,7 +88,7 @@ export default function MerchantOrdersScreen() {
               refreshing={false}
               ListEmptyComponent={(
                 <View style={styles.empty}>
-                  <Text style={styles.emptyIcon}>📭</Text>
+                  <InboxSimple size={48} color={DARK.textMuted} />
                   <Text style={styles.emptyText}>{t('common.no_results')}</Text>
                 </View>
               )}
@@ -181,7 +181,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   filterBar: {
     backgroundColor: DARK.bg,
@@ -207,7 +206,6 @@ const styles = StyleSheet.create({
   loadingPad: { padding: SPACING.base },
   listContent: { padding: SPACING.base },
   empty: { alignItems: 'center', paddingTop: 80, gap: SPACING.md },
-  emptyIcon: { fontSize: 48 },
   emptyText: { fontFamily: FONT.sans, fontSize: 15, color: DARK.textMuted },
   card: {
     backgroundColor: DARK.card,

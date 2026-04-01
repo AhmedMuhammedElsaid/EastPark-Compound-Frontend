@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ArrowLeft } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -65,7 +66,7 @@ export default function MerchantOrderDetailScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <View style={styles.navInfo}>
           <Text style={styles.navUnit}>{t('checkout.unit', { number: order.user.unitNumber })}</Text>
@@ -237,7 +238,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navInfo: { flex: 1 },
   navUnit: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: BRAND.gold },
   navName: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted },
