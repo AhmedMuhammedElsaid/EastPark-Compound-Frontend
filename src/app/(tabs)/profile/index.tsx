@@ -48,8 +48,8 @@ function GuestProfile() {
         <Text style={styles.guestIcon}>👤</Text>
         <Text style={styles.guestPrompt}>{t('profile.guest_prompt')}</Text>
         <Text style={styles.guestSubtitle}>{t('profile.guest_subtitle')}</Text>
-        <Pressable style={styles.signInBtn} onPress={() => router.push('/(auth)/login' as any)} accessibilityRole="button" accessibilityLabel={t('profile.account')}>
-          <Text style={styles.signInBtnText}>{t('profile.account')}</Text>
+        <Pressable style={styles.signInBtn} onPress={() => router.push('/(auth)/login' as any)} accessibilityRole="button" accessibilityLabel={t('auth.login')}>
+          <Text style={styles.signInBtnText}>{t('auth.login')}</Text>
         </Pressable>
       </View>
       <PreferencesSection />
