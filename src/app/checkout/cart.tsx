@@ -133,7 +133,9 @@ function CartItemRow({
 
       <View style={styles.qtyControls}>
         <Pressable style={styles.qtyBtn} onPress={onDecrease} hitSlop={8}>
-          <Text style={styles.qtyBtnText}>{item.quantity === 1 ? '🗑' : '−'}</Text>
+          {item.quantity === 1
+            ? <Trash size={16} color={SEMANTIC.error} />
+            : <Text style={styles.qtyBtnText}>−</Text>}
         </Pressable>
         <Text style={styles.qtyValue}>{item.quantity}</Text>
         <Pressable style={styles.qtyBtn} onPress={onIncrease} hitSlop={8}>

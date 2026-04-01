@@ -10,7 +10,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
-import { MegaphoneSimple } from 'phosphor-react-native';
+import { ChatCircle, CheckSquare, FilePdf, MegaphoneSimple } from 'phosphor-react-native';
 
 import { communityApi } from '@/services/api/community';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
@@ -98,15 +98,15 @@ function CommunityHeader({
       <Text style={styles.headerTitle}>{t('community.title')}</Text>
       <View style={styles.quickLinks}>
         <Pressable style={styles.quickLink} onPress={onGovernance}>
-          <Text style={styles.quickLinkIcon}>🗳️</Text>
+          <CheckSquare size={22} color={BRAND.gold} />
           <Text style={styles.quickLinkLabel}>{t('community.governance')}</Text>
         </Pressable>
         <Pressable style={styles.quickLink} onPress={onReports}>
-          <Text style={styles.quickLinkIcon}>📄</Text>
+          <FilePdf size={22} color={BRAND.gold} />
           <Text style={styles.quickLinkLabel}>{t('community.reports')}</Text>
         </Pressable>
         <Pressable style={styles.quickLink} onPress={onFeedback}>
-          <Text style={styles.quickLinkIcon}>💬</Text>
+          <ChatCircle size={22} color={BRAND.gold} />
           <Text style={styles.quickLinkLabel}>{t('community.feedback')}</Text>
         </Pressable>
       </View>
@@ -235,7 +235,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.xs,
   },
-  quickLinkIcon: { fontSize: 22 },
   quickLinkLabel: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted, textAlign: 'center', fontWeight: '500' },
   chips: { paddingHorizontal: SPACING.base, paddingVertical: SPACING.sm, gap: SPACING.sm },
   chip: { height: 34, paddingHorizontal: SPACING.md, borderRadius: RADIUS.full, justifyContent: 'center' },
