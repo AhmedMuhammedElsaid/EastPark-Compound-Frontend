@@ -48,8 +48,8 @@ function GuestProfile() {
         <Text style={styles.guestIcon}>👤</Text>
         <Text style={styles.guestPrompt}>{t('profile.guest_prompt')}</Text>
         <Text style={styles.guestSubtitle}>{t('profile.guest_subtitle')}</Text>
-        <Pressable style={styles.signInBtn} onPress={() => router.push('/(auth)/login' as any)}>
-          <Text style={styles.signInBtnText}>{t('auth.login')}</Text>
+        <Pressable style={styles.signInBtn} onPress={() => router.push('/(auth)/login' as any)} accessibilityRole="button" accessibilityLabel={t('profile.account')}>
+          <Text style={styles.signInBtnText}>{t('profile.account')}</Text>
         </Pressable>
       </View>
       <PreferencesSection />
@@ -123,7 +123,7 @@ function AccountSection({ role }: { role: string }) {
   const { t } = useTranslation();
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{t('auth.login')}</Text>
+      <Text style={styles.sectionTitle}>{t('profile.account')}</Text>
       {role === 'MERCHANT' && (
         <ProfileRow icon="🏪" label={t('profile.manage_shop')} onPress={() => router.push('/(merchant)/dashboard' as any)} />
       )}
@@ -154,6 +154,9 @@ function PreferencesSection() {
             key={lang}
             style={[styles.segment, language === lang && styles.segmentActive]}
             onPress={() => setLanguage(lang)}
+            accessibilityRole="radio"
+            accessibilityLabel={lang === 'en' ? t('profile.english') : t('profile.arabic')}
+            accessibilityState={{ checked: language === lang }}
           >
             <Text style={[styles.segmentText, language === lang && styles.segmentTextActive]}>
               {lang === 'en' ? t('profile.english') : t('profile.arabic')}
@@ -169,6 +172,9 @@ function PreferencesSection() {
             key={value}
             style={[styles.segment, selectedTheme === value && styles.segmentActive]}
             onPress={() => setSelectedTheme(value)}
+            accessibilityRole="radio"
+            accessibilityLabel={label}
+            accessibilityState={{ checked: selectedTheme === value }}
           >
             <Text style={[styles.segmentText, selectedTheme === value && styles.segmentTextActive]}>
               {label}
@@ -184,11 +190,11 @@ function DangerSection({ onLogout, onDeleteAccount }: { onLogout: () => void; on
   const { t } = useTranslation();
   return (
     <View style={styles.section}>
-      <Pressable style={[styles.row, styles.rowDanger]} onPress={onLogout}>
+      <Pressable style={[styles.row, styles.rowDanger]} onPress={onLogout} accessibilityRole="button" accessibilityLabel={t('auth.logout')}>
         <Text style={styles.rowIcon}>🚪</Text>
         <Text style={styles.rowLabelDanger}>{t('auth.logout')}</Text>
       </Pressable>
-      <Pressable style={[styles.row, styles.rowDanger]} onPress={onDeleteAccount}>
+      <Pressable style={[styles.row, styles.rowDanger]} onPress={onDeleteAccount} accessibilityRole="button" accessibilityLabel={t('profile.delete_account')}>
         <Text style={styles.rowIcon}>⚠️</Text>
         <Text style={styles.rowLabelDanger}>{t('profile.delete_account')}</Text>
       </Pressable>
@@ -198,7 +204,7 @@ function DangerSection({ onLogout, onDeleteAccount }: { onLogout: () => void; on
 
 function ProfileRow({ icon, label, onPress }: { icon: string; label: string; onPress: () => void }) {
   return (
-    <Pressable style={styles.row} onPress={onPress}>
+    <Pressable style={styles.row} onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
       <Text style={styles.rowIcon}>{icon}</Text>
       <Text style={styles.rowLabel}>{label}</Text>
       <Text style={styles.rowChevron}>›</Text>

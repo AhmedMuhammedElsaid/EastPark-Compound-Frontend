@@ -5,10 +5,11 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatCurrency } from '@/lib/formatCurrency';
 import { merchantApi } from '@/services/api/merchant';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -55,7 +56,7 @@ export default function MerchantOrdersScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
-        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
+        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.backIcon}>←</Text>
         </Pressable>
         <Text style={styles.navTitle}>{t('merchant.orders')}</Text>
@@ -104,7 +105,12 @@ export default function MerchantOrdersScreen() {
 function StatusFilterBar({ filter, onSelect }: { filter: StatusFilter; onSelect: (f: StatusFilter) => void }) {
   const { t } = useTranslation();
   return (
-    <View style={styles.filterBar}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={styles.filterBar}
+      contentContainerStyle={styles.filterBarContent}
+    >
       {STATUS_FILTERS.map((key) => {
         const active = filter === key;
         const label = key === 'ALL' ? t('directory.all_categories') : t(`orders.${key}`);
@@ -118,7 +124,7 @@ function StatusFilterBar({ filter, onSelect }: { filter: StatusFilter; onSelect:
           </Pressable>
         );
       })}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -134,10 +140,7 @@ function MerchantOrderCard({ order }: { order: MerchantOrder }) {
     >
       <View style={styles.cardTop}>
         <View style={styles.cardLeft}>
-          <Text style={styles.unitLabel}>
-            Unit
-            {order.user.unitNumber}
-          </Text>
+          <Text style={styles.unitLabel}>{t('checkout.unit', { number: order.user.unitNumber })}</Text>
           <Text style={styles.customerName}>{order.user.name}</Text>
         </View>
         <View style={styles.cardRight}>
@@ -150,10 +153,7 @@ function MerchantOrderCard({ order }: { order: MerchantOrder }) {
       <Text style={styles.items} numberOfLines={1}>
         {order.items.map(item => `${item.quantity}× ${item.productNameSnapshot}`).join(', ')}
       </Text>
-      <Text style={styles.total}>
-        EGP
-        {order.totalAmount.toFixed(2)}
-      </Text>
+      <Text style={styles.total}>{formatCurrency(order.totalAmount)}</Text>
     </Pressable>
   );
 }
@@ -183,13 +183,15 @@ const styles = StyleSheet.create({
   backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   filterBar: {
+    backgroundColor: DARK.bg,
+    borderBottomWidth: 1,
+    borderBottomColor: DARK.border,
+  },
+  filterBarContent: {
     flexDirection: 'row',
     paddingHorizontal: SPACING.base,
     paddingVertical: SPACING.sm,
     gap: SPACING.sm,
-    backgroundColor: DARK.bg,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
   },
   filterChip: {
     paddingHorizontal: SPACING.md,

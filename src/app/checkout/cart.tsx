@@ -7,6 +7,7 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { Trash } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { formatCurrency } from '@/lib/formatCurrency';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { clearCart, updateQuantity } from '@/store/slices/cartSlice';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
@@ -28,7 +29,7 @@ export default function CartScreen() {
           <Text style={styles.emptyIcon}>🛒</Text>
           <Text style={styles.emptyTitle}>{t('cart.empty')}</Text>
           <Text style={styles.emptyBody}>{t('cart.empty_subtitle')}</Text>
-          <Pressable style={styles.browseBtn} onPress={() => router.replace('/(tabs)/directory' as any)}>
+          <Pressable style={styles.browseBtn} onPress={() => router.replace('/(tabs)/directory' as any)} accessibilityRole="button" accessibilityLabel={t('directory.title')}>
             <Text style={styles.browseBtnText}>{t('directory.title')}</Text>
           </Pressable>
         </View>
@@ -49,8 +50,14 @@ export default function CartScreen() {
             key={item.productId}
             item={item}
             isAr={isAr}
-            onIncrease={() => dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity + 1 }))}
-            onDecrease={() => dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity - 1 }))}
+            onIncrease={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity + 1 }));
+            }}
+            onDecrease={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity - 1 }));
+            }}
           />
         ))}
       </ScrollView>
@@ -58,10 +65,7 @@ export default function CartScreen() {
       <View style={[styles.footer, { paddingBottom: insets.bottom + SPACING.md }]}>
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>{t('cart.total')}</Text>
-          <Text style={styles.totalValue}>
-            EGP
-            {total.toFixed(2)}
-          </Text>
+          <Text style={styles.totalValue}>{formatCurrency(total)}</Text>
         </View>
         <Pressable
           style={styles.checkoutBtn}
@@ -69,6 +73,8 @@ export default function CartScreen() {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             router.push('/checkout/address' as any);
           }}
+          accessibilityRole="button"
+          accessibilityLabel={t('cart.checkout')}
         >
           <Text style={styles.checkoutBtnText}>{t('cart.checkout')}</Text>
         </Pressable>
@@ -83,12 +89,12 @@ function CartNav({ shopName, onClear }: { shopName?: string; onClear?: () => voi
   const { t } = useTranslation();
   return (
     <View style={styles.nav}>
-      <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
+      <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back">
         <Text style={styles.backIcon}>←</Text>
       </Pressable>
       <Text style={styles.navTitle}>{shopName || t('cart.title')}</Text>
       {onClear && (
-        <Pressable onPress={onClear} hitSlop={8}>
+        <Pressable onPress={onClear} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.clear')}>
           <Text style={styles.clearText}>{t('common.clear')}</Text>
         </Pressable>
       )}
@@ -118,10 +124,7 @@ function CartItemRow({
 
       <View style={styles.itemInfo}>
         <Text style={styles.itemName} numberOfLines={2}>{name}</Text>
-        <Text style={styles.itemPrice}>
-          EGP
-          {item.price.toFixed(2)}
-        </Text>
+        <Text style={styles.itemPrice}>{formatCurrency(item.price)}</Text>
       </View>
 
       <View style={styles.qtyControls}>
@@ -132,10 +135,7 @@ function CartItemRow({
         <Pressable style={styles.qtyBtn} onPress={onIncrease} hitSlop={8}>
           <Text style={styles.qtyBtnText}>+</Text>
         </Pressable>
-        <Text style={styles.itemSubtotal}>
-          EGP
-          {subtotal}
-        </Text>
+        <Text style={styles.itemSubtotal}>{formatCurrency(item.price * item.quantity)}</Text>
       </View>
     </View>
   );

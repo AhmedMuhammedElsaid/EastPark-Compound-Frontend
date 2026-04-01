@@ -69,7 +69,12 @@ export default function DirectoryScreen() {
           clearButtonMode="while-editing"
         />
         {search.length > 0 && (
-          <Pressable onPress={() => setSearch('')} hitSlop={8}>
+          <Pressable
+            onPress={() => setSearch('')}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('common.clear')}
+          >
             <Text style={styles.clearBtn}>✕</Text>
           </Pressable>
         )}

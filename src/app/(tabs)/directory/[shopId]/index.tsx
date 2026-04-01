@@ -5,10 +5,12 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { ArrowLeft, ChatCircle, Heart, HeartStraight, Phone } from 'phosphor-react-native';
 
 import { Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatCurrency } from '@/lib/formatCurrency';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
 import { shopsApi } from '@/services/api/shops';
 import { useAppDispatch, useAppSelector } from '@/store';
@@ -92,11 +94,11 @@ function ShopHero({ shop, saved, onBack, onSave, topInset }: ShopHeroProps) {
         ? <Image source={{ uri: coverPhoto.url }} style={styles.heroImage} resizeMode="cover" />
         : <View style={[styles.heroImage, styles.heroPlaceholder]} />}
       <View style={[styles.heroNav, { top: topInset + SPACING.sm }]}>
-        <Pressable style={styles.navBtn} onPress={onBack} hitSlop={8}>
-          <Text style={styles.navIcon}>←</Text>
+        <Pressable style={styles.navBtn} onPress={onBack} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back">
+          <ArrowLeft size={20} color={DARK.text} />
         </Pressable>
-        <Pressable style={styles.navBtn} onPress={onSave} hitSlop={8}>
-          <Text style={styles.navIcon}>{saved ? '❤️' : '🤍'}</Text>
+        <Pressable style={styles.navBtn} onPress={onSave} hitSlop={8} accessibilityRole="button" accessibilityLabel={saved ? 'Remove from saved' : 'Save shop'}>
+          {saved ? <Heart size={20} color={DARK.text} weight="fill" /> : <HeartStraight size={20} color={DARK.text} />}
         </Pressable>
       </View>
     </View>
@@ -118,6 +120,9 @@ function ShopTabBar({
           key={tab}
           style={[styles.tab, activeTab === tab && styles.tabActive]}
           onPress={() => onTabChange(tab)}
+          accessibilityRole="tab"
+          accessibilityLabel={tab === 'menu' ? t('directory.menu') : t('directory.reviews_tab')}
+          accessibilityState={{ selected: activeTab === tab }}
         >
           <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
             {tab === 'menu' ? t('directory.menu') : t('directory.reviews_tab')}
@@ -160,9 +165,9 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
       <View style={styles.ctaRow}>
         {shop.phone
           ? (
-              <Pressable style={styles.ctaBtn} onPress={() => { if (shop?.phone) Linking.openURL(`tel:${shop.phone}`); }}>
+              <Pressable style={styles.ctaBtn} onPress={() => { if (shop?.phone) Linking.openURL(`tel:${shop.phone}`); }} accessibilityRole="button" accessibilityLabel={t('directory.call')}>
+                <Phone size={16} color={DARK.text} />
                 <Text style={styles.ctaBtnText}>
-                  📞
                   {t('directory.call')}
                 </Text>
               </Pressable>
@@ -173,8 +178,11 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
               <Pressable
                 style={[styles.ctaBtn, styles.ctaBtnWhatsapp]}
                 onPress={() => Linking.openURL(`https://wa.me/${shop.whatsapp}`)}
+                accessibilityRole="button"
+                accessibilityLabel="WhatsApp"
               >
-                <Text style={styles.ctaBtnText}>💬 WhatsApp</Text>
+                <ChatCircle size={16} color={DARK.text} />
+                <Text style={styles.ctaBtnText}>WhatsApp</Text>
               </Pressable>
             )
           : null}
@@ -271,10 +279,7 @@ function ProductRow({
       <View style={styles.productInfo}>
         <Text style={styles.productName} numberOfLines={1}>{name}</Text>
         {desc ? <Text style={styles.productDesc} numberOfLines={2}>{desc}</Text> : null}
-        <Text style={styles.productPrice}>
-          EGP
-          {product.price.toFixed(2)}
-        </Text>
+        <Text style={styles.productPrice}>{formatCurrency(product.price)}</Text>
       </View>
       <View style={styles.productRight}>
         {product.imageUrl
@@ -282,7 +287,7 @@ function ProductRow({
               <Image source={{ uri: product.imageUrl }} style={styles.productImage} resizeMode="cover" />
             )
           : null}
-        <Pressable style={styles.addBtn} onPress={handleAddToCart} hitSlop={8}>
+        <Pressable style={styles.addBtn} onPress={handleAddToCart} hitSlop={8} accessibilityRole="button" accessibilityLabel={`Add ${name} to cart`}>
           <Text style={styles.addBtnText}>+</Text>
         </Pressable>
       </View>
@@ -346,15 +351,14 @@ function CartBar({ shopId, bottomInset }: { shopId: string; bottomInset: number 
     <Pressable
       style={[styles.cartBar, { paddingBottom: bottomInset + SPACING.sm }]}
       onPress={() => router.push('/checkout/cart' as any)}
+      accessibilityRole="button"
+      accessibilityLabel={t('cart.checkout')}
     >
       <View style={styles.cartBarBadge}>
         <Text style={styles.cartBarBadgeText}>{count}</Text>
       </View>
       <Text style={styles.cartBarLabel}>{t('cart.checkout')}</Text>
-      <Text style={styles.cartBarTotal}>
-        EGP
-        {total.toFixed(2)}
-      </Text>
+      <Text style={styles.cartBarTotal}>{formatCurrency(total)}</Text>
     </Pressable>
   );
 }

@@ -68,7 +68,11 @@ export default function HomeScreen() {
         {/* What's new */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{t('home.whats_new')}</Text>
-          <Pressable onPress={() => router.push('/(tabs)/community' as any)}>
+          <Pressable
+            onPress={() => router.push('/(tabs)/community' as any)}
+            accessibilityRole="button"
+            accessibilityLabel={t('common.see_all')}
+          >
             <Text style={styles.seeAll}>{t('common.see_all')}</Text>
           </Pressable>
         </View>
@@ -80,7 +84,11 @@ export default function HomeScreen() {
         {/* Shops */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{t('home.shops')}</Text>
-          <Pressable onPress={() => router.push('/(tabs)/directory' as any)}>
+          <Pressable
+            onPress={() => router.push('/(tabs)/directory' as any)}
+            accessibilityRole="button"
+            accessibilityLabel={t('common.see_all')}
+          >
             <Text style={styles.seeAll}>{t('common.see_all')}</Text>
           </Pressable>
         </View>
@@ -117,6 +125,8 @@ function QuickActionsGrid({ requireAuthNavigation }: { requireAuthNavigation: (h
         <Pressable
           key={action.route}
           style={styles.quickCard}
+          accessibilityRole="button"
+          accessibilityLabel={t(action.labelKey as any)}
           onPress={() => {
             if (action.authRequired)
               requireAuthNavigation(action.route);
@@ -132,6 +142,7 @@ function QuickActionsGrid({ requireAuthNavigation }: { requireAuthNavigation: (h
 }
 
 function AnnouncementsPreview({ announcements, isAr }: { announcements: any[]; isAr: boolean }) {
+  const { t } = useTranslation();
   if (!announcements.length)
     return null;
   return (
@@ -142,9 +153,11 @@ function AnnouncementsPreview({ announcements, isAr }: { announcements: any[]; i
           <Pressable
             key={ann.id}
             style={styles.annCard}
+            accessibilityRole="button"
+            accessibilityLabel={isAr ? ann.titleAr : ann.title}
             onPress={() => router.push(`/(tabs)/community/${ann.id}` as any)}
           >
-            <Text style={styles.annCategory}>{ann.category}</Text>
+            <Text style={styles.annCategory}>{t(`community.${ann.category}` as any)}</Text>
             <Text style={styles.annTitle} numberOfLines={2}>{title}</Text>
           </Pressable>
         );
@@ -165,10 +178,12 @@ function ShopsGrid({ shops, isAr }: { shops: any[]; isAr: boolean }) {
           <Pressable
             key={shop.id}
             style={styles.shopCard}
+            accessibilityRole="button"
+            accessibilityLabel={name}
             onPress={() => router.push(`/(tabs)/directory/${shop.id}` as any)}
           >
             {cover
-              ? <Image source={{ uri: cover.url }} style={styles.shopImg} resizeMode="cover" />
+              ? <Image source={{ uri: cover.url }} style={styles.shopImg} resizeMode="cover" accessibilityRole="image" accessibilityLabel={name} />
               : <View style={[styles.shopImg, { backgroundColor: DARK.elevated }]} />}
             <Text style={styles.shopName} numberOfLines={1}>{name}</Text>
           </Pressable>

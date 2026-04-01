@@ -1,4 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import * as Haptics from 'expo-haptics';
+import LottieView from 'lottie-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -25,6 +27,7 @@ export default function ConfirmationScreen() {
   React.useEffect(() => {
     scale.value = withSpring(1, { damping: 12, stiffness: 120 });
     opacity.value = withDelay(200, withTiming(1, { duration: 400 }));
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }, [opacity, scale]);
 
   const iconStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
@@ -34,7 +37,12 @@ export default function ConfirmationScreen() {
     <View style={[styles.container, { paddingBottom: insets.bottom + SPACING.xl, paddingTop: insets.top }]}>
       <View style={styles.body}>
         <Animated.View style={[styles.iconWrap, iconStyle]}>
-          <Text style={styles.icon}>✓</Text>
+          <LottieView
+            source={require('../../../assets/animations/success.json')}
+            autoPlay
+            loop={false}
+            style={{ width: 200, height: 200 }}
+          />
         </Animated.View>
 
         <Animated.View style={[styles.textWrap, contentStyle]}>
@@ -50,6 +58,8 @@ export default function ConfirmationScreen() {
             if (orderId)
               router.replace(`/(tabs)/orders/${orderId}` as any);
           }}
+          accessibilityRole="button"
+          accessibilityLabel={t('home.my_orders')}
         >
           <Text style={styles.viewOrderBtnText}>{t('home.my_orders')}</Text>
         </Pressable>
@@ -57,6 +67,8 @@ export default function ConfirmationScreen() {
         <Pressable
           style={styles.continueBtn}
           onPress={() => router.replace('/(tabs)/directory' as any)}
+          accessibilityRole="button"
+          accessibilityLabel={t('directory.title')}
         >
           <Text style={styles.continueBtnText}>{t('directory.title')}</Text>
         </Pressable>
@@ -79,14 +91,9 @@ const styles = StyleSheet.create({
     gap: SPACING.xl,
   },
   iconWrap: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: SEMANTIC.success,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  icon: { fontSize: 48, color: DARK.text },
   textWrap: { alignItems: 'center', gap: SPACING.sm },
   title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 26, color: DARK.text, textAlign: 'center' },
   subtitle: { fontFamily: FONT.sans, fontSize: 15, color: DARK.textMuted, textAlign: 'center', lineHeight: 24 },

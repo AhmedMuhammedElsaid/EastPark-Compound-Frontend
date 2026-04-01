@@ -2,6 +2,7 @@ import type { PaymentMethod } from '@/services/api/orders';
 import type { CartItem } from '@/store/slices/cartSlice';
 import { useMutation } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -40,7 +41,7 @@ export default function PaymentScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
-        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
+        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.backIcon}>←</Text>
         </Pressable>
         <Text style={styles.navTitle}>{t('checkout.payment')}</Text>
@@ -72,8 +73,13 @@ export default function PaymentScreen() {
 
         <Pressable
           style={[styles.placeBtn, isPending && styles.placeBtnDisabled]}
-          onPress={() => mutate()}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            mutate();
+          }}
           disabled={isPending}
+          accessibilityRole="button"
+          accessibilityLabel={t('checkout.place_order')}
         >
           <Text style={styles.placeBtnText}>
             {isPending ? t('common.loading') : t('checkout.place_order')}
@@ -99,6 +105,9 @@ function PaymentOption({
     <Pressable
       style={[styles.option, selected && styles.optionSelected]}
       onPress={onPress}
+      accessibilityRole="radio"
+      accessibilityLabel={label}
+      accessibilityState={{ checked: selected }}
     >
       <Text style={styles.optionIcon}>{icon}</Text>
       <Text style={[styles.optionLabel, selected && styles.optionLabelSelected]}>{label}</Text>

@@ -92,7 +92,7 @@ export default function MerchantDashboard() {
           <QuickActionCard
             icon="🏪"
             label={t('merchant.shop_profile')}
-            onPress={() => router.push('/(merchant)/menu' as any)}
+            onPress={() => router.push(`/(tabs)/directory/${shop.id}` as any)}
           />
         </View>
 
