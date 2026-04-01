@@ -2,14 +2,15 @@ import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { CaretRight, EnvelopeSimple } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
-type QuickAction = { labelKey: string; icon: string; route: string };
+type QuickAction = { labelKey: string; icon: React.ReactNode; route: string };
 
 const QUICK_ACTIONS: QuickAction[] = [
-  { labelKey: 'admin.invitations', icon: '✉️', route: '/(admin)/invitations' },
+  { labelKey: 'admin.invitations', icon: <EnvelopeSimple size={20} color={BRAND.gold} />, route: '/(admin)/invitations' },
 ];
 
 export default function AdminDashboard() {
@@ -34,9 +35,9 @@ export default function AdminDashboard() {
             style={styles.actionRow}
             onPress={() => router.push(action.route as any)}
           >
-            <Text style={styles.actionIcon}>{action.icon}</Text>
+            <View style={styles.actionIcon}>{action.icon}</View>
             <Text style={styles.actionLabel}>{t(action.labelKey)}</Text>
-            <Text style={styles.actionChevron}>›</Text>
+            <CaretRight size={16} color={DARK.textMuted} />
           </Pressable>
         ))}
       </ScrollView>
@@ -85,7 +86,6 @@ const styles = StyleSheet.create({
     padding: SPACING.md,
     gap: SPACING.md,
   },
-  actionIcon: { fontSize: 20, width: 28, textAlign: 'center' },
+  actionIcon: { width: 28, alignItems: 'center', justifyContent: 'center' },
   actionLabel: { flex: 1, fontFamily: FONT.sans, fontWeight: '500', fontSize: 15, color: DARK.text },
-  actionChevron: { fontSize: 20, color: DARK.textMuted },
 });

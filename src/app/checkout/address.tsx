@@ -13,6 +13,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { ArrowLeft } from 'phosphor-react-native';
+
 import { useAppSelector } from '@/store';
 import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
@@ -34,7 +36,7 @@ export default function AddressScreen() {
     >
       <View style={[styles.nav, { paddingTop: insets.top + SPACING.sm }]}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('checkout.title')}</Text>
       </View>
@@ -106,7 +108,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   scroll: { padding: SPACING.base, gap: SPACING.lg },
   section: { gap: SPACING.sm },

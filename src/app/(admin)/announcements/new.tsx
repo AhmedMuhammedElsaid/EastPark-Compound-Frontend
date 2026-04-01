@@ -9,6 +9,8 @@ import { showMessage } from 'react-native-flash-message';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
+import { ArrowLeft } from 'phosphor-react-native';
+
 import { communityApi } from '@/services/api/community';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -49,7 +51,7 @@ export default function NewAnnouncementScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('admin.new_announcement')}</Text>
       </View>
@@ -97,7 +99,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: DARK.bg },
   nav: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SPACING.base, paddingVertical: SPACING.md, backgroundColor: DARK.card, borderBottomWidth: 1, borderBottomColor: DARK.border, gap: SPACING.sm },
   backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: DARK.elevated, justifyContent: 'center', alignItems: 'center' },
-  backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   scroll: { padding: SPACING.base, gap: SPACING.sm },
   label: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 13, color: DARK.textMuted, marginTop: SPACING.md, marginBottom: SPACING.xs },

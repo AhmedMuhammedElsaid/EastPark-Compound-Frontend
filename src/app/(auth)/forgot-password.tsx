@@ -12,7 +12,9 @@ import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
 import { authApi } from '@/services/api/auth';
-import { DARK, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
+import { ArrowLeft, EnvelopeSimple } from 'phosphor-react-native';
+
+import { BRAND, DARK, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const schema = z.object({
   email: z.string().email('auth.errors.invalid_email'),
@@ -57,7 +59,7 @@ export default function ForgotPasswordScreen() {
         </View>
 
         <View style={styles.successCard}>
-          <Text style={styles.successIcon}>✉️</Text>
+          <EnvelopeSimple size={56} color={BRAND.gold} />
           <Text style={styles.successTitle}>{t('auth.reset_link_sent')}</Text>
           <Text style={styles.successBody}>
             {t('auth.reset_link_body', { email: sentEmail })}
@@ -109,11 +111,9 @@ export default function ForgotPasswordScreen() {
       />
 
       <View style={styles.footer}>
-        <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Text style={styles.backLink}>
-            ←
-            {t('common.back')}
-          </Text>
+        <Pressable onPress={() => router.back()} hitSlop={8} style={styles.backLinkRow}>
+          <ArrowLeft size={14} color={DARK.textMuted} />
+          <Text style={styles.backLink}>{t('common.back')}</Text>
         </Pressable>
       </View>
     </AuthScreenWrapper>
@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
   },
   form: { marginBottom: SPACING.sm },
   footer: { alignItems: 'center', marginTop: SPACING.lg },
+  backLinkRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
   backLink: {
     fontFamily: FONT.sans,
     fontSize: 14,
@@ -158,7 +159,6 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
     paddingHorizontal: SPACING.lg,
   },
-  successIcon: { fontSize: 56 },
   successTitle: {
     fontFamily: FONT.sans,
     fontWeight: '700',

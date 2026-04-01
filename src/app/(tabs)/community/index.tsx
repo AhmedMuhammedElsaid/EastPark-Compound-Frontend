@@ -10,6 +10,8 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
+import { MegaphoneSimple } from 'phosphor-react-native';
+
 import { communityApi } from '@/services/api/community';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -174,7 +176,7 @@ function AnnouncementList({ announcements, isLoading, isFetchingNextPage, isRefe
       refreshing={isRefetching}
       ListEmptyComponent={(
         <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>📢</Text>
+          <MegaphoneSimple size={48} color={DARK.textMuted} />
           <Text style={styles.emptyTitle}>{t('community.no_announcements')}</Text>
         </View>
       )}
@@ -245,7 +247,6 @@ const styles = StyleSheet.create({
   loadingPad: { padding: SPACING.base },
   listContent: { padding: SPACING.base },
   empty: { alignItems: 'center', paddingTop: 80, gap: SPACING.md },
-  emptyIcon: { fontSize: 48 },
   emptyTitle: { fontFamily: FONT.sans, fontSize: 16, color: DARK.textMuted, fontWeight: '600' },
   card: {
     backgroundColor: DARK.card,

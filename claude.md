@@ -6,7 +6,7 @@
 ## Status
 
 ✅ All 7 phases + all 38 AppGaps + 20 deep-audit fixes + FE-BE wiring resolved.
-Last commit: `ddce900`. Branch: main.
+Last commit: `10e5b67`. Branch: main.
 
 ## Stack (locked — do not change)
 
@@ -100,10 +100,11 @@ Always `--no-verify` (WSL cannot run node/pnpm hooks). Branch: main.
 ## Env Vars
 
 ```
-EXPO_PUBLIC_API_URL=http://localhost:3000/v1   # dev
-EXPO_PUBLIC_API_URL=https://api.eastpark.app/v1 # prod
+EXPO_PUBLIC_API_URL=http://localhost:3000       # dev — do NOT add /v1, Axios client appends it
+EXPO_PUBLIC_API_URL=https://api.eastpark.app    # prod
 EXPO_PUBLIC_SOCKET_URL=http://localhost:3000    # dev
 ```
+> Android emulator: use `http://10.0.2.2:3000`. Physical device: use your LAN IP (`http://192.168.x.x:3000`).
 
 ## Commands
 

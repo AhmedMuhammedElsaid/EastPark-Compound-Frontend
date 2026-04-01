@@ -4,7 +4,7 @@ import * as Haptics from 'expo-haptics';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Trash } from 'phosphor-react-native';
+import { ArrowLeft, ShoppingCart, Trash } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatCurrency } from '@/lib/formatCurrency';
@@ -26,7 +26,7 @@ export default function CartScreen() {
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <CartNav />
         <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>🛒</Text>
+          <ShoppingCart size={64} color={DARK.textMuted} />
           <Text style={styles.emptyTitle}>{t('cart.empty')}</Text>
           <Text style={styles.emptyBody}>{t('cart.empty_subtitle')}</Text>
           <Pressable style={styles.browseBtn} onPress={() => router.replace('/(tabs)/directory' as any)} accessibilityRole="button" accessibilityLabel={t('directory.title')}>
@@ -94,7 +94,7 @@ function CartNav({ shopName, onClear }: { shopName?: string; onClear?: () => voi
   return (
     <View style={styles.nav}>
       <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back">
-        <Text style={styles.backIcon}>←</Text>
+        <ArrowLeft size={18} color={DARK.text} />
       </Pressable>
       <Text style={styles.navTitle}>{shopName || t('cart.title')}</Text>
       {onClear && (
@@ -167,11 +167,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   clearText: { fontFamily: FONT.sans, fontSize: 13, color: SEMANTIC.error, fontWeight: '600' },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: SPACING.md, paddingHorizontal: SPACING.xl },
-  emptyIcon: { fontSize: 64 },
   emptyTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text, textAlign: 'center' },
   emptyBody: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, textAlign: 'center', lineHeight: 22 },
   browseBtn: {

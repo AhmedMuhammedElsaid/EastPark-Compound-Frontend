@@ -9,6 +9,8 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ArrowLeft, Plus, X } from 'phosphor-react-native';
+
 import { adminApi } from '@/services/api/admin';
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -65,14 +67,14 @@ export default function InvitationsScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={18} color={DARK.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('admin.invitations')}</Text>
         <Pressable
           style={[styles.newBtn, showForm && styles.newBtnActive]}
           onPress={() => setShowForm(v => !v)}
         >
-          <Text style={styles.newBtnText}>{showForm ? '✕' : '+'}</Text>
+          {showForm ? <X size={18} color={DARK.text} /> : <Plus size={18} color={DARK.bg} />}
         </Pressable>
       </View>
 
@@ -192,7 +194,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backIcon: { fontSize: 16, color: DARK.text },
   navTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
   newBtn: {
     width: 36,
@@ -203,7 +204,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   newBtnActive: { backgroundColor: DARK.elevated },
-  newBtnText: { fontSize: 20, color: DARK.bg, lineHeight: 26, fontWeight: '700' },
   scroll: { padding: SPACING.base, gap: SPACING.sm },
   form: {
     backgroundColor: DARK.card,
