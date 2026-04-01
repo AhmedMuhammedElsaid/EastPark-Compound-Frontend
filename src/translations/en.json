@@ -1,4 +1,16 @@
 {
+  "admin": {
+    "email": "Email address",
+    "expired": "Expired",
+    "invite_sent": "Invitation sent successfully",
+    "invitations": "Invitations",
+    "pending": "Pending",
+    "role": "Role",
+    "send_invite": "Send Invitation",
+    "title": "Admin Portal",
+    "tools": "Admin Tools",
+    "used": "Used"
+  },
   "auth": {
     "accept_invitation": "You've been invited",
     "already_have_account": "Already have an account?",
@@ -85,6 +97,7 @@
     "done": "Done",
     "error": "Something went wrong",
     "filter": "Filter",
+    "load_more": "Load more",
     "loading": "Loading...",
     "next": "Next",
     "no_results": "No results found",
@@ -185,7 +198,8 @@
     "vote": "Vote",
     "vote_confirm": "Are you sure you want to vote for \"{{option}}\"? This cannot be undone.",
     "vote_submitted": "Your vote has been submitted!",
-    "voted": "Voted"
+    "voted": "Voted",
+    "votes_label": "votes"
   },
   "home": {
     "community": "Community",

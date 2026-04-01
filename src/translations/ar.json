@@ -1,4 +1,16 @@
 {
+  "admin": {
+    "email": "البريد الإلكتروني",
+    "expired": "منتهية",
+    "invite_sent": "تم إرسال الدعوة بنجاح",
+    "invitations": "الدعوات",
+    "pending": "معلقة",
+    "role": "الدور",
+    "send_invite": "إرسال دعوة",
+    "title": "لوحة المشرف",
+    "tools": "أدوات الإدارة",
+    "used": "مستخدمة"
+  },
   "auth": {
     "accept_invitation": "تمت دعوتك",
     "already_have_account": "لديك حساب بالفعل؟",
@@ -85,6 +97,7 @@
     "done": "تم",
     "error": "حدث خطأ ما",
     "filter": "تصفية",
+    "load_more": "تحميل المزيد",
     "loading": "جار التحميل...",
     "next": "التالي",
     "no_results": "لا توجد نتائج",
@@ -185,7 +198,8 @@
     "vote": "صوّت",
     "vote_confirm": "هل أنت متأكد من التصويت لـ \"{{option}}\"؟ لا يمكن التراجع.",
     "vote_submitted": "تم تقديم تصويتك!",
-    "voted": "تم التصويت"
+    "voted": "تم التصويت",
+    "votes_label": "أصوات"
   },
   "home": {
     "community": "المجتمع",

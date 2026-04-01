@@ -1,6 +1,7 @@
-import type { Shop } from '@/services/api/shops';
+import type { AxiosResponse } from 'axios';
+import type { CursorPage, Product, Shop } from '@/services/api/shops';
 import type { CartItem } from '@/store/slices/cartSlice';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -184,14 +185,23 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
 
 function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string }) {
   const { t, i18n } = useTranslation();
+
   const isAr = i18n.language === 'ar';
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery<
+    any,
+    Error,
+    any,
+    string[],
+    string | undefined
+  >({
     queryKey: ['shop-products', shopId],
-    queryFn: () => shopsApi.getProducts(shopId, { limit: 50 }),
+    queryFn: ({ pageParam }) => shopsApi.getProducts(shopId, { cursor: pageParam, limit: 20 }),
+    getNextPageParam: (last: any) => last.data.data.nextCursor ?? undefined,
+    initialPageParam: undefined,
   });
 
-  const products = data?.data.data.data ?? [];
+  const products = data?.pages.flatMap((p: any) => p.data.data.data) ?? [];
 
   if (isLoading) {
     return (
@@ -213,9 +223,19 @@ function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string
 
   return (
     <View style={styles.tabContent}>
-      {products.map(product => (
+      {products.map((product: any) => (
         <ProductRow key={product.id} product={product} isAr={isAr} shopId={shopId} shopName={shopName} />
       ))}
+      {hasNextPage && (
+        <Pressable
+          style={styles.loadMoreBtn}
+          onPress={() => { if (!isFetchingNextPage) fetchNextPage(); }}
+        >
+          {isFetchingNextPage
+            ? <Skeleton width="100%" height={48} borderRadius={8} />
+            : <Text style={styles.loadMoreText}>{t('common.load_more')}</Text>}
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -476,4 +496,6 @@ const styles = StyleSheet.create({
   cartBarBadgeText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 13, color: DARK.text },
   cartBarLabel: { flex: 1, fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: DARK.bg },
   cartBarTotal: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: DARK.bg },
+  loadMoreBtn: { alignItems: 'center', paddingVertical: SPACING.sm },
+  loadMoreText: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: '600' },
 });

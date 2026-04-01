@@ -1,9 +1,11 @@
+import type { AxiosResponse } from 'axios';
 import type { Election, Poll } from '@/services/api/governance';
-import { useQuery } from '@tanstack/react-query';
+import { FlashList } from '@shopify/flash-list';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,18 +17,34 @@ export default function GovernanceScreen() {
   const insets = useSafeAreaInsets();
   const [tab, setTab] = React.useState<'polls' | 'elections'>('polls');
 
-  const pollsQuery = useQuery({
+  const pollsQuery = useInfiniteQuery<
+    AxiosResponse<{ data: { data: Poll[]; nextCursor: string | null } }>,
+    Error,
+    { pages: AxiosResponse<{ data: { data: Poll[]; nextCursor: string | null } }>[] },
+    string[],
+    string | undefined
+  >({
     queryKey: ['polls'],
-    queryFn: () => governanceApi.getPolls({ limit: 20 }),
+    queryFn: ({ pageParam }) => governanceApi.getPolls({ cursor: pageParam, limit: 20 }),
+    getNextPageParam: last => last.data.data.nextCursor ?? undefined,
+    initialPageParam: undefined,
   });
 
-  const electionsQuery = useQuery({
+  const electionsQuery = useInfiniteQuery<
+    AxiosResponse<{ data: { data: Election[]; nextCursor: string | null } }>,
+    Error,
+    { pages: AxiosResponse<{ data: { data: Election[]; nextCursor: string | null } }>[] },
+    string[],
+    string | undefined
+  >({
     queryKey: ['elections'],
-    queryFn: () => governanceApi.getElections({ limit: 20 }),
+    queryFn: ({ pageParam }) => governanceApi.getElections({ cursor: pageParam, limit: 20 }),
+    getNextPageParam: last => last.data.data.nextCursor ?? undefined,
+    initialPageParam: undefined,
   });
 
-  const polls = pollsQuery.data?.data.data.data ?? [];
-  const elections = electionsQuery.data?.data.data.data ?? [];
+  const polls = pollsQuery.data?.pages.flatMap(p => p.data.data.data) ?? [];
+  const elections = electionsQuery.data?.pages.flatMap(p => p.data.data.data) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -51,65 +69,82 @@ export default function GovernanceScreen() {
         ))}
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scroll}
-      >
-        {tab === 'polls' && (
-          <GovernanceList
-            isLoading={pollsQuery.isLoading}
-            empty={!polls.length}
-            emptyText={t('governance.no_polls')}
-          >
-            {polls.map(poll => <PollCard key={poll.id} poll={poll} />)}
-          </GovernanceList>
-        )}
-        {tab === 'elections' && (
-          <GovernanceList
-            isLoading={electionsQuery.isLoading}
-            empty={!elections.length}
-            emptyText={t('governance.no_elections')}
-          >
-            {elections.map(el => <ElectionCard key={el.id} election={el} />)}
-          </GovernanceList>
-        )}
-      </ScrollView>
+      {tab === 'polls'
+        ? (
+            pollsQuery.isLoading
+              ? (
+                  <View style={styles.loadingPad}>
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <Skeleton key={`gov-sk-${i}`} width="100%" height={96} borderRadius={RADIUS.md} style={{ marginBottom: 12 }} />
+                    ))}
+                  </View>
+                )
+              : (
+                  <FlashList
+                    data={polls}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => <PollCard poll={item} />}
+                    estimatedItemSize={120}
+                    onEndReached={() => {
+                      if (pollsQuery.hasNextPage && !pollsQuery.isFetchingNextPage)
+                        pollsQuery.fetchNextPage();
+                    }}
+                    onEndReachedThreshold={0.5}
+                    contentContainerStyle={styles.listContent}
+                    ListEmptyComponent={(
+                      <View style={styles.empty}>
+                        <Text style={styles.emptyIcon}>🗳️</Text>
+                        <Text style={styles.emptyText}>{t('governance.no_polls')}</Text>
+                      </View>
+                    )}
+                    ListFooterComponent={
+                      pollsQuery.isFetchingNextPage
+                        ? <Skeleton width="100%" height={96} borderRadius={RADIUS.md} style={{ marginTop: SPACING.sm }} />
+                        : null
+                    }
+                  />
+                )
+          )
+        : (
+            electionsQuery.isLoading
+              ? (
+                  <View style={styles.loadingPad}>
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <Skeleton key={`gov-el-sk-${i}`} width="100%" height={96} borderRadius={RADIUS.md} style={{ marginBottom: 12 }} />
+                    ))}
+                  </View>
+                )
+              : (
+                  <FlashList
+                    data={elections}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => <ElectionCard election={item} />}
+                    estimatedItemSize={120}
+                    onEndReached={() => {
+                      if (electionsQuery.hasNextPage && !electionsQuery.isFetchingNextPage)
+                        electionsQuery.fetchNextPage();
+                    }}
+                    onEndReachedThreshold={0.5}
+                    contentContainerStyle={styles.listContent}
+                    ListEmptyComponent={(
+                      <View style={styles.empty}>
+                        <Text style={styles.emptyIcon}>🗳️</Text>
+                        <Text style={styles.emptyText}>{t('governance.no_elections')}</Text>
+                      </View>
+                    )}
+                    ListFooterComponent={
+                      electionsQuery.isFetchingNextPage
+                        ? <Skeleton width="100%" height={96} borderRadius={RADIUS.md} style={{ marginTop: SPACING.sm }} />
+                        : null
+                    }
+                  />
+                )
+          )}
     </View>
   );
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-
-function GovernanceList({
-  isLoading,
-  empty,
-  emptyText,
-  children,
-}: {
-  isLoading: boolean;
-  empty: boolean;
-  emptyText: string;
-  children: React.ReactNode;
-}) {
-  if (isLoading) {
-    return (
-      <>
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={`gov-sk-${i}`} width="100%" height={96} borderRadius={RADIUS.md} style={{ marginBottom: 12 }} />
-        ))}
-      </>
-    );
-  }
-  if (empty) {
-    return (
-      <View style={styles.empty}>
-        <Text style={styles.emptyIcon}>🗳️</Text>
-        <Text style={styles.emptyText}>{emptyText}</Text>
-      </View>
-    );
-  }
-  return <>{children}</>;
-}
 
 function PollCard({ poll }: { poll: Poll }) {
   const { t, i18n } = useTranslation();
@@ -138,7 +173,7 @@ function PollCard({ poll }: { poll: Poll }) {
         <Text style={styles.metaText}>
           {poll.totalVotes}
           {' '}
-          votes
+          {t('governance.votes_label')}
         </Text>
         <Text style={styles.metaDot}>·</Text>
         <Text style={styles.metaText}>{t('governance.expires', { date: expiry })}</Text>
@@ -224,7 +259,8 @@ const styles = StyleSheet.create({
   tabActive: { borderBottomColor: BRAND.gold },
   tabText: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, fontWeight: '500' },
   tabTextActive: { color: BRAND.gold },
-  scroll: { padding: SPACING.base },
+  loadingPad: { padding: SPACING.base },
+  listContent: { padding: SPACING.base },
   empty: { alignItems: 'center', paddingTop: 80, gap: SPACING.md },
   emptyIcon: { fontSize: 48 },
   emptyText: { fontFamily: FONT.sans, fontSize: 15, color: DARK.textMuted },

@@ -52,6 +52,30 @@ export default function NotificationsScreen() {
   const notifications = data?.pages.flatMap(p => p.data.data.data) ?? [];
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
+  function handleNotificationPress(notification: AppNotification) {
+    markRead(notification.id);
+    const d = notification.data as Record<string, string>;
+    switch (notification.type) {
+      case 'ORDER_UPDATE':
+        if (d.orderId) router.push(`/(tabs)/orders/${d.orderId}` as any);
+        break;
+      case 'ANNOUNCEMENT':
+        if (d.announcementId) router.push(`/(tabs)/community/${d.announcementId}` as any);
+        break;
+      case 'POLL':
+        if (d.pollId) router.push(`/(tabs)/community/governance/polls/${d.pollId}` as any);
+        break;
+      case 'ELECTION':
+        if (d.electionId) router.push(`/(tabs)/community/governance/elections/${d.electionId}` as any);
+        break;
+      case 'FEEDBACK_REPLY':
+        if (d.feedbackId) router.push(`/(tabs)/community/feedback/${d.feedbackId}` as any);
+        break;
+      default:
+        break;
+    }
+  }
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
@@ -84,7 +108,7 @@ export default function NotificationsScreen() {
               data={notifications}
               keyExtractor={item => item.id}
               renderItem={({ item }) => (
-                <NotificationItem notification={item} onPress={() => markRead(item.id)} />
+                <NotificationItem notification={item} onPress={() => handleNotificationPress(item)} />
               )}
               onEndReached={() => {
                 if (hasNextPage && !isFetchingNextPage) {

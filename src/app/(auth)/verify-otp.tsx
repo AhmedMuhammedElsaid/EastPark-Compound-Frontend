@@ -1,4 +1,3 @@
-import * as Notifications from 'expo-notifications';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
@@ -12,23 +11,12 @@ import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
 import { authApi } from '@/services/api/auth';
 import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
-import { usersApi } from '@/services/api/users';
+import { registerPushToken } from '@/services/push';
 import { useAppDispatch } from '@/store';
 import { login } from '@/store/slices/authSlice';
 import { BRAND, DARK, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const RESEND_COOLDOWN = 60;
-
-async function registerPushToken() {
-  try {
-    const { status } = await Notifications.getPermissionsAsync();
-    if (status === 'granted') {
-      const token = await Notifications.getExpoPushTokenAsync();
-      await usersApi.updatePushToken(token.data);
-    }
-  }
-  catch {}
-}
 
 export default function VerifyOtpScreen() {
   const { t } = useTranslation();

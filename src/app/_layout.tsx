@@ -15,6 +15,7 @@ import { AuthWallSheet } from '@/components/auth/auth-wall-sheet';
 import { CartConflictSheet } from '@/components/cart/cart-conflict-sheet';
 
 import { useThemeConfig } from '@/components/ui/use-theme-config';
+import { useAuthRehydration } from '@/lib/hooks/use-auth-rehydration';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
 import { injectStore } from '@/services/api/client';
 import { asyncStoragePersister, queryClient } from '@/services/query/client';
@@ -62,6 +63,7 @@ export default function RootLayout() {
 }
 
 function Providers({ children }: { children: React.ReactNode }) {
+  useAuthRehydration();
   const theme = useThemeConfig();
   return (
     <GestureHandlerRootView
