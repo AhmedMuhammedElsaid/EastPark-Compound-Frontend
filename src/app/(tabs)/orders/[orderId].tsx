@@ -10,8 +10,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ordersApi } from '@/services/api/orders';
 import { formatCurrency } from '@/lib/formatCurrency';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { getOrdersSocket, joinOrderRoom, leaveOrderRoom } from '@/services/socket/client';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const STATUS_STEPS: OrderStatus[] = ['PLACED', 'CONFIRMED', 'PREPARING', 'READY', 'ON_THE_WAY', 'DELIVERED'];
 
@@ -22,14 +23,96 @@ const STATUS_COLOR: Record<string, string> = {
   READY: SEMANTIC.warning,
   ON_THE_WAY: BRAND.gold,
   DELIVERED: SEMANTIC.success,
-  CANCELLED: DARK.elevated,
 };
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    nav: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingVertical: SPACING.md,
+      gap: SPACING.md,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    backBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.elevated,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    navInfo: { flex: 1, flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, gap: SPACING.sm },
+    navShop: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text, flex: 1 },
+    statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.full },
+    statusText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: colors.text },
+    scroll: { padding: SPACING.base, gap: SPACING.md },
+    timeline: {
+      flexDirection: 'row' as const,
+      alignItems: 'flex-start' as const,
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      overflow: 'hidden' as const,
+    },
+    timelineItem: { flex: 1, alignItems: 'center' as const, gap: 6 },
+    timelineDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.elevated, borderWidth: 2, borderColor: colors.border },
+    timelineDotDone: { backgroundColor: BRAND.gold, borderColor: BRAND.gold },
+    timelineDotActive: { width: 16, height: 16, borderRadius: 8 },
+    timelineLine: {
+      position: 'absolute' as const,
+      top: 6,
+      left: '50%',
+      right: -40,
+      height: 2,
+      backgroundColor: colors.border,
+      zIndex: -1,
+    },
+    timelineLineDone: { backgroundColor: BRAND.gold },
+    timelineLabel: { fontFamily: FONT.sans, fontSize: 9, color: colors.textMuted, textAlign: 'center' as const },
+    timelineLabelDone: { color: BRAND.gold },
+    section: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      gap: SPACING.sm,
+    },
+    summarySection: { gap: SPACING.md },
+    itemRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: SPACING.sm },
+    itemQty: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: BRAND.gold, minWidth: 28 },
+    itemName: { fontFamily: FONT.sans, fontSize: 14, color: colors.text, flex: 1 },
+    itemPrice: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text },
+    summaryRow: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const },
+    summaryLabel: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted },
+    summaryValue: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text },
+    totalRow: { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: SPACING.md, marginTop: SPACING.xs },
+    totalLabel: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text },
+    totalValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: BRAND.gold },
+    cancelBtn: {
+      height: 48,
+      borderRadius: RADIUS.md,
+      borderWidth: 1,
+      borderColor: SEMANTIC.error,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    cancelBtnDisabled: { opacity: 0.5 },
+    cancelBtnText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: SEMANTIC.error },
+  }), [colors]);
+}
 
 export default function OrderDetailScreen() {
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
+  const colors = useAppColors();
+  const styles = useStyles();
   const isAr = i18n.language === 'ar';
 
   const { data, isLoading } = useQuery({
@@ -88,16 +171,16 @@ export default function OrderDetailScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <OrderNav order={order} isAr={isAr} />
+      <OrderNav order={order} isAr={isAr} colors={colors} styles={styles} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + SPACING.xl }]}
       >
         {order.status !== 'CANCELLED' && (
-          <StatusTimeline currentStatus={order.status} />
+          <StatusTimeline currentStatus={order.status} styles={styles} />
         )}
-        <OrderItems order={order} isAr={isAr} />
-        <OrderSummary order={order} />
+        <OrderItems order={order} isAr={isAr} styles={styles} />
+        <OrderSummary order={order} styles={styles} />
         {order.status === 'PLACED' && (
           <Pressable
             style={[styles.cancelBtn, cancelling && styles.cancelBtnDisabled]}
@@ -114,15 +197,15 @@ export default function OrderDetailScreen() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function OrderNav({ order, isAr }: { order: Order; isAr: boolean }) {
+function OrderNav({ order, isAr, colors, styles }: { order: Order; isAr: boolean; colors: any; styles: any }) {
   const { t } = useTranslation();
   const shopName = isAr ? order.shop.nameAr : order.shop.name;
-  const statusColor = STATUS_COLOR[order.status] ?? DARK.elevated;
+  const statusColor = order.status === 'CANCELLED' ? colors.elevated : (STATUS_COLOR[order.status] ?? colors.elevated);
 
   return (
     <View style={styles.nav}>
       <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-        <ArrowLeft size={18} color={DARK.text} />
+        <ArrowLeft size={18} color={colors.text} />
       </Pressable>
       <View style={styles.navInfo}>
         <Text style={styles.navShop} numberOfLines={1}>{shopName}</Text>
@@ -134,7 +217,7 @@ function OrderNav({ order, isAr }: { order: Order; isAr: boolean }) {
   );
 }
 
-function StatusTimeline({ currentStatus }: { currentStatus: OrderStatus }) {
+function StatusTimeline({ currentStatus, styles }: { currentStatus: OrderStatus; styles: any }) {
   const { t } = useTranslation();
   const currentIdx = STATUS_STEPS.indexOf(currentStatus);
 
@@ -159,7 +242,7 @@ function StatusTimeline({ currentStatus }: { currentStatus: OrderStatus }) {
   );
 }
 
-function OrderItems({ order, isAr }: { order: Order; isAr: boolean }) {
+function OrderItems({ order, isAr, styles }: { order: Order; isAr: boolean; styles: any }) {
   return (
     <View style={styles.section}>
       {order.items.map(item => (
@@ -180,7 +263,7 @@ function OrderItems({ order, isAr }: { order: Order; isAr: boolean }) {
   );
 }
 
-function OrderSummary({ order }: { order: Order }) {
+function OrderSummary({ order, styles }: { order: Order; styles: any }) {
   const { t } = useTranslation();
   return (
     <View style={[styles.section, styles.summarySection]}>
@@ -207,9 +290,11 @@ function OrderSummary({ order }: { order: Order }) {
 }
 
 function OrderDetailSkeleton({ insets }: { insets: { top: number } }) {
+  const colors = useAppColors();
+  const styles = useStyles();
   return (
     <View style={styles.container}>
-      <View style={{ height: insets.top + 56, backgroundColor: DARK.card }} />
+      <View style={{ height: insets.top + 56, backgroundColor: colors.card }} />
       <View style={{ padding: SPACING.base, gap: SPACING.md }}>
         <Skeleton width="100%" height={80} borderRadius={RADIUS.md} />
         <Skeleton width="100%" height={120} borderRadius={RADIUS.md} />
@@ -218,83 +303,3 @@ function OrderDetailSkeleton({ insets }: { insets: { top: number } }) {
     </View>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  nav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.md,
-    gap: SPACING.md,
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: DARK.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navInfo: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SPACING.sm },
-  navShop: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.text, flex: 1 },
-  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.full },
-  statusText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: DARK.text },
-  scroll: { padding: SPACING.base, gap: SPACING.md },
-  timeline: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    overflow: 'hidden',
-  },
-  timelineItem: { flex: 1, alignItems: 'center', gap: 6 },
-  timelineDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: DARK.elevated, borderWidth: 2, borderColor: DARK.border },
-  timelineDotDone: { backgroundColor: BRAND.gold, borderColor: BRAND.gold },
-  timelineDotActive: { width: 16, height: 16, borderRadius: 8 },
-  timelineLine: {
-    position: 'absolute',
-    top: 6,
-    left: '50%',
-    right: -40,
-    height: 2,
-    backgroundColor: DARK.border,
-    zIndex: -1,
-  },
-  timelineLineDone: { backgroundColor: BRAND.gold },
-  timelineLabel: { fontFamily: FONT.sans, fontSize: 9, color: DARK.textMuted, textAlign: 'center' },
-  timelineLabelDone: { color: BRAND.gold },
-  section: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    gap: SPACING.sm,
-  },
-  summarySection: { gap: SPACING.md },
-  itemRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
-  itemQty: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: BRAND.gold, minWidth: 28 },
-  itemName: { fontFamily: FONT.sans, fontSize: 14, color: DARK.text, flex: 1 },
-  itemPrice: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text },
-  summaryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  summaryLabel: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted },
-  summaryValue: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text },
-  totalRow: { borderTopWidth: 1, borderTopColor: DARK.border, paddingTop: SPACING.md, marginTop: SPACING.xs },
-  totalLabel: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.text },
-  totalValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: BRAND.gold },
-  cancelBtn: {
-    height: 48,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: SEMANTIC.error,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cancelBtnDisabled: { opacity: 0.5 },
-  cancelBtnText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: SEMANTIC.error },
-});

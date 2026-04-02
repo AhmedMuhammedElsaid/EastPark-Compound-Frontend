@@ -7,14 +7,71 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Bell, CaretRight, ForkKnife, Package, Storefront } from 'phosphor-react-native';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { merchantApi } from '@/services/api/merchant';
-import { DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    header: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingVertical: SPACING.md,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    greeting: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
+    shopName: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 20, color: colors.text },
+    openRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: SPACING.sm },
+    openLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 13 },
+    scroll: { padding: SPACING.base, gap: SPACING.md },
+    alertBanner: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      backgroundColor: `${SEMANTIC.warning}22`,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      borderWidth: 1,
+      borderColor: SEMANTIC.warning,
+      gap: SPACING.sm,
+    },
+    alertText: { flex: 1, fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text },
+    quickActions: { flexDirection: 'row' as const, gap: SPACING.md },
+    quickCard: {
+      flex: 1,
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      alignItems: 'center' as const,
+      gap: SPACING.sm,
+    },
+    quickLabel: { fontFamily: FONT.sans, fontSize: 12, color: colors.textMuted, textAlign: 'center' as const, fontWeight: '500' },
+    statsRow: { flexDirection: 'row' as const, gap: SPACING.md },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      alignItems: 'center' as const,
+      gap: SPACING.xs,
+    },
+    statValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 22 },
+    statLabel: { fontFamily: FONT.sans, fontSize: 12, color: colors.textMuted },
+  }), [colors]);
+}
 
 export default function MerchantDashboard() {
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const isAr = i18n.language === 'ar';
+  const styles = useStyles();
+  const colors = useAppColors();
 
   const { data: shopData, isLoading } = useQuery({
     queryKey: ['merchant-shop'],
@@ -24,7 +81,7 @@ export default function MerchantDashboard() {
   const { data: ordersData } = useQuery({
     queryKey: ['merchant-orders', 'PLACED'],
     queryFn: () => merchantApi.getIncomingOrders({ status: 'PLACED', limit: 5 }),
-    refetchInterval: 30000, // poll every 30s
+    refetchInterval: 30000,
   });
 
   const shop = shopData?.data.data;
@@ -48,14 +105,14 @@ export default function MerchantDashboard() {
           <Text style={styles.shopName} numberOfLines={1}>{shopName}</Text>
         </View>
         <View style={styles.openRow}>
-          <Text style={[styles.openLabel, { color: shop.isOpen ? SEMANTIC.success : DARK.textMuted }]}>
+          <Text style={[styles.openLabel, { color: shop.isOpen ? SEMANTIC.success : colors.textMuted }]}>
             {shop.isOpen ? t('common.open') : t('common.closed')}
           </Text>
           <Switch
             value={shop.isOpen}
             onValueChange={v => toggleOpen(v)}
-            trackColor={{ true: SEMANTIC.success, false: DARK.elevated }}
-            thumbColor={DARK.text}
+            trackColor={{ true: SEMANTIC.success, false: colors.elevated }}
+            thumbColor={colors.text}
           />
         </View>
       </View>
@@ -72,31 +129,34 @@ export default function MerchantDashboard() {
               {' '}
               {t('merchant.pending_orders_waiting')}
             </Text>
-            <CaretRight size={18} color={DARK.textMuted} />
+            <CaretRight size={18} color={colors.textMuted} />
           </Pressable>
         )}
 
         <View style={styles.quickActions}>
           <QuickActionCard
-            icon={<Package size={28} color={DARK.textMuted} />}
+            icon={<Package size={28} color={colors.textMuted} />}
             label={t('merchant.orders')}
             onPress={() => router.push('/(merchant)/orders' as any)}
+            styles={styles}
           />
           <QuickActionCard
-            icon={<ForkKnife size={28} color={DARK.textMuted} />}
+            icon={<ForkKnife size={28} color={colors.textMuted} />}
             label={t('merchant.menu')}
             onPress={() => router.push('/(merchant)/menu' as any)}
+            styles={styles}
           />
           <QuickActionCard
-            icon={<Storefront size={28} color={DARK.textMuted} />}
+            icon={<Storefront size={28} color={colors.textMuted} />}
             label={t('merchant.shop_profile')}
             onPress={() => router.push('/(merchant)/shop-profile' as any)}
+            styles={styles}
           />
         </View>
 
         <View style={styles.statsRow}>
-          <StatCard label={t('merchant.status_open')} value={shop.isOpen ? t('common.open') : t('common.closed')} accent={shop.isOpen ? SEMANTIC.success : DARK.textMuted} />
-          <StatCard label={t('merchant.pending')} value={String(pendingCount)} accent={pendingCount > 0 ? SEMANTIC.warning : DARK.textMuted} />
+          <StatCard label={t('merchant.status_open')} value={shop.isOpen ? t('common.open') : t('common.closed')} accent={shop.isOpen ? SEMANTIC.success : colors.textMuted} styles={styles} />
+          <StatCard label={t('merchant.pending')} value={String(pendingCount)} accent={pendingCount > 0 ? SEMANTIC.warning : colors.textMuted} styles={styles} />
         </View>
       </ScrollView>
     </View>
@@ -105,7 +165,7 @@ export default function MerchantDashboard() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function QuickActionCard({ icon, label, onPress }: { icon: React.ReactNode; label: string; onPress: () => void }) {
+function QuickActionCard({ icon, label, onPress, styles }: { icon: React.ReactNode; label: string; onPress: () => void; styles: any }) {
   return (
     <Pressable style={styles.quickCard} onPress={onPress}>
       {icon}
@@ -114,7 +174,7 @@ function QuickActionCard({ icon, label, onPress }: { icon: React.ReactNode; labe
   );
 }
 
-function StatCard({ label, value, accent }: { label: string; value: string; accent: string }) {
+function StatCard({ label, value, accent, styles }: { label: string; value: string; accent: string; styles: any }) {
   return (
     <View style={styles.statCard}>
       <Text style={[styles.statValue, { color: accent }]}>{value}</Text>
@@ -124,9 +184,11 @@ function StatCard({ label, value, accent }: { label: string; value: string; acce
 }
 
 function DashboardSkeleton({ insets }: { insets: { top: number } }) {
+  const colors = useAppColors();
+  const styles = useStyles();
   return (
     <View style={styles.container}>
-      <View style={{ height: insets.top + 80, backgroundColor: DARK.card }} />
+      <View style={{ height: insets.top + 80, backgroundColor: colors.card }} />
       <View style={{ padding: SPACING.base, gap: SPACING.md }}>
         <Skeleton width="100%" height={80} borderRadius={RADIUS.md} />
         <View style={{ flexDirection: 'row', gap: SPACING.md }}>
@@ -138,56 +200,3 @@ function DashboardSkeleton({ insets }: { insets: { top: number } }) {
     </View>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.md,
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-  },
-  greeting: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted },
-  shopName: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 20, color: DARK.text },
-  openRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
-  openLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 13 },
-  scroll: { padding: SPACING.base, gap: SPACING.md },
-  alertBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: `${SEMANTIC.warning}22`,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    borderWidth: 1,
-    borderColor: SEMANTIC.warning,
-    gap: SPACING.sm,
-  },
-  alertText: { flex: 1, fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text },
-  quickActions: { flexDirection: 'row', gap: SPACING.md },
-  quickCard: {
-    flex: 1,
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    alignItems: 'center',
-    gap: SPACING.sm,
-  },
-  quickLabel: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted, textAlign: 'center', fontWeight: '500' },
-  statsRow: { flexDirection: 'row', gap: SPACING.md },
-  statCard: {
-    flex: 1,
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    alignItems: 'center',
-    gap: SPACING.xs,
-  },
-  statValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 22 },
-  statLabel: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted },
-});

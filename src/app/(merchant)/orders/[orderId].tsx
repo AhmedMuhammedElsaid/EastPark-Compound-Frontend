@@ -9,8 +9,9 @@ import { ArrowLeft } from 'phosphor-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency } from '@/lib/formatCurrency';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { merchantApi } from '@/services/api/merchant';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 // Status pipeline for merchant actions
 const NEXT_STATUS: Record<string, string | null> = {
@@ -23,11 +24,94 @@ const NEXT_STATUS: Record<string, string | null> = {
   CANCELLED: null,
 };
 
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    nav: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingVertical: SPACING.md,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      gap: SPACING.md,
+    },
+    backBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.elevated,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    navInfo: { flex: 1 },
+    navUnit: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: BRAND.gold },
+    navName: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
+    navTime: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
+    scroll: { padding: SPACING.base, gap: SPACING.md },
+    statusCard: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      borderLeftWidth: 4,
+      borderLeftColor: BRAND.gold,
+    },
+    statusLabel: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text },
+    itemsCard: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      gap: SPACING.sm,
+    },
+    itemRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: SPACING.sm },
+    itemQty: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: BRAND.gold, minWidth: 28 },
+    itemName: { flex: 1, fontFamily: FONT.sans, fontSize: 14, color: colors.text },
+    itemPrice: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text },
+    totalRow: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: SPACING.sm, marginTop: SPACING.xs },
+    totalLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: colors.text },
+    totalValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: BRAND.gold },
+    metaCard: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      gap: SPACING.sm,
+    },
+    metaRow: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, gap: SPACING.sm },
+    metaLabel: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
+    metaValue: { fontFamily: FONT.sans, fontSize: 13, color: colors.text, fontWeight: '500', flex: 1, textAlign: 'right' as const },
+    actions: { flexDirection: 'row' as const, gap: SPACING.md },
+    acceptBtn: {
+      flex: 1,
+      height: 52,
+      borderRadius: RADIUS.md,
+      backgroundColor: SEMANTIC.success,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    acceptBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: colors.text },
+    rejectBtn: {
+      flex: 1,
+      height: 52,
+      borderRadius: RADIUS.md,
+      borderWidth: 1,
+      borderColor: SEMANTIC.error,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    rejectBtnText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: SEMANTIC.error },
+    btnDisabled: { opacity: 0.5 },
+  }), [colors]);
+}
+
 export default function MerchantOrderDetailScreen() {
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
+  const styles = useStyles();
+  const colors = useAppColors();
 
   const { data, isLoading } = useQuery({
     queryKey: ['merchant-order', orderId],
@@ -66,7 +150,7 @@ export default function MerchantOrderDetailScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <ArrowLeft size={18} color={DARK.text} />
+          <ArrowLeft size={18} color={colors.text} />
         </Pressable>
         <View style={styles.navInfo}>
           <Text style={styles.navUnit}>{t('checkout.unit', { number: order.user.unitNumber })}</Text>
@@ -79,9 +163,9 @@ export default function MerchantOrderDetailScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + SPACING.xl }]}
       >
-        <OrderStatusBadge status={order.status} />
-        <OrderItemsList order={order} />
-        <OrderMeta order={order} />
+        <OrderStatusBadge status={order.status} styles={styles} colors={colors} />
+        <OrderItemsList order={order} styles={styles} />
+        <OrderMeta order={order} styles={styles} />
 
         {isActive && (
           <ActionButtons
@@ -94,6 +178,7 @@ export default function MerchantOrderDetailScreen() {
             onReject={() => rejectOrder()}
             isPending={isPending}
             isRejecting={rejecting}
+            styles={styles}
           />
         )}
       </ScrollView>
@@ -103,25 +188,25 @@ export default function MerchantOrderDetailScreen() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function OrderStatusBadge({ status }: { status: string }) {
+function OrderStatusBadge({ status, styles, colors }: { status: string; styles: any; colors: any }) {
   const { t } = useTranslation();
-  const colors: Record<string, string> = {
+  const statusColors: Record<string, string> = {
     PLACED: SEMANTIC.info,
     CONFIRMED: SEMANTIC.info,
     PREPARING: SEMANTIC.warning,
     READY: SEMANTIC.success,
     ON_THE_WAY: BRAND.gold,
-    DELIVERED: DARK.elevated,
+    DELIVERED: colors.elevated,
     CANCELLED: SEMANTIC.error,
   };
   return (
-    <View style={[styles.statusCard, { borderLeftColor: colors[status] ?? DARK.border }]}>
+    <View style={[styles.statusCard, { borderLeftColor: statusColors[status] ?? colors.border }]}>
       <Text style={styles.statusLabel}>{t(`orders.${status}`)}</Text>
     </View>
   );
 }
 
-function OrderItemsList({ order }: { order: MerchantOrder }) {
+function OrderItemsList({ order, styles }: { order: MerchantOrder; styles: any }) {
   const { t } = useTranslation();
   return (
     <View style={styles.itemsCard}>
@@ -143,7 +228,7 @@ function OrderItemsList({ order }: { order: MerchantOrder }) {
   );
 }
 
-function OrderMeta({ order }: { order: MerchantOrder }) {
+function OrderMeta({ order, styles }: { order: MerchantOrder; styles: any }) {
   const { t } = useTranslation();
   return (
     <View style={styles.metaCard}>
@@ -168,6 +253,7 @@ function ActionButtons({
   onReject,
   isPending,
   isRejecting,
+  styles,
 }: {
   status: string;
   nextStatus: string | null;
@@ -175,6 +261,7 @@ function ActionButtons({
   onReject: () => void;
   isPending: boolean;
   isRejecting: boolean;
+  styles: any;
 }) {
   const { t } = useTranslation();
   return (
@@ -204,9 +291,11 @@ function ActionButtons({
 }
 
 function OrderDetailSkeleton({ insets }: { insets: { top: number } }) {
+  const colors = useAppColors();
+  const styles = useStyles();
   return (
     <View style={styles.container}>
-      <View style={{ height: insets.top + 56, backgroundColor: DARK.card }} />
+      <View style={{ height: insets.top + 56, backgroundColor: colors.card }} />
       <View style={{ padding: SPACING.base, gap: SPACING.md }}>
         <Skeleton width="100%" height={60} borderRadius={RADIUS.md} />
         <Skeleton width="100%" height={140} borderRadius={RADIUS.md} />
@@ -215,83 +304,3 @@ function OrderDetailSkeleton({ insets }: { insets: { top: number } }) {
     </View>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  nav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.md,
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-    gap: SPACING.md,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: DARK.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navInfo: { flex: 1 },
-  navUnit: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: BRAND.gold },
-  navName: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted },
-  navTime: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted },
-  scroll: { padding: SPACING.base, gap: SPACING.md },
-  statusCard: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    borderLeftWidth: 4,
-    borderLeftColor: BRAND.gold,
-  },
-  statusLabel: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.text },
-  itemsCard: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    gap: SPACING.sm,
-  },
-  itemRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
-  itemQty: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: BRAND.gold, minWidth: 28 },
-  itemName: { flex: 1, fontFamily: FONT.sans, fontSize: 14, color: DARK.text },
-  itemPrice: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text },
-  totalRow: { flexDirection: 'row', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: DARK.border, paddingTop: SPACING.sm, marginTop: SPACING.xs },
-  totalLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: DARK.text },
-  totalValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: BRAND.gold },
-  metaCard: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    gap: SPACING.sm,
-  },
-  metaRow: { flexDirection: 'row', justifyContent: 'space-between', gap: SPACING.sm },
-  metaLabel: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted },
-  metaValue: { fontFamily: FONT.sans, fontSize: 13, color: DARK.text, fontWeight: '500', flex: 1, textAlign: 'right' },
-  actions: { flexDirection: 'row', gap: SPACING.md },
-  acceptBtn: {
-    flex: 1,
-    height: 52,
-    borderRadius: RADIUS.md,
-    backgroundColor: SEMANTIC.success,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  acceptBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: DARK.text },
-  rejectBtn: {
-    flex: 1,
-    height: 52,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: SEMANTIC.error,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  rejectBtnText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: SEMANTIC.error },
-  btnDisabled: { opacity: 0.5 },
-});

@@ -10,12 +10,66 @@ import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, ClipboardText, FilePdf } from 'phosphor-react-native';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { communityApi } from '@/services/api/community';
-import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    nav: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingVertical: SPACING.md,
+      gap: SPACING.sm,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    backBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.elevated,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    loadingPad: { padding: SPACING.base },
+    listContent: { padding: SPACING.base },
+    empty: { alignItems: 'center' as const, paddingTop: 80, gap: SPACING.md },
+    emptyText: { fontFamily: FONT.sans, fontSize: 15, color: colors.textMuted },
+    row: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      marginBottom: SPACING.md,
+      gap: SPACING.md,
+    },
+    rowIcon: {
+      width: 44,
+      height: 44,
+      borderRadius: RADIUS.sm,
+      backgroundColor: colors.elevated,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    rowContent: { flex: 1, gap: 4 },
+    rowTitle: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text, lineHeight: 20 },
+    rowDate: { fontFamily: FONT.sans, fontSize: 12, color: colors.textMuted },
+    viewLabel: { fontFamily: FONT.sans, fontSize: 12, color: BRAND.gold, fontWeight: '600' },
+  }), [colors]);
+}
 
 export default function ReportsScreen() {
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
+  const styles = useStyles();
+  const colors = useAppColors();
   const isAr = i18n.language === 'ar';
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch }
@@ -38,7 +92,7 @@ export default function ReportsScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-          <ArrowLeft size={18} color={DARK.text} />
+          <ArrowLeft size={18} color={colors.text} />
         </Pressable>
         <Text style={styles.title}>{t('community.reports')}</Text>
       </View>
@@ -55,7 +109,7 @@ export default function ReportsScreen() {
             <FlashList
               data={reports}
               keyExtractor={item => item.id}
-              renderItem={({ item }) => <ReportRow report={item} isAr={isAr} />}
+              renderItem={({ item }) => <ReportRow report={item} isAr={isAr} styles={styles} />}
               onEndReached={() => {
                 if (hasNextPage && !isFetchingNextPage)
                   fetchNextPage();
@@ -66,7 +120,7 @@ export default function ReportsScreen() {
               refreshing={isRefetching}
               ListEmptyComponent={(
                 <View style={styles.empty}>
-                  <ClipboardText size={48} color={DARK.textMuted} />
+                  <ClipboardText size={48} color={colors.textMuted} />
                   <Text style={styles.emptyText}>{t('community.no_reports')}</Text>
                 </View>
               )}
@@ -81,7 +135,7 @@ export default function ReportsScreen() {
   );
 }
 
-function ReportRow({ report, isAr }: { report: Report; isAr: boolean }) {
+function ReportRow({ report, isAr, styles }: { report: Report; isAr: boolean; styles: any }) {
   const { t } = useTranslation();
   const title = isAr ? report.titleAr : report.title;
   const date = new Date(report.publishedAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-GB', {
@@ -103,51 +157,3 @@ function ReportRow({ report, isAr }: { report: Report; isAr: boolean }) {
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  nav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.md,
-    gap: SPACING.sm,
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: DARK.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
-  loadingPad: { padding: SPACING.base },
-  listContent: { padding: SPACING.base },
-  empty: { alignItems: 'center', paddingTop: 80, gap: SPACING.md },
-  emptyText: { fontFamily: FONT.sans, fontSize: 15, color: DARK.textMuted },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    marginBottom: SPACING.md,
-    gap: SPACING.md,
-  },
-  rowIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: RADIUS.sm,
-    backgroundColor: DARK.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  rowContent: { flex: 1, gap: 4 },
-  rowTitle: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text, lineHeight: 20 },
-  rowDate: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted },
-  viewLabel: { fontFamily: FONT.sans, fontSize: 12, color: BRAND.gold, fontWeight: '600' },
-});

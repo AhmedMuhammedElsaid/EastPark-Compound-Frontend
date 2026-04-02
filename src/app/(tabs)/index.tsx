@@ -8,11 +8,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChatCircle, CheckSquare, FileText, Megaphone, Package, Storefront } from 'phosphor-react-native';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
 import { communityApi } from '@/services/api/community';
 import { shopsApi } from '@/services/api/shops';
 import { useAppSelector } from '@/store';
-import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
 function greeting(h: number): string {
   if (h < 12)
@@ -22,11 +23,57 @@ function greeting(h: number): string {
   return 'home.greeting_evening';
 }
 
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    scroll: { padding: SPACING.base, gap: SPACING.lg },
+    greeting: { gap: SPACING.xs },
+    greetText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 26, color: colors.text },
+    unitText: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
+    sectionHeader: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const },
+    sectionTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    seeAll: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: '600' },
+    quickGrid: { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: SPACING.sm },
+    quickCard: {
+      width: '30.5%',
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      alignItems: 'center' as const,
+      gap: SPACING.xs,
+      aspectRatio: 1,
+      justifyContent: 'center' as const,
+    },
+    quickLabel: { fontFamily: FONT.sans, fontSize: 11, color: colors.textMuted, textAlign: 'center' as const, fontWeight: '500' },
+    annList: { gap: SPACING.sm },
+    annCard: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      gap: SPACING.xs,
+    },
+    annCategory: { fontFamily: FONT.sans, fontSize: 11, color: BRAND.gold, fontWeight: '600', textTransform: 'uppercase' as const },
+    annTitle: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text, lineHeight: 20 },
+    shopsGrid: { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: SPACING.sm },
+    shopCard: {
+      width: '30.5%',
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      overflow: 'hidden' as const,
+    },
+    shopImg: { width: '100%', aspectRatio: 1 },
+    shopName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 12, color: colors.text, padding: SPACING.xs },
+  }), [colors]);
+}
+
 export default function HomeScreen() {
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const user = useAppSelector(s => s.auth.user);
   const { requireAuthNavigation } = useAuthGuard();
+  const colors = useAppColors();
+  const styles = useStyles();
   const isAr = i18n.language === 'ar';
 
   const greetKey = greeting(new Date().getHours());
@@ -63,7 +110,7 @@ export default function HomeScreen() {
 
         {/* Quick actions */}
         <Text style={styles.sectionTitle}>{t('home.quick_actions')}</Text>
-        <QuickActionsGrid requireAuthNavigation={requireAuthNavigation} />
+        <QuickActionsGrid requireAuthNavigation={requireAuthNavigation} colors={colors} />
 
         {/* What's new */}
         <View style={styles.sectionHeader}>
@@ -117,8 +164,9 @@ const QUICK_ACTIONS: Array<{
   { renderIcon: (color) => <FileText size={28} color={color} />, labelKey: 'community.reports', route: '/(tabs)/community/reports' },
 ];
 
-function QuickActionsGrid({ requireAuthNavigation }: { requireAuthNavigation: (href: string) => void }) {
+function QuickActionsGrid({ requireAuthNavigation, colors }: { requireAuthNavigation: (href: string) => void; colors: any }) {
   const { t } = useTranslation();
+  const styles = useStyles();
   return (
     <View style={styles.quickGrid}>
       {QUICK_ACTIONS.map(action => (
@@ -133,7 +181,7 @@ function QuickActionsGrid({ requireAuthNavigation }: { requireAuthNavigation: (h
             else router.push(action.route as any);
           }}
         >
-          {action.renderIcon(DARK.textMuted)}
+          {action.renderIcon(colors.textMuted)}
           <Text style={styles.quickLabel}>{t(action.labelKey as any)}</Text>
         </Pressable>
       ))}
@@ -143,6 +191,7 @@ function QuickActionsGrid({ requireAuthNavigation }: { requireAuthNavigation: (h
 
 function AnnouncementsPreview({ announcements, isAr }: { announcements: any[]; isAr: boolean }) {
   const { t } = useTranslation();
+  const styles = useStyles();
   if (!announcements.length)
     return null;
   return (
@@ -167,6 +216,8 @@ function AnnouncementsPreview({ announcements, isAr }: { announcements: any[]; i
 }
 
 function ShopsGrid({ shops, isAr }: { shops: any[]; isAr: boolean }) {
+  const styles = useStyles();
+  const colors = useAppColors();
   if (!shops.length)
     return null;
   return (
@@ -184,7 +235,7 @@ function ShopsGrid({ shops, isAr }: { shops: any[]; isAr: boolean }) {
           >
             {cover
               ? <Image source={{ uri: cover.url }} style={styles.shopImg} resizeMode="cover" accessibilityRole="image" accessibilityLabel={name} />
-              : <View style={[styles.shopImg, { backgroundColor: DARK.elevated }]} />}
+              : <View style={[styles.shopImg, { backgroundColor: colors.elevated }]} />}
             <Text style={styles.shopName} numberOfLines={1}>{name}</Text>
           </Pressable>
         );
@@ -201,46 +252,3 @@ function HomeSectionSkeleton() {
     </View>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  scroll: { padding: SPACING.base, gap: SPACING.lg },
-  greeting: { gap: SPACING.xs },
-  greetText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 26, color: DARK.text },
-  unitText: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  sectionTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
-  seeAll: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: '600' },
-  quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
-  quickCard: {
-    width: '30.5%',
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    alignItems: 'center',
-    gap: SPACING.xs,
-    aspectRatio: 1,
-    justifyContent: 'center',
-  },
-  quickLabel: { fontFamily: FONT.sans, fontSize: 11, color: DARK.textMuted, textAlign: 'center', fontWeight: '500' },
-  annList: { gap: SPACING.sm },
-  annCard: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    gap: SPACING.xs,
-  },
-  annCategory: { fontFamily: FONT.sans, fontSize: 11, color: BRAND.gold, fontWeight: '600', textTransform: 'uppercase' },
-  annTitle: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text, lineHeight: 20 },
-  shopsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
-  shopCard: {
-    width: '30.5%',
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    overflow: 'hidden',
-  },
-  shopImg: { width: '100%', aspectRatio: 1 },
-  shopName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 12, color: DARK.text, padding: SPACING.xs },
-});

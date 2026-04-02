@@ -10,12 +10,84 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, CheckSquare } from 'phosphor-react-native';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { governanceApi } from '@/services/api/governance';
-import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    nav: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingVertical: SPACING.md,
+      gap: SPACING.sm,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    backBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.elevated,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    tabBar: {
+      flexDirection: 'row' as const,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    tab: {
+      flex: 1,
+      height: 48,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      borderBottomWidth: 2,
+      borderBottomColor: 'transparent',
+    },
+    tabActive: { borderBottomColor: BRAND.gold },
+    tabText: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, fontWeight: '500' },
+    tabTextActive: { color: BRAND.gold },
+    loadingPad: { padding: SPACING.base },
+    listContent: { padding: SPACING.base },
+    empty: { alignItems: 'center' as const, paddingTop: 80, gap: SPACING.md },
+    emptyText: { fontFamily: FONT.sans, fontSize: 15, color: colors.textMuted },
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      marginBottom: SPACING.md,
+      gap: SPACING.sm,
+    },
+    cardVoted: { borderWidth: 1, borderColor: BRAND.gold },
+    cardHeader: { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const },
+    pollBadge: {
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: RADIUS.full,
+      backgroundColor: colors.elevated,
+    },
+    electionBadge: { backgroundColor: BRAND.goldTint },
+    pollBadgeText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: colors.text },
+    votedBadge: { fontFamily: FONT.sans, fontSize: 11, color: BRAND.gold, fontWeight: '600' },
+    cardQuestion: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: colors.text, lineHeight: 22 },
+    cardMeta: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: SPACING.xs },
+    metaText: { fontFamily: FONT.sans, fontSize: 12, color: colors.textMuted },
+    metaDot: { fontSize: 12, color: colors.textMuted },
+  }), [colors]);
+}
 
 export default function GovernanceScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const styles = useStyles();
+  const colors = useAppColors();
   const [tab, setTab] = React.useState<'polls' | 'elections'>('polls');
 
   const pollsQuery = useInfiniteQuery<
@@ -51,7 +123,7 @@ export default function GovernanceScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-          <ArrowLeft size={18} color={DARK.text} />
+          <ArrowLeft size={18} color={colors.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('governance.title')}</Text>
       </View>
@@ -86,7 +158,7 @@ export default function GovernanceScreen() {
                   <FlashList
                     data={polls}
                     keyExtractor={item => item.id}
-                    renderItem={({ item }) => <PollCard poll={item} />}
+                    renderItem={({ item }) => <PollCard poll={item} styles={styles} />}
                     estimatedItemSize={120}
                     onEndReached={() => {
                       if (pollsQuery.hasNextPage && !pollsQuery.isFetchingNextPage)
@@ -96,7 +168,7 @@ export default function GovernanceScreen() {
                     contentContainerStyle={styles.listContent}
                     ListEmptyComponent={(
                       <View style={styles.empty}>
-                        <CheckSquare size={48} color={DARK.textMuted} />
+                        <CheckSquare size={48} color={colors.textMuted} />
                         <Text style={styles.emptyText}>{t('governance.no_polls')}</Text>
                       </View>
                     )}
@@ -121,7 +193,7 @@ export default function GovernanceScreen() {
                   <FlashList
                     data={elections}
                     keyExtractor={item => item.id}
-                    renderItem={({ item }) => <ElectionCard election={item} />}
+                    renderItem={({ item }) => <ElectionCard election={item} styles={styles} />}
                     estimatedItemSize={120}
                     onEndReached={() => {
                       if (electionsQuery.hasNextPage && !electionsQuery.isFetchingNextPage)
@@ -131,7 +203,7 @@ export default function GovernanceScreen() {
                     contentContainerStyle={styles.listContent}
                     ListEmptyComponent={(
                       <View style={styles.empty}>
-                        <CheckSquare size={48} color={DARK.textMuted} />
+                        <CheckSquare size={48} color={colors.textMuted} />
                         <Text style={styles.emptyText}>{t('governance.no_elections')}</Text>
                       </View>
                     )}
@@ -149,7 +221,7 @@ export default function GovernanceScreen() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function PollCard({ poll }: { poll: Poll }) {
+function PollCard({ poll, styles }: { poll: Poll; styles: any }) {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
   const question = isAr ? poll.questionAr : poll.question;
@@ -187,7 +259,7 @@ function PollCard({ poll }: { poll: Poll }) {
   );
 }
 
-function ElectionCard({ election }: { election: Election }) {
+function ElectionCard({ election, styles }: { election: Election; styles: any }) {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
   const title = isAr ? election.titleAr : election.title;
@@ -224,71 +296,3 @@ function ElectionCard({ election }: { election: Election }) {
     </Pressable>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  nav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.md,
-    gap: SPACING.sm,
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: DARK.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
-  tabBar: {
-    flexDirection: 'row',
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-  },
-  tab: {
-    flex: 1,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-  },
-  tabActive: { borderBottomColor: BRAND.gold },
-  tabText: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, fontWeight: '500' },
-  tabTextActive: { color: BRAND.gold },
-  loadingPad: { padding: SPACING.base },
-  listContent: { padding: SPACING.base },
-  empty: { alignItems: 'center', paddingTop: 80, gap: SPACING.md },
-  emptyText: { fontFamily: FONT.sans, fontSize: 15, color: DARK.textMuted },
-  card: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    marginBottom: SPACING.md,
-    gap: SPACING.sm,
-  },
-  cardVoted: { borderWidth: 1, borderColor: BRAND.gold },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  pollBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: RADIUS.full,
-    backgroundColor: DARK.elevated,
-  },
-  electionBadge: { backgroundColor: BRAND.goldTint },
-  pollBadgeText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: DARK.text },
-  votedBadge: { fontFamily: FONT.sans, fontSize: 11, color: BRAND.gold, fontWeight: '600' },
-  cardQuestion: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: DARK.text, lineHeight: 22 },
-  cardMeta: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
-  metaText: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted },
-  metaDot: { fontSize: 12, color: DARK.textMuted },
-});

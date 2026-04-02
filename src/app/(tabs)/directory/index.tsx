@@ -12,16 +12,56 @@ import { CategoryChips } from '@/components/directory/category-chips';
 import { ShopCard } from '@/components/directory/shop-card';
 import { ErrorState } from '@/components/ui/error-state';
 import { ShopCardSkeleton } from '@/components/ui/skeleton';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { shopsApi } from '@/services/api/shops';
-import { DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { FONT, RADIUS, SPACING } from '@/theme/tokens';
 
 type Category = ShopCategory | 'ALL';
 
 const PAGE_LIMIT = 20;
 
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    searchBar: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.full,
+      marginHorizontal: SPACING.base,
+      marginTop: SPACING.sm,
+      marginBottom: SPACING.xs,
+      paddingHorizontal: SPACING.md,
+      height: 48,
+      gap: SPACING.sm,
+    },
+    searchInput: {
+      flex: 1,
+      fontFamily: FONT.sans,
+      fontSize: 15,
+      color: colors.text,
+      height: '100%',
+    },
+    listPad: { paddingHorizontal: SPACING.base, paddingTop: SPACING.sm },
+    listContent: { paddingHorizontal: SPACING.base, paddingTop: SPACING.sm },
+    empty: {
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      paddingTop: 80,
+      gap: SPACING.md,
+      paddingHorizontal: SPACING.xl,
+    },
+    emptyTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text, textAlign: 'center' as const },
+    emptyBody: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, textAlign: 'center' as const, lineHeight: 22 },
+  }), [colors]);
+}
+
 export default function DirectoryScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const colors = useAppColors();
+  const styles = useStyles();
 
   const [search, setSearch] = React.useState('');
   const [category, setCategory] = React.useState<Category>('ALL');
@@ -59,12 +99,12 @@ export default function DirectoryScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Search bar */}
       <View style={styles.searchBar}>
-        <MagnifyingGlass size={18} color={DARK.textMuted} />
+        <MagnifyingGlass size={18} color={colors.textMuted} />
         <TextInput
           value={search}
           onChangeText={setSearch}
           placeholder={t('directory.search_placeholder')}
-          placeholderTextColor={DARK.textMuted}
+          placeholderTextColor={colors.textMuted}
           style={styles.searchInput}
           returnKeyType="search"
           clearButtonMode="while-editing"
@@ -76,7 +116,7 @@ export default function DirectoryScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('common.clear')}
           >
-            <X size={16} color={DARK.textMuted} />
+            <X size={16} color={colors.textMuted} />
           </Pressable>
         )}
       </View>
@@ -118,10 +158,12 @@ export default function DirectoryScreen() {
 
 function EmptyState({ search }: { search: string }) {
   const { t } = useTranslation();
+  const colors = useAppColors();
+  const styles = useStyles();
   return (
     <View style={styles.empty}>
       <View style={{ alignItems: 'center' }}>
-        <Storefront size={48} color={DARK.textMuted} />
+        <Storefront size={48} color={colors.textMuted} />
       </View>
       <Text style={styles.emptyTitle}>
         {search ? t('common.no_results') : t('directory.no_shops')}
@@ -132,37 +174,3 @@ function EmptyState({ search }: { search: string }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.full,
-    marginHorizontal: SPACING.base,
-    marginTop: SPACING.sm,
-    marginBottom: SPACING.xs,
-    paddingHorizontal: SPACING.md,
-    height: 48,
-    gap: SPACING.sm,
-  },
-  searchInput: {
-    flex: 1,
-    fontFamily: FONT.sans,
-    fontSize: 15,
-    color: DARK.text,
-    height: '100%',
-  },
-  listPad: { paddingHorizontal: SPACING.base, paddingTop: SPACING.sm },
-  listContent: { paddingHorizontal: SPACING.base, paddingTop: SPACING.sm },
-  empty: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 80,
-    gap: SPACING.md,
-    paddingHorizontal: SPACING.xl,
-  },
-  emptyTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text, textAlign: 'center' },
-  emptyBody: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, textAlign: 'center', lineHeight: 22 },
-});

@@ -10,15 +10,98 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { notificationsApi } from '@/services/api/notifications';
 import { useAppSelector } from '@/store';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    header: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingVertical: SPACING.md,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      gap: SPACING.sm,
+    },
+    backBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.elevated,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    headerCenter: { flex: 1, flexDirection: 'row' as const, alignItems: 'center' as const, gap: SPACING.xs },
+    headerTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    unreadBadge: {
+      backgroundColor: BRAND.gold,
+      borderRadius: RADIUS.full,
+      paddingHorizontal: 7,
+      paddingVertical: 2,
+    },
+    unreadBadgeText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 11, color: colors.bg },
+    markAllBtn: { paddingHorizontal: SPACING.sm, paddingVertical: 6 },
+    markAllBtnDisabled: { opacity: 0.4 },
+    markAllText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 12, color: BRAND.gold },
+    listContent: { padding: SPACING.base },
+    card: {
+      flexDirection: 'row' as const,
+      alignItems: 'flex-start' as const,
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      marginBottom: SPACING.sm,
+      gap: SPACING.sm,
+    },
+    cardUnread: { backgroundColor: colors.elevated },
+    typeDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      marginTop: 5,
+      flexShrink: 0,
+    },
+    cardContent: { flex: 1, gap: 4 },
+    cardTop: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const, gap: SPACING.sm },
+    cardTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text },
+    cardTime: { fontFamily: FONT.sans, fontSize: 11, color: colors.textMuted, flexShrink: 0 },
+    cardBody: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, lineHeight: 18 },
+    unreadDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: BRAND.gold,
+      marginTop: 5,
+      flexShrink: 0,
+    },
+    empty: { alignItems: 'center' as const, paddingTop: 100, gap: SPACING.md },
+    emptyText: { fontFamily: FONT.sans, fontSize: 15, color: colors.textMuted },
+    skeletonPad: { padding: SPACING.base },
+  }), [colors]);
+}
+
+const TYPE_COLOR: Record<string, string> = {
+  ORDER_UPDATE: BRAND.gold,
+  ANNOUNCEMENT: SEMANTIC.info,
+  POLL: SEMANTIC.success,
+  ELECTION: SEMANTIC.warning,
+  FEEDBACK_REPLY: SEMANTIC.info,
+  GENERAL: '', // filled at runtime with colors.textMuted
+};
 
 export default function NotificationsScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const isAuthenticated = useAppSelector(s => s.auth.isAuthenticated);
   const queryClient = useQueryClient();
+  const styles = useStyles();
+  const colors = useAppColors();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
@@ -81,7 +164,7 @@ export default function NotificationsScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-          <ArrowLeft size={18} color={DARK.text} />
+          <ArrowLeft size={18} color={colors.text} />
         </Pressable>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{t('notifications.title')}</Text>
@@ -105,13 +188,13 @@ export default function NotificationsScreen() {
       </View>
 
       {isLoading
-        ? <NotificationsSkeleton />
+        ? <NotificationsSkeleton styles={styles} />
         : (
             <FlashList
               data={notifications}
               keyExtractor={item => item.id}
               renderItem={({ item }) => (
-                <NotificationItem notification={item} onPress={() => handleNotificationPress(item)} />
+                <NotificationItem notification={item} onPress={() => handleNotificationPress(item)} styles={styles} colors={colors} />
               )}
               onEndReached={() => {
                 if (hasNextPage && !isFetchingNextPage) {
@@ -122,7 +205,7 @@ export default function NotificationsScreen() {
               onRefresh={refetch}
               refreshing={isRefetching}
               contentContainerStyle={styles.listContent}
-              ListEmptyComponent={<EmptyState />}
+              ListEmptyComponent={<EmptyState styles={styles} colors={colors} />}
               ListFooterComponent={
                 isFetchingNextPage
                   ? <Skeleton width="100%" height={72} borderRadius={RADIUS.md} style={{ marginTop: SPACING.sm }} />
@@ -139,13 +222,19 @@ export default function NotificationsScreen() {
 function NotificationItem({
   notification,
   onPress,
+  styles,
+  colors,
 }: {
   notification: AppNotification;
   onPress: () => void;
+  styles: any;
+  colors: any;
 }) {
   const { t } = useTranslation();
   const timeAgo = formatRelativeTime(notification.createdAt, t);
-  const typeColor = TYPE_COLOR[notification.type] ?? DARK.textMuted;
+  const typeColor = notification.type === 'GENERAL'
+    ? colors.textMuted
+    : (TYPE_COLOR[notification.type] ?? colors.textMuted);
 
   return (
     <Pressable
@@ -167,17 +256,17 @@ function NotificationItem({
   );
 }
 
-function EmptyState() {
+function EmptyState({ styles, colors }: { styles: any; colors: any }) {
   const { t } = useTranslation();
   return (
     <View style={styles.empty}>
-      <Bell size={48} color={DARK.textMuted} />
+      <Bell size={48} color={colors.textMuted} />
       <Text style={styles.emptyText}>{t('notifications.empty')}</Text>
     </View>
   );
 }
 
-function NotificationsSkeleton() {
+function NotificationsSkeleton({ styles }: { styles: any }) {
   return (
     <View style={styles.skeletonPad}>
       {Array.from({ length: 8 }).map((_, i) => (
@@ -189,15 +278,6 @@ function NotificationsSkeleton() {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const TYPE_COLOR: Record<string, string> = {
-  ORDER_UPDATE: BRAND.gold,
-  ANNOUNCEMENT: SEMANTIC.info,
-  POLL: SEMANTIC.success,
-  ELECTION: SEMANTIC.warning,
-  FEEDBACK_REPLY: SEMANTIC.info,
-  GENERAL: DARK.textMuted,
-};
-
 function formatRelativeTime(iso: string, t: (key: string, opts?: object) => string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
@@ -208,73 +288,3 @@ function formatRelativeTime(iso: string, t: (key: string, opts?: object) => stri
   const days = Math.floor(hrs / 24);
   return t('notifications.time_days', { count: days });
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.md,
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-    gap: SPACING.sm,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: DARK.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
-  headerTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
-  unreadBadge: {
-    backgroundColor: BRAND.gold,
-    borderRadius: RADIUS.full,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-  },
-  unreadBadgeText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 11, color: DARK.bg },
-  markAllBtn: { paddingHorizontal: SPACING.sm, paddingVertical: 6 },
-  markAllBtnDisabled: { opacity: 0.4 },
-  markAllText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 12, color: BRAND.gold },
-  listContent: { padding: SPACING.base },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    marginBottom: SPACING.sm,
-    gap: SPACING.sm,
-  },
-  cardUnread: { backgroundColor: DARK.elevated },
-  typeDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginTop: 5,
-    flexShrink: 0,
-  },
-  cardContent: { flex: 1, gap: 4 },
-  cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: SPACING.sm },
-  cardTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text },
-  cardTime: { fontFamily: FONT.sans, fontSize: 11, color: DARK.textMuted, flexShrink: 0 },
-  cardBody: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted, lineHeight: 18 },
-  unreadDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: BRAND.gold,
-    marginTop: 5,
-    flexShrink: 0,
-  },
-  empty: { alignItems: 'center', paddingTop: 100, gap: SPACING.md },
-  emptyText: { fontFamily: FONT.sans, fontSize: 15, color: DARK.textMuted },
-  skeletonPad: { padding: SPACING.base },
-});

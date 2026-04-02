@@ -13,7 +13,37 @@ import { ErrorState } from '@/components/ui/error-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ordersApi } from '@/services/api/orders';
 import { formatCurrency } from '@/lib/formatCurrency';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    header: { paddingHorizontal: SPACING.base, paddingVertical: SPACING.md },
+    headerTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 24, color: colors.text },
+    loadingPad: { padding: SPACING.base },
+    listContent: { padding: SPACING.base },
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      marginBottom: SPACING.md,
+      gap: SPACING.xs,
+    },
+    cardTop: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const, gap: SPACING.sm },
+    shopName: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: colors.text, flex: 1 },
+    statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: RADIUS.full },
+    statusText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: colors.text },
+    items: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
+    cardBottom: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const },
+    total: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: BRAND.gold },
+    date: { fontFamily: FONT.sans, fontSize: 12, color: colors.textMuted },
+    empty: { alignItems: 'center' as const, paddingTop: 80, gap: SPACING.md, paddingHorizontal: SPACING.xl },
+    emptyTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text, textAlign: 'center' as const },
+    emptyBody: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, textAlign: 'center' as const, lineHeight: 22 },
+  }), [colors]);
+}
 
 const STATUS_COLOR: Record<OrderStatus, string> = {
   PLACED: SEMANTIC.info,
@@ -22,12 +52,14 @@ const STATUS_COLOR: Record<OrderStatus, string> = {
   READY: SEMANTIC.warning,
   ON_THE_WAY: BRAND.gold,
   DELIVERED: SEMANTIC.success,
-  CANCELLED: DARK.elevated,
+  CANCELLED: '#2e2a26', // fallback static — will be overridden by colors.elevated at render
 };
 
 export default function OrdersScreen() {
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
+  const colors = useAppColors();
+  const styles = useStyles();
   const isAr = i18n.language === 'ar';
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, isLoading, isRefetching, refetch }
@@ -66,7 +98,7 @@ export default function OrdersScreen() {
             <FlashList
               data={orders}
               keyExtractor={item => item.id}
-              renderItem={({ item }) => <OrderCard order={item} isAr={isAr} />}
+              renderItem={({ item }) => <OrderCard order={item} isAr={isAr} colors={colors} styles={styles} />}
               onEndReached={() => {
                 if (hasNextPage && !isFetchingNextPage)
                   fetchNextPage();
@@ -75,7 +107,7 @@ export default function OrdersScreen() {
               contentContainerStyle={styles.listContent}
               onRefresh={refetch}
               refreshing={isRefetching}
-              ListEmptyComponent={<EmptyOrders />}
+              ListEmptyComponent={<EmptyOrders styles={styles} />}
               ListFooterComponent={
                 isFetchingNextPage
                   ? <Skeleton width="100%" height={96} borderRadius={RADIUS.md} />
@@ -87,10 +119,10 @@ export default function OrdersScreen() {
   );
 }
 
-function OrderCard({ order, isAr }: { order: Order; isAr: boolean }) {
+function OrderCard({ order, isAr, colors, styles }: { order: Order; isAr: boolean; colors: any; styles: any }) {
   const { t } = useTranslation();
   const shopName = isAr ? order.shop.nameAr : order.shop.name;
-  const statusColor = STATUS_COLOR[order.status] ?? DARK.elevated;
+  const statusColor = order.status === 'CANCELLED' ? colors.elevated : (STATUS_COLOR[order.status] ?? colors.elevated);
   const date = new Date(order.createdAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-GB', {
     month: 'short',
     day: 'numeric',
@@ -122,39 +154,14 @@ function OrderCard({ order, isAr }: { order: Order; isAr: boolean }) {
   );
 }
 
-function EmptyOrders() {
+function EmptyOrders({ styles }: { styles: any }) {
   const { t } = useTranslation();
+  const colors = useAppColors();
   return (
     <View style={styles.empty}>
-      <Package size={56} color={DARK.textMuted} />
+      <Package size={56} color={colors.textMuted} />
       <Text style={styles.emptyTitle}>{t('orders.empty')}</Text>
       <Text style={styles.emptyBody}>{t('orders.empty_subtitle')}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  header: { paddingHorizontal: SPACING.base, paddingVertical: SPACING.md },
-  headerTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 24, color: DARK.text },
-  loadingPad: { padding: SPACING.base },
-  listContent: { padding: SPACING.base },
-  card: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    marginBottom: SPACING.md,
-    gap: SPACING.xs,
-  },
-  cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: SPACING.sm },
-  shopName: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: DARK.text, flex: 1 },
-  statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: RADIUS.full },
-  statusText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: DARK.text },
-  items: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted },
-  cardBottom: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  total: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: BRAND.gold },
-  date: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted },
-  empty: { alignItems: 'center', paddingTop: 80, gap: SPACING.md, paddingHorizontal: SPACING.xl },
-  emptyTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text, textAlign: 'center' },
-  emptyBody: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, textAlign: 'center', lineHeight: 22 },
-});

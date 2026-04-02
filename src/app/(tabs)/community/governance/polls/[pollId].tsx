@@ -7,9 +7,83 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'phosphor-react-native';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
 import { governanceApi } from '@/services/api/governance';
-import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    nav: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingVertical: SPACING.md,
+      gap: SPACING.sm,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    backBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.elevated,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    scroll: { padding: SPACING.base },
+    question: {
+      fontFamily: FONT.sans,
+      fontWeight: '700',
+      fontSize: 20,
+      color: colors.text,
+      lineHeight: 30,
+      marginBottom: SPACING.xl,
+    },
+    sealedBanner: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      marginBottom: SPACING.md,
+      borderLeftWidth: 3,
+      borderLeftColor: BRAND.gold,
+    },
+    sealedText: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
+    options: { gap: SPACING.sm },
+    option: {
+      height: 56,
+      borderRadius: RADIUS.md,
+      backgroundColor: colors.card,
+      overflow: 'hidden' as const,
+      justifyContent: 'center' as const,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    optionSelected: { borderColor: BRAND.gold },
+    optionDisabled: { opacity: 0.85 },
+    resultBar: {
+      position: 'absolute' as const,
+      left: 0,
+      top: 0,
+      bottom: 0,
+      backgroundColor: `${BRAND.gold}22`,
+    },
+    optionContent: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'space-between' as const,
+      paddingHorizontal: SPACING.md,
+    },
+    optionText: { fontFamily: FONT.sans, fontWeight: '500', fontSize: 14, color: colors.text },
+    optionTextSelected: { color: BRAND.gold },
+    optionVotes: { fontFamily: FONT.sans, fontSize: 12, color: colors.textMuted },
+    meta: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, marginTop: SPACING.lg, textAlign: 'center' as const },
+  }), [colors]);
+}
 
 export default function PollDetailScreen() {
   const { pollId } = useLocalSearchParams<{ pollId: string }>();
@@ -17,6 +91,8 @@ export default function PollDetailScreen() {
   const insets = useSafeAreaInsets();
   const { requireAuth } = useAuthGuard();
   const queryClient = useQueryClient();
+  const styles = useStyles();
+  const colors = useAppColors();
 
   const { data, isLoading } = useQuery({
     queryKey: ['poll', pollId],
@@ -59,7 +135,7 @@ export default function PollDetailScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <ArrowLeft size={18} color={DARK.text} />
+          <ArrowLeft size={18} color={colors.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('governance.polls')}</Text>
       </View>
@@ -83,6 +159,7 @@ export default function PollDetailScreen() {
           maxVotes={maxVotes}
           onVote={handleVote}
           isPending={isPending}
+          styles={styles}
         />
 
         <Text style={styles.meta}>
@@ -111,6 +188,7 @@ function OptionsList({
   maxVotes,
   onVote,
   isPending,
+  styles,
 }: {
   poll: ReturnType<typeof useQuery<any>>['data'] extends undefined ? never : any;
   isAr: boolean;
@@ -118,6 +196,7 @@ function OptionsList({
   maxVotes: number;
   onVote: (id: string, text: string) => void;
   isPending: boolean;
+  styles: any;
 }) {
   return (
     <View style={styles.options}>
@@ -167,9 +246,11 @@ function OptionsList({
 }
 
 function PollSkeleton({ insets }: { insets: { top: number } }) {
+  const colors = useAppColors();
+  const styles = useStyles();
   return (
     <View style={styles.container}>
-      <View style={{ height: insets.top + 56, backgroundColor: DARK.card }} />
+      <View style={{ height: insets.top + 56, backgroundColor: colors.card }} />
       <View style={{ padding: SPACING.base, gap: SPACING.md }}>
         <Skeleton width="90%" height={28} />
         <Skeleton width="100%" height={56} borderRadius={RADIUS.md} />
@@ -179,75 +260,3 @@ function PollSkeleton({ insets }: { insets: { top: number } }) {
     </View>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  nav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.md,
-    gap: SPACING.sm,
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: DARK.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
-  scroll: { padding: SPACING.base },
-  question: {
-    fontFamily: FONT.sans,
-    fontWeight: '700',
-    fontSize: 20,
-    color: DARK.text,
-    lineHeight: 30,
-    marginBottom: SPACING.xl,
-  },
-  sealedBanner: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    marginBottom: SPACING.md,
-    borderLeftWidth: 3,
-    borderLeftColor: BRAND.gold,
-  },
-  sealedText: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted },
-  options: { gap: SPACING.sm },
-  option: {
-    height: 56,
-    borderRadius: RADIUS.md,
-    backgroundColor: DARK.card,
-    overflow: 'hidden',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: DARK.border,
-  },
-  optionSelected: { borderColor: BRAND.gold },
-  optionDisabled: { opacity: 0.85 },
-  resultBar: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: `${BRAND.gold}22`,
-  },
-  optionContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.md,
-  },
-  optionText: { fontFamily: FONT.sans, fontWeight: '500', fontSize: 14, color: DARK.text },
-  optionTextSelected: { color: BRAND.gold },
-  optionVotes: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted },
-  meta: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted, marginTop: SPACING.lg, textAlign: 'center' },
-});

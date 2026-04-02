@@ -11,8 +11,9 @@ import { ArrowLeft, InboxSimple } from 'phosphor-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency } from '@/lib/formatCurrency';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { merchantApi } from '@/services/api/merchant';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const STATUS_FILTERS = ['ALL', 'PLACED', 'CONFIRMED', 'PREPARING', 'READY'] as const;
 type StatusFilter = (typeof STATUS_FILTERS)[number];
@@ -23,13 +24,83 @@ const STATUS_COLOR: Record<string, string> = {
   PREPARING: SEMANTIC.warning,
   READY: SEMANTIC.success,
   ON_THE_WAY: BRAND.gold,
-  DELIVERED: DARK.elevated,
-  CANCELLED: DARK.elevated,
+  DELIVERED: '', // overridden at render with colors.elevated
+  CANCELLED: '', // overridden at render with colors.elevated
 };
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    nav: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingVertical: SPACING.md,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      gap: SPACING.sm,
+    },
+    backBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.elevated,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    filterBar: {
+      backgroundColor: colors.bg,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    filterBarContent: {
+      flexDirection: 'row' as const,
+      paddingHorizontal: SPACING.base,
+      paddingVertical: SPACING.sm,
+      gap: SPACING.sm,
+    },
+    filterChip: {
+      paddingHorizontal: SPACING.md,
+      paddingVertical: 6,
+      borderRadius: RADIUS.full,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    filterChipActive: { backgroundColor: BRAND.gold, borderColor: BRAND.gold },
+    filterChipText: { fontFamily: FONT.sans, fontSize: 12, color: colors.textMuted, fontWeight: '500' },
+    filterChipTextActive: { color: colors.bg },
+    loadingPad: { padding: SPACING.base },
+    listContent: { padding: SPACING.base },
+    empty: { alignItems: 'center' as const, paddingTop: 80, gap: SPACING.md },
+    emptyText: { fontFamily: FONT.sans, fontSize: 15, color: colors.textMuted },
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      marginBottom: SPACING.md,
+      gap: SPACING.xs,
+    },
+    cardTop: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'flex-start' as const },
+    cardLeft: { gap: 2 },
+    cardRight: { alignItems: 'flex-end' as const, gap: 4 },
+    unitLabel: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: BRAND.gold },
+    customerName: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
+    statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: RADIUS.full },
+    statusText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: colors.text },
+    time: { fontFamily: FONT.sans, fontSize: 12, color: colors.textMuted },
+    items: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
+    total: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: colors.text },
+  }), [colors]);
+}
 
 export default function MerchantOrdersScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const styles = useStyles();
+  const colors = useAppColors();
   const [filter, setFilter] = React.useState<StatusFilter>('ALL');
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
@@ -49,7 +120,7 @@ export default function MerchantOrdersScreen() {
         }),
       getNextPageParam: last => last.data.data.nextCursor ?? undefined,
       initialPageParam: undefined,
-      refetchInterval: 15000, // poll every 15s for new orders
+      refetchInterval: 15000,
     });
 
   const orders = data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
@@ -58,12 +129,12 @@ export default function MerchantOrdersScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-          <ArrowLeft size={18} color={DARK.text} />
+          <ArrowLeft size={18} color={colors.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('merchant.orders')}</Text>
       </View>
 
-      <StatusFilterBar filter={filter} onSelect={setFilter} />
+      <StatusFilterBar filter={filter} onSelect={setFilter} styles={styles} />
 
       {isLoading
         ? (
@@ -77,7 +148,7 @@ export default function MerchantOrdersScreen() {
             <FlashList
               data={orders}
               keyExtractor={item => item.id}
-              renderItem={({ item }) => <MerchantOrderCard order={item} />}
+              renderItem={({ item }) => <MerchantOrderCard order={item} styles={styles} colors={colors} />}
               onEndReached={() => {
                 if (hasNextPage && !isFetchingNextPage)
                   fetchNextPage();
@@ -88,7 +159,7 @@ export default function MerchantOrdersScreen() {
               refreshing={false}
               ListEmptyComponent={(
                 <View style={styles.empty}>
-                  <InboxSimple size={48} color={DARK.textMuted} />
+                  <InboxSimple size={48} color={colors.textMuted} />
                   <Text style={styles.emptyText}>{t('common.no_results')}</Text>
                 </View>
               )}
@@ -103,7 +174,7 @@ export default function MerchantOrdersScreen() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function StatusFilterBar({ filter, onSelect }: { filter: StatusFilter; onSelect: (f: StatusFilter) => void }) {
+function StatusFilterBar({ filter, onSelect, styles }: { filter: StatusFilter; onSelect: (f: StatusFilter) => void; styles: any }) {
   const { t } = useTranslation();
   return (
     <ScrollView
@@ -129,9 +200,11 @@ function StatusFilterBar({ filter, onSelect }: { filter: StatusFilter; onSelect:
   );
 }
 
-function MerchantOrderCard({ order }: { order: MerchantOrder }) {
+function MerchantOrderCard({ order, styles, colors }: { order: MerchantOrder; styles: any; colors: any }) {
   const { t } = useTranslation();
-  const statusColor = STATUS_COLOR[order.status] ?? DARK.elevated;
+  const statusColor = (order.status === 'DELIVERED' || order.status === 'CANCELLED')
+    ? colors.elevated
+    : (STATUS_COLOR[order.status] ?? colors.elevated);
   const time = new Date(order.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
   return (
@@ -158,70 +231,3 @@ function MerchantOrderCard({ order }: { order: MerchantOrder }) {
     </Pressable>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  nav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.md,
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-    gap: SPACING.sm,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: DARK.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
-  filterBar: {
-    backgroundColor: DARK.bg,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-  },
-  filterBarContent: {
-    flexDirection: 'row',
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.sm,
-    gap: SPACING.sm,
-  },
-  filterChip: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: 6,
-    borderRadius: RADIUS.full,
-    borderWidth: 1,
-    borderColor: DARK.border,
-  },
-  filterChipActive: { backgroundColor: BRAND.gold, borderColor: BRAND.gold },
-  filterChipText: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted, fontWeight: '500' },
-  filterChipTextActive: { color: DARK.bg },
-  loadingPad: { padding: SPACING.base },
-  listContent: { padding: SPACING.base },
-  empty: { alignItems: 'center', paddingTop: 80, gap: SPACING.md },
-  emptyText: { fontFamily: FONT.sans, fontSize: 15, color: DARK.textMuted },
-  card: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    marginBottom: SPACING.md,
-    gap: SPACING.xs,
-  },
-  cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  cardLeft: { gap: 2 },
-  cardRight: { alignItems: 'flex-end', gap: 4 },
-  unitLabel: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: BRAND.gold },
-  customerName: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted },
-  statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: RADIUS.full },
-  statusText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: DARK.text },
-  time: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted },
-  items: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted },
-  total: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: DARK.text },
-});

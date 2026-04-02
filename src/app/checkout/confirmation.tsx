@@ -6,12 +6,57 @@ import { useTranslation } from 'react-i18next';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bg,
+      justifyContent: 'space-between' as const,
+      paddingHorizontal: SPACING.xl,
+    },
+    body: {
+      flex: 1,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      gap: SPACING.xl,
+    },
+    iconWrap: {
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    textWrap: { alignItems: 'center' as const, gap: SPACING.sm },
+    title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 26, color: colors.text, textAlign: 'center' as const },
+    subtitle: { fontFamily: FONT.sans, fontSize: 15, color: colors.textMuted, textAlign: 'center' as const, lineHeight: 24 },
+    actions: { gap: SPACING.md },
+    viewOrderBtn: {
+      height: 52,
+      borderRadius: RADIUS.md,
+      backgroundColor: BRAND.gold,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    viewOrderBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.bg },
+    continueBtn: {
+      height: 48,
+      borderRadius: RADIUS.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    continueBtnText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: colors.textMuted },
+  }), [colors]);
+}
 
 export default function ConfirmationScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
+  const styles = useStyles();
 
   // Entry animations
   const scale = React.useRef(new Animated.Value(0)).current;
@@ -72,43 +117,3 @@ export default function ConfirmationScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: DARK.bg,
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.xl,
-  },
-  body: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: SPACING.xl,
-  },
-  iconWrap: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textWrap: { alignItems: 'center', gap: SPACING.sm },
-  title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 26, color: DARK.text, textAlign: 'center' },
-  subtitle: { fontFamily: FONT.sans, fontSize: 15, color: DARK.textMuted, textAlign: 'center', lineHeight: 24 },
-  actions: { gap: SPACING.md },
-  viewOrderBtn: {
-    height: 52,
-    borderRadius: RADIUS.md,
-    backgroundColor: BRAND.gold,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  viewOrderBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.bg },
-  continueBtn: {
-    height: 48,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: DARK.border,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  continueBtnText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: DARK.textMuted },
-});

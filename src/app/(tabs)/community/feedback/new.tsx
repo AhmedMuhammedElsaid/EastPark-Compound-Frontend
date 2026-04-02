@@ -21,8 +21,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { z } from 'zod';
 import { ArrowLeft } from 'phosphor-react-native';
 
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { communityApi } from '@/services/api/community';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const CATEGORIES: FeedbackCategory[] = [
   'MAINTENANCE',
@@ -42,10 +43,89 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    nav: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingBottom: SPACING.sm,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      gap: SPACING.sm,
+    },
+    backBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.elevated,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    scroll: { padding: SPACING.base, gap: SPACING.md },
+    section: { gap: SPACING.sm },
+    label: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 13, color: colors.text },
+    categoryGrid: { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: SPACING.sm },
+    catChip: {
+      paddingHorizontal: SPACING.md,
+      paddingVertical: SPACING.sm,
+      borderRadius: RADIUS.full,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    catChipActive: { backgroundColor: BRAND.gold, borderColor: BRAND.gold },
+    catChipText: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, fontWeight: '500' },
+    catChipTextActive: { color: colors.bg },
+    input: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingHorizontal: SPACING.md,
+      paddingVertical: SPACING.sm,
+      fontFamily: FONT.sans,
+      fontSize: 14,
+      color: colors.text,
+      height: 48,
+    },
+    inputMultiline: { height: 120, textAlignVertical: 'top' as const, paddingTop: SPACING.md },
+    inputFocused: { borderColor: BRAND.gold },
+    inputError: { borderColor: SEMANTIC.error },
+    errorText: { fontFamily: FONT.sans, fontSize: 12, color: SEMANTIC.error },
+    anonymousRow: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'space-between' as const,
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+    },
+    anonymousText: { flex: 1, gap: 2 },
+    anonymousLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text },
+    anonymousSubtitle: { fontFamily: FONT.sans, fontSize: 12, color: colors.textMuted },
+    submitBtn: {
+      height: 52,
+      borderRadius: RADIUS.md,
+      backgroundColor: BRAND.gold,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      marginTop: SPACING.md,
+    },
+    submitBtnDisabled: { opacity: 0.5 },
+    submitBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.bg },
+  }), [colors]);
+}
+
 export default function NewFeedbackScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
+  const styles = useStyles();
+  const colors = useAppColors();
 
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -67,7 +147,7 @@ export default function NewFeedbackScreen() {
     >
       <View style={[styles.nav, { paddingTop: insets.top + SPACING.sm }]}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <ArrowLeft size={18} color={DARK.text} />
+          <ArrowLeft size={18} color={colors.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('feedback.new')}</Text>
       </View>
@@ -77,10 +157,10 @@ export default function NewFeedbackScreen() {
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + SPACING.xl }]}
         keyboardShouldPersistTaps="handled"
       >
-        <CategoryPickerField control={control} />
-        <RhfTextInput control={control} name="title" label={t('feedback.feedback_title')} error={errors.title?.message} />
-        <RhfTextInput control={control} name="body" label={t('feedback.feedback_body')} error={errors.body?.message} multiline />
-        <AnonymousToggleField control={control} />
+        <CategoryPickerField control={control} styles={styles} />
+        <RhfTextInput control={control} name="title" label={t('feedback.feedback_title')} error={errors.title?.message} styles={styles} colors={colors} />
+        <RhfTextInput control={control} name="body" label={t('feedback.feedback_body')} error={errors.body?.message} multiline styles={styles} colors={colors} />
+        <AnonymousToggleField control={control} styles={styles} colors={colors} />
 
         <Pressable
           style={[styles.submitBtn, isPending && styles.submitBtnDisabled]}
@@ -98,7 +178,7 @@ export default function NewFeedbackScreen() {
 
 // ─── Form field sub-components ────────────────────────────────────────────────
 
-function CategoryPickerField({ control }: { control: any }) {
+function CategoryPickerField({ control, styles }: { control: any; styles: any }) {
   const { t } = useTranslation();
   const { field } = useController({ control, name: 'category' });
 
@@ -131,12 +211,16 @@ function RhfTextInput({
   label,
   error,
   multiline,
+  styles,
+  colors,
 }: {
   control: any;
   name: string;
   label: string;
   error?: string;
   multiline?: boolean;
+  styles: any;
+  colors: any;
 }) {
   const { field } = useController({ control, name });
   const [isFocused, setIsFocused] = React.useState(false);
@@ -152,7 +236,7 @@ function RhfTextInput({
           setIsFocused(false);
         }}
         onFocus={() => setIsFocused(true)}
-        placeholderTextColor={DARK.textMuted}
+        placeholderTextColor={colors.textMuted}
         placeholder={label}
         multiline={multiline}
         style={[
@@ -167,7 +251,7 @@ function RhfTextInput({
   );
 }
 
-function AnonymousToggleField({ control }: { control: any }) {
+function AnonymousToggleField({ control, styles, colors }: { control: any; styles: any; colors: any }) {
   const { t } = useTranslation();
   const { field } = useController({ control, name: 'isAnonymous' });
 
@@ -180,85 +264,9 @@ function AnonymousToggleField({ control }: { control: any }) {
       <Switch
         value={field.value as boolean}
         onValueChange={field.onChange}
-        trackColor={{ true: BRAND.gold, false: DARK.elevated }}
-        thumbColor={DARK.text}
+        trackColor={{ true: BRAND.gold, false: colors.elevated }}
+        thumbColor={colors.text}
       />
     </View>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  nav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingBottom: SPACING.sm,
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-    gap: SPACING.sm,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: DARK.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
-  scroll: { padding: SPACING.base, gap: SPACING.md },
-  section: { gap: SPACING.sm },
-  label: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 13, color: DARK.text },
-  categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
-  catChip: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: RADIUS.full,
-    borderWidth: 1,
-    borderColor: DARK.border,
-  },
-  catChipActive: { backgroundColor: BRAND.gold, borderColor: BRAND.gold },
-  catChipText: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted, fontWeight: '500' },
-  catChipTextActive: { color: DARK.bg },
-  input: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: DARK.border,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    fontFamily: FONT.sans,
-    fontSize: 14,
-    color: DARK.text,
-    height: 48,
-  },
-  inputMultiline: { height: 120, textAlignVertical: 'top', paddingTop: SPACING.md },
-  inputFocused: { borderColor: BRAND.gold },
-  inputError: { borderColor: SEMANTIC.error },
-  errorText: { fontFamily: FONT.sans, fontSize: 12, color: SEMANTIC.error },
-  anonymousRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-  },
-  anonymousText: { flex: 1, gap: 2 },
-  anonymousLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text },
-  anonymousSubtitle: { fontFamily: FONT.sans, fontSize: 12, color: DARK.textMuted },
-  submitBtn: {
-    height: 52,
-    borderRadius: RADIUS.md,
-    backgroundColor: BRAND.gold,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: SPACING.md,
-  },
-  submitBtnDisabled: { opacity: 0.5 },
-  submitBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.bg },
-});

@@ -8,9 +8,93 @@ import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'rea
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'phosphor-react-native';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
 import { governanceApi } from '@/services/api/governance';
-import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    nav: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingVertical: SPACING.md,
+      gap: SPACING.sm,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    backBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.elevated,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    scroll: { padding: SPACING.base },
+    title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 22, color: colors.text, lineHeight: 30, marginBottom: SPACING.sm },
+    description: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, lineHeight: 22, marginBottom: SPACING.md },
+    sealedBanner: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      marginBottom: SPACING.md,
+      borderLeftWidth: 3,
+      borderLeftColor: BRAND.gold,
+    },
+    sealedText: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
+    sectionTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text, marginBottom: SPACING.md },
+    candidates: { gap: SPACING.md },
+    candidateCard: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      gap: SPACING.sm,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    candidateSelected: { borderColor: BRAND.gold },
+    candidateTop: { flexDirection: 'row' as const, gap: SPACING.md },
+    avatar: { width: 56, height: 56, borderRadius: 28 },
+    avatarFallback: { backgroundColor: colors.elevated, justifyContent: 'center' as const, alignItems: 'center' as const },
+    avatarInitial: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 20, color: BRAND.gold },
+    candidateInfo: { flex: 1 },
+    candidateName: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text },
+    candidateStatement: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, lineHeight: 20, marginTop: 4 },
+    voteBar: {
+      height: 28,
+      backgroundColor: colors.elevated,
+      borderRadius: RADIUS.sm,
+      overflow: 'hidden' as const,
+      justifyContent: 'center' as const,
+      paddingHorizontal: SPACING.sm,
+    },
+    voteBarFill: {
+      position: 'absolute' as const,
+      left: 0,
+      top: 0,
+      bottom: 0,
+      backgroundColor: `${BRAND.gold}33`,
+    },
+    voteBarText: { fontFamily: FONT.sans, fontSize: 12, color: colors.text, fontWeight: '600' },
+    voteBtn: {
+      height: 40,
+      borderRadius: RADIUS.md,
+      backgroundColor: BRAND.gold,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    voteBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: colors.bg },
+    votedRow: { alignItems: 'center' as const },
+    votedText: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: '600' },
+    meta: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, marginTop: SPACING.lg, textAlign: 'center' as const },
+  }), [colors]);
+}
 
 export default function ElectionScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -18,6 +102,8 @@ export default function ElectionScreen() {
   const insets = useSafeAreaInsets();
   const { requireAuth } = useAuthGuard();
   const queryClient = useQueryClient();
+  const styles = useStyles();
+  const colors = useAppColors();
 
   const { data, isLoading } = useQuery({
     queryKey: ['election', id],
@@ -61,7 +147,7 @@ export default function ElectionScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <ArrowLeft size={18} color={DARK.text} />
+          <ArrowLeft size={18} color={colors.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('governance.elections')}</Text>
       </View>
@@ -89,6 +175,7 @@ export default function ElectionScreen() {
           maxVotes={maxVotes}
           onVote={handleVote}
           isPending={isPending}
+          styles={styles}
         />
 
         <Text style={styles.meta}>
@@ -118,6 +205,7 @@ function CandidateList({
   maxVotes,
   onVote,
   isPending,
+  styles,
 }: {
   candidates: Candidate[];
   isAr: boolean;
@@ -126,6 +214,7 @@ function CandidateList({
   maxVotes: number;
   onVote: (id: string, name: string) => void;
   isPending: boolean;
+  styles: any;
 }) {
   return (
     <View style={styles.candidates}>
@@ -152,6 +241,7 @@ function CandidateList({
               if (!myVote && !isPending)
                 onVote(candidate.id, name);
             }}
+            styles={styles}
           />
         );
       })}
@@ -169,6 +259,7 @@ function CandidateCard({
   votes,
   pct,
   onVote,
+  styles,
 }: {
   name: string;
   statement: string | null;
@@ -179,6 +270,7 @@ function CandidateCard({
   votes: number | undefined;
   pct: number;
   onVote: () => void;
+  styles: any;
 }) {
   const { t } = useTranslation();
   return (
@@ -225,9 +317,11 @@ function CandidateCard({
 }
 
 function ElectionSkeleton({ insets }: { insets: { top: number } }) {
+  const colors = useAppColors();
+  const styles = useStyles();
   return (
     <View style={styles.container}>
-      <View style={{ height: insets.top + 56, backgroundColor: DARK.card }} />
+      <View style={{ height: insets.top + 56, backgroundColor: colors.card }} />
       <View style={{ padding: SPACING.base, gap: SPACING.md }}>
         <Skeleton width="70%" height={28} />
         <Skeleton width="100%" height={100} borderRadius={RADIUS.md} />
@@ -236,85 +330,3 @@ function ElectionSkeleton({ insets }: { insets: { top: number } }) {
     </View>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  nav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.md,
-    gap: SPACING.sm,
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: DARK.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
-  scroll: { padding: SPACING.base },
-  title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 22, color: DARK.text, lineHeight: 30, marginBottom: SPACING.sm },
-  description: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, lineHeight: 22, marginBottom: SPACING.md },
-  sealedBanner: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    marginBottom: SPACING.md,
-    borderLeftWidth: 3,
-    borderLeftColor: BRAND.gold,
-  },
-  sealedText: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted },
-  sectionTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.text, marginBottom: SPACING.md },
-  candidates: { gap: SPACING.md },
-  candidateCard: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    gap: SPACING.sm,
-    borderWidth: 1,
-    borderColor: DARK.border,
-  },
-  candidateSelected: { borderColor: BRAND.gold },
-  candidateTop: { flexDirection: 'row', gap: SPACING.md },
-  avatar: { width: 56, height: 56, borderRadius: 28 },
-  avatarFallback: { backgroundColor: DARK.elevated, justifyContent: 'center', alignItems: 'center' },
-  avatarInitial: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 20, color: BRAND.gold },
-  candidateInfo: { flex: 1 },
-  candidateName: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.text },
-  candidateStatement: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted, lineHeight: 20, marginTop: 4 },
-  voteBar: {
-    height: 28,
-    backgroundColor: DARK.elevated,
-    borderRadius: RADIUS.sm,
-    overflow: 'hidden',
-    justifyContent: 'center',
-    paddingHorizontal: SPACING.sm,
-  },
-  voteBarFill: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: `${BRAND.gold}33`,
-  },
-  voteBarText: { fontFamily: FONT.sans, fontSize: 12, color: DARK.text, fontWeight: '600' },
-  voteBtn: {
-    height: 40,
-    borderRadius: RADIUS.md,
-    backgroundColor: BRAND.gold,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  voteBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: DARK.bg },
-  votedRow: { alignItems: 'center' },
-  votedText: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: '600' },
-  meta: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted, marginTop: SPACING.lg, textAlign: 'center' },
-});

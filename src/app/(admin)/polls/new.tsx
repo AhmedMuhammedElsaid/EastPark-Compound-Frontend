@@ -11,8 +11,9 @@ import { z } from 'zod';
 
 import { ArrowLeft } from 'phosphor-react-native';
 
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { governanceApi } from '@/services/api/governance';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const optionSchema = z.object({ text: z.string().min(1), textAr: z.string().min(1) });
 const schema = z.object({
@@ -23,11 +24,34 @@ const schema = z.object({
 });
 type FormValues = z.infer<typeof schema>;
 
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    nav: { flexDirection: 'row' as const, alignItems: 'center' as const, paddingHorizontal: SPACING.base, paddingVertical: SPACING.md, backgroundColor: colors.card, borderBottomWidth: 1, borderBottomColor: colors.border, gap: SPACING.sm },
+    backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.elevated, justifyContent: 'center' as const, alignItems: 'center' as const },
+    navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    scroll: { padding: SPACING.base, gap: SPACING.sm },
+    label: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 13, color: colors.textMuted, marginTop: SPACING.md, marginBottom: SPACING.xs },
+    input: { backgroundColor: colors.card, borderRadius: RADIUS.md, paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, fontFamily: FONT.sans, fontSize: 14, color: colors.text, borderWidth: 1, borderColor: colors.border },
+    inputError: { borderColor: SEMANTIC.error },
+    optionRow: { gap: SPACING.xs, marginBottom: SPACING.sm },
+    optionInput: { flex: 1 },
+    addOptionBtn: { alignItems: 'center' as const, paddingVertical: SPACING.sm },
+    addOptionText: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: '600' },
+    submitBtn: { height: 52, borderRadius: RADIUS.md, backgroundColor: BRAND.gold, justifyContent: 'center' as const, alignItems: 'center' as const, marginTop: SPACING.xl },
+    submitBtnDisabled: { opacity: 0.5 },
+    submitBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.bg },
+  }), [colors]);
+}
+
 export default function NewPollScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const [optionCount, setOptionCount] = React.useState(2);
+  const styles = useStyles();
+  const colors = useAppColors();
 
   const { control, handleSubmit, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -55,34 +79,34 @@ export default function NewPollScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <ArrowLeft size={18} color={DARK.text} />
+          <ArrowLeft size={18} color={colors.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('admin.new_poll')}</Text>
       </View>
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + SPACING.xl }]}>
         <Text style={styles.label}>{t('admin.question_en')}</Text>
         <Controller control={control} name="question" render={({ field }) => (
-          <TextInput style={[styles.input, errors.question && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={DARK.textMuted} placeholder={t('admin.question_en')} />
+          <TextInput style={[styles.input, errors.question && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.question_en')} />
         )} />
 
         <Text style={styles.label}>{t('admin.question_ar')}</Text>
         <Controller control={control} name="questionAr" render={({ field }) => (
-          <TextInput style={[styles.input, errors.questionAr && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={DARK.textMuted} placeholder={t('admin.question_ar')} textAlign="right" />
+          <TextInput style={[styles.input, errors.questionAr && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.question_ar')} textAlign="right" />
         )} />
 
         <Text style={styles.label}>{t('admin.expires_at')}</Text>
         <Controller control={control} name="expiresAt" render={({ field }) => (
-          <TextInput style={[styles.input, errors.expiresAt && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={DARK.textMuted} placeholder="YYYY-MM-DD" />
+          <TextInput style={[styles.input, errors.expiresAt && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder="YYYY-MM-DD" />
         )} />
 
         <Text style={styles.label}>{t('admin.options')}</Text>
         {Array.from({ length: optionCount }).map((_, i) => (
           <View key={i} style={styles.optionRow}>
             <Controller control={control} name={`options.${i}.text`} render={({ field }) => (
-              <TextInput style={[styles.input, styles.optionInput]} value={field.value} onChangeText={field.onChange} placeholderTextColor={DARK.textMuted} placeholder={`${t('admin.option')} ${i + 1} (EN)`} />
+              <TextInput style={[styles.input, styles.optionInput]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={`${t('admin.option')} ${i + 1} (EN)`} />
             )} />
             <Controller control={control} name={`options.${i}.textAr`} render={({ field }) => (
-              <TextInput style={[styles.input, styles.optionInput]} value={field.value} onChangeText={field.onChange} placeholderTextColor={DARK.textMuted} placeholder={`${t('admin.option')} ${i + 1} (AR)`} textAlign="right" />
+              <TextInput style={[styles.input, styles.optionInput]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={`${t('admin.option')} ${i + 1} (AR)`} textAlign="right" />
             )} />
           </View>
         ))}
@@ -99,21 +123,3 @@ export default function NewPollScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  nav: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SPACING.base, paddingVertical: SPACING.md, backgroundColor: DARK.card, borderBottomWidth: 1, borderBottomColor: DARK.border, gap: SPACING.sm },
-  backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: DARK.elevated, justifyContent: 'center', alignItems: 'center' },
-  navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
-  scroll: { padding: SPACING.base, gap: SPACING.sm },
-  label: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 13, color: DARK.textMuted, marginTop: SPACING.md, marginBottom: SPACING.xs },
-  input: { backgroundColor: DARK.card, borderRadius: RADIUS.md, paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, fontFamily: FONT.sans, fontSize: 14, color: DARK.text, borderWidth: 1, borderColor: DARK.border },
-  inputError: { borderColor: SEMANTIC.error },
-  optionRow: { gap: SPACING.xs, marginBottom: SPACING.sm },
-  optionInput: { flex: 1 },
-  addOptionBtn: { alignItems: 'center', paddingVertical: SPACING.sm },
-  addOptionText: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: '600' },
-  submitBtn: { height: 52, borderRadius: RADIUS.md, backgroundColor: BRAND.gold, justifyContent: 'center', alignItems: 'center', marginTop: SPACING.xl },
-  submitBtnDisabled: { opacity: 0.5 },
-  submitBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.bg },
-});

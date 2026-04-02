@@ -15,17 +15,79 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ArrowLeft } from 'phosphor-react-native';
 
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAppSelector } from '@/store';
-import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    nav: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingBottom: SPACING.sm,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      gap: SPACING.sm,
+    },
+    backBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.elevated,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    scroll: { padding: SPACING.base, gap: SPACING.lg },
+    section: { gap: SPACING.sm },
+    label: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text },
+    optional: { fontFamily: FONT.sans, fontWeight: '400', fontSize: 13, color: colors.textMuted },
+    unitBox: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    unitLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 16, color: colors.text },
+    unitHint: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
+    notesInput: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingHorizontal: SPACING.md,
+      paddingTop: SPACING.md,
+      fontFamily: FONT.sans,
+      fontSize: 14,
+      color: colors.text,
+      height: 100,
+      textAlignVertical: 'top' as const,
+    },
+    nextBtn: {
+      height: 52,
+      borderRadius: RADIUS.md,
+      backgroundColor: BRAND.gold,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    nextBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.bg },
+  }), [colors]);
+}
 
 export default function AddressScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const user = useAppSelector(s => s.auth.user);
   const [notes, setNotes] = React.useState('');
+  const styles = useStyles();
+  const colors = useAppColors();
 
   function handleNext() {
-    // Notes saved via navigation param
     router.push({ pathname: '/checkout/payment' as any, params: { notes } });
   }
 
@@ -36,7 +98,7 @@ export default function AddressScreen() {
     >
       <View style={[styles.nav, { paddingTop: insets.top + SPACING.sm }]}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
-          <ArrowLeft size={18} color={DARK.text} />
+          <ArrowLeft size={18} color={colors.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('checkout.title')}</Text>
       </View>
@@ -73,7 +135,7 @@ export default function AddressScreen() {
             value={notes}
             onChangeText={setNotes}
             placeholder={t('checkout.notes_placeholder')}
-            placeholderTextColor={DARK.textMuted}
+            placeholderTextColor={colors.textMuted}
             multiline
             numberOfLines={4}
             style={styles.notesInput}
@@ -87,60 +149,3 @@ export default function AddressScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  nav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingBottom: SPACING.sm,
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-    gap: SPACING.sm,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: DARK.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
-  scroll: { padding: SPACING.base, gap: SPACING.lg },
-  section: { gap: SPACING.sm },
-  label: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text },
-  optional: { fontFamily: FONT.sans, fontWeight: '400', fontSize: 13, color: DARK.textMuted },
-  unitBox: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    borderWidth: 1,
-    borderColor: DARK.border,
-  },
-  unitLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 16, color: DARK.text },
-  unitHint: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted },
-  notesInput: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: DARK.border,
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.md,
-    fontFamily: FONT.sans,
-    fontSize: 14,
-    color: DARK.text,
-    height: 100,
-    textAlignVertical: 'top',
-  },
-  nextBtn: {
-    height: 52,
-    borderRadius: RADIUS.md,
-    backgroundColor: BRAND.gold,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  nextBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.bg },
-});

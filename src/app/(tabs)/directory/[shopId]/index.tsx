@@ -12,17 +12,144 @@ import { Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'r
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency } from '@/lib/formatCurrency';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
 import { shopsApi } from '@/services/api/shops';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { addItem } from '@/store/slices/cartSlice';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    hero: { width: '100%', height: 240, backgroundColor: colors.elevated },
+    heroImage: { width: '100%', height: '100%' },
+    heroPlaceholder: { backgroundColor: colors.elevated },
+    heroNav: {
+      position: 'absolute' as const,
+      left: 0,
+      right: 0,
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      paddingHorizontal: SPACING.base,
+    },
+    navBtn: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: 'rgba(13,12,11,0.6)',
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    tabBar: {
+      flexDirection: 'row' as const,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    tab: {
+      flex: 1,
+      height: 48,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      borderBottomWidth: 2,
+      borderBottomColor: 'transparent',
+    },
+    tabActive: { borderBottomColor: BRAND.gold },
+    tabText: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, fontWeight: '500' },
+    tabTextActive: { color: BRAND.gold },
+    info: { padding: SPACING.base, gap: SPACING.sm },
+    nameRow: { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, gap: SPACING.sm },
+    name: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 22, color: colors.text, flex: 1 },
+    statusBadge: { paddingHorizontal: SPACING.sm, paddingVertical: 3, borderRadius: RADIUS.full },
+    badgeOpen: { backgroundColor: SEMANTIC.success },
+    badgeClosed: { backgroundColor: colors.elevated, borderWidth: 1, borderColor: colors.border },
+    statusText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: colors.text },
+    ratingRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: SPACING.xs },
+    rating: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted },
+    description: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, lineHeight: 22 },
+    ctaRow: { flexDirection: 'row' as const, gap: SPACING.sm, marginTop: SPACING.xs },
+    ctaBtn: {
+      flex: 1,
+      height: 44,
+      borderRadius: RADIUS.md,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    ctaBtnWhatsapp: { borderColor: '#25D366' }, // WhatsApp brand green — intentional
+    ctaBtnText: { fontFamily: FONT.sans, fontSize: 14, color: colors.text, fontWeight: '500' },
+    tabContent: { padding: SPACING.base, gap: SPACING.sm },
+    emptyTab: { padding: SPACING['3xl'], alignItems: 'center' as const },
+    emptyText: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted },
+    productRow: {
+      flexDirection: 'row' as const,
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.sm,
+      padding: SPACING.md,
+      gap: SPACING.md,
+      marginBottom: SPACING.sm,
+    },
+    productInfo: { flex: 1, gap: SPACING.xs },
+    productName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: colors.text },
+    productDesc: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, lineHeight: 20 },
+    productPrice: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: BRAND.gold },
+    productRight: { alignItems: 'center' as const, gap: SPACING.xs },
+    productImage: { width: 72, height: 72, borderRadius: RADIUS.sm },
+    addBtn: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: BRAND.gold,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    reviewCard: {
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.sm,
+      padding: SPACING.md,
+      gap: SPACING.xs,
+      marginBottom: SPACING.sm,
+    },
+    reviewHeader: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const },
+    reviewerName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text },
+    reviewStars: { flexDirection: 'row' as const, gap: 2 },
+    reviewComment: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, lineHeight: 22 },
+    cartBar: {
+      position: 'absolute' as const,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: BRAND.gold,
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingTop: SPACING.md,
+      gap: SPACING.sm,
+    },
+    cartBarBadge: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      backgroundColor: 'rgba(0,0,0,0.2)',
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    cartBarBadgeText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 13, color: colors.text },
+    cartBarLabel: { flex: 1, fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: colors.bg },
+    cartBarTotal: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: colors.bg },
+  }), [colors]);
+}
 
 export default function ShopDetailScreen() {
   const { shopId } = useLocalSearchParams<{ shopId: string }>();
   const { i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const { requireAuth } = useAuthGuard();
+  const styles = useStyles();
   const [saved, setSaved] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<'menu' | 'reviews'>('menu');
 
@@ -89,6 +216,8 @@ type ShopHeroProps = {
 
 function ShopHero({ shop, saved, onBack, onSave, topInset }: ShopHeroProps) {
   const { t } = useTranslation();
+  const colors = useAppColors();
+  const styles = useStyles();
   const coverPhoto = shop.photos[0];
   return (
     <View style={styles.hero}>
@@ -97,10 +226,10 @@ function ShopHero({ shop, saved, onBack, onSave, topInset }: ShopHeroProps) {
         : <View style={[styles.heroImage, styles.heroPlaceholder]} />}
       <View style={[styles.heroNav, { top: topInset + SPACING.sm }]}>
         <Pressable style={styles.navBtn} onPress={onBack} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-          <ArrowLeft size={20} color={DARK.text} />
+          <ArrowLeft size={20} color={colors.text} />
         </Pressable>
         <Pressable style={styles.navBtn} onPress={onSave} hitSlop={8} accessibilityRole="button" accessibilityLabel={saved ? t('directory.saved') : t('directory.save')}>
-          {saved ? <Heart size={20} color={DARK.text} weight="fill" /> : <HeartStraight size={20} color={DARK.text} />}
+          {saved ? <Heart size={20} color={colors.text} weight="fill" /> : <HeartStraight size={20} color={colors.text} />}
         </Pressable>
       </View>
     </View>
@@ -115,6 +244,7 @@ function ShopTabBar({
   onTabChange: (tab: 'menu' | 'reviews') => void;
 }) {
   const { t } = useTranslation();
+  const styles = useStyles();
   return (
     <View style={styles.tabBar}>
       {(['menu', 'reviews'] as const).map(tab => (
@@ -137,6 +267,8 @@ function ShopTabBar({
 
 function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
   const { t } = useTranslation();
+  const colors = useAppColors();
+  const styles = useStyles();
   const displayName = isAr ? shop.nameAr : shop.name;
   const description = isAr ? shop.descriptionAr : shop.description;
 
@@ -169,7 +301,7 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
         {shop.phone
           ? (
               <Pressable style={styles.ctaBtn} onPress={() => { if (shop?.phone) Linking.openURL(`tel:${shop.phone}`); }} accessibilityRole="button" accessibilityLabel={t('directory.call')}>
-                <Phone size={16} color={DARK.text} />
+                <Phone size={16} color={colors.text} />
                 <Text style={styles.ctaBtnText}>
                   {t('directory.call')}
                 </Text>
@@ -184,7 +316,7 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
                 accessibilityRole="button"
                 accessibilityLabel="WhatsApp"
               >
-                <ChatCircle size={16} color={DARK.text} />
+                <ChatCircle size={16} color={colors.text} />
                 <Text style={styles.ctaBtnText}>WhatsApp</Text>
               </Pressable>
             )
@@ -196,6 +328,7 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
 
 function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string }) {
   const { t, i18n } = useTranslation();
+  const styles = useStyles();
 
   const isAr = i18n.language === 'ar';
 
@@ -263,6 +396,8 @@ function ProductRow({
   const { t } = useTranslation();
   const { requireAuth } = useAuthGuard();
   const dispatch = useAppDispatch();
+  const colors = useAppColors();
+  const styles = useStyles();
   const name = isAr ? product.nameAr : product.name;
   const desc = isAr ? product.descriptionAr : product.description;
 
@@ -290,7 +425,7 @@ function ProductRow({
             )
           : null}
         <Pressable style={styles.addBtn} onPress={handleAddToCart} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('directory.add_to_cart')}>
-          <Plus size={20} color={DARK.bg} />
+          <Plus size={20} color={colors.bg} />
         </Pressable>
       </View>
     </View>
@@ -299,6 +434,7 @@ function ProductRow({
 
 function ReviewsTabContent({ shopId }: { shopId: string }) {
   const { t } = useTranslation();
+  const styles = useStyles();
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery<
     any,
     Error,
@@ -361,6 +497,7 @@ function ReviewsTabContent({ shopId }: { shopId: string }) {
 
 function CartBar({ shopId, bottomInset }: { shopId: string; bottomInset: number }) {
   const { t } = useTranslation();
+  const styles = useStyles();
   const { items, shopId: cartShopId } = useAppSelector(s => s.cart);
 
   if (cartShopId !== shopId || !items.length)
@@ -386,6 +523,7 @@ function CartBar({ shopId, bottomInset }: { shopId: string; bottomInset: number 
 }
 
 function ShopDetailSkeleton() {
+  const styles = useStyles();
   return (
     <View style={styles.container}>
       <Skeleton width="100%" height={240} borderRadius={0} />
@@ -398,127 +536,3 @@ function ShopDetailSkeleton() {
     </View>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  hero: { width: '100%', height: 240, backgroundColor: DARK.elevated },
-  heroImage: { width: '100%', height: '100%' },
-  heroPlaceholder: { backgroundColor: DARK.elevated },
-  heroNav: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.base,
-  },
-  navBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(13,12,11,0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  tabBar: {
-    flexDirection: 'row',
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-  },
-  tab: {
-    flex: 1,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-  },
-  tabActive: { borderBottomColor: BRAND.gold },
-  tabText: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, fontWeight: '500' },
-  tabTextActive: { color: BRAND.gold },
-  info: { padding: SPACING.base, gap: SPACING.sm },
-  nameRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SPACING.sm },
-  name: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 22, color: DARK.text, flex: 1 },
-  statusBadge: { paddingHorizontal: SPACING.sm, paddingVertical: 3, borderRadius: RADIUS.full },
-  badgeOpen: { backgroundColor: SEMANTIC.success },
-  badgeClosed: { backgroundColor: DARK.elevated, borderWidth: 1, borderColor: DARK.border },
-  statusText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: DARK.text },
-  ratingRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
-  rating: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted },
-  description: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, lineHeight: 22 },
-  ctaRow: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.xs },
-  ctaBtn: {
-    flex: 1,
-    height: 44,
-    borderRadius: RADIUS.md,
-    backgroundColor: DARK.card,
-    borderWidth: 1,
-    borderColor: DARK.border,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  ctaBtnWhatsapp: { borderColor: '#25D366' }, // WhatsApp brand green — intentional
-  ctaBtnText: { fontFamily: FONT.sans, fontSize: 14, color: DARK.text, fontWeight: '500' },
-  tabContent: { padding: SPACING.base, gap: SPACING.sm },
-  emptyTab: { padding: SPACING['3xl'], alignItems: 'center' },
-  emptyText: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted },
-  productRow: {
-    flexDirection: 'row',
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.sm,
-    padding: SPACING.md,
-    gap: SPACING.md,
-    marginBottom: SPACING.sm,
-  },
-  productInfo: { flex: 1, gap: SPACING.xs },
-  productName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: DARK.text },
-  productDesc: { fontFamily: FONT.sans, fontSize: 13, color: DARK.textMuted, lineHeight: 20 },
-  productPrice: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: BRAND.gold },
-  productRight: { alignItems: 'center', gap: SPACING.xs },
-  productImage: { width: 72, height: 72, borderRadius: RADIUS.sm },
-  addBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: BRAND.gold,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  reviewCard: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.sm,
-    padding: SPACING.md,
-    gap: SPACING.xs,
-    marginBottom: SPACING.sm,
-  },
-  reviewHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  reviewerName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.text },
-  reviewStars: { flexDirection: 'row', gap: 2 },
-  reviewComment: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, lineHeight: 22 },
-  cartBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: BRAND.gold,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingTop: SPACING.md,
-    gap: SPACING.sm,
-  },
-  cartBarBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cartBarBadgeText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 13, color: DARK.text },
-  cartBarLabel: { flex: 1, fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: DARK.bg },
-  cartBarTotal: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: DARK.bg },
-});

@@ -11,10 +11,85 @@ import { showMessage } from 'react-native-flash-message';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatCurrency } from '@/lib/formatCurrency';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { ordersApi } from '@/services/api/orders';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { clearCart } from '@/store/slices/cartSlice';
-import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    nav: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: SPACING.base,
+      paddingVertical: SPACING.md,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      gap: SPACING.sm,
+    },
+    backBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.elevated,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    content: { padding: SPACING.base, gap: SPACING.md },
+    sectionLabel: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text },
+    option: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      gap: SPACING.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    optionSelected: { borderColor: BRAND.gold },
+    optionIcon: { width: 24, height: 24, justifyContent: 'center' as const, alignItems: 'center' as const },
+    optionLabel: { flex: 1, fontFamily: FONT.sans, fontWeight: '500', fontSize: 15, color: colors.textMuted },
+    optionLabelSelected: { color: colors.text },
+    radio: {
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      borderWidth: 2,
+      borderColor: colors.border,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    radioSelected: { borderColor: BRAND.gold },
+    radioInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: BRAND.gold },
+    summary: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      alignItems: 'center' as const,
+      backgroundColor: colors.card,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      marginTop: SPACING.md,
+    },
+    summaryLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: colors.text },
+    summaryValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: BRAND.gold },
+    placeBtn: {
+      height: 52,
+      borderRadius: RADIUS.md,
+      backgroundColor: BRAND.gold,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      marginTop: SPACING.sm,
+    },
+    placeBtnDisabled: { opacity: 0.5 },
+    placeBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.bg },
+  }), [colors]);
+}
 
 export default function PaymentScreen() {
   const { t } = useTranslation();
@@ -23,6 +98,8 @@ export default function PaymentScreen() {
   const { notes } = useLocalSearchParams<{ notes?: string }>();
   const { items, shopId } = useAppSelector(s => s.cart);
   const [paymentMethod, setPaymentMethod] = React.useState<PaymentMethod>('CASH');
+  const styles = useStyles();
+  const colors = useAppColors();
 
   const total = items.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
 
@@ -53,7 +130,7 @@ export default function PaymentScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-          <ArrowLeft size={18} color={DARK.text} />
+          <ArrowLeft size={18} color={colors.text} />
         </Pressable>
         <Text style={styles.navTitle}>{t('checkout.payment')}</Text>
       </View>
@@ -63,15 +140,17 @@ export default function PaymentScreen() {
 
         <PaymentOption
           label={t('checkout.cash')}
-          icon={<Money size={24} color={DARK.textMuted} />}
+          icon={<Money size={24} color={colors.textMuted} />}
           selected={paymentMethod === 'CASH'}
           onPress={() => setPaymentMethod('CASH')}
+          styles={styles}
         />
         <PaymentOption
           label={t('checkout.card')}
-          icon={<CreditCard size={24} color={DARK.textMuted} />}
+          icon={<CreditCard size={24} color={colors.textMuted} />}
           selected={paymentMethod === 'PAYMOB'}
           onPress={() => setPaymentMethod('PAYMOB')}
+          styles={styles}
         />
 
         <View style={styles.summary}>
@@ -103,11 +182,13 @@ function PaymentOption({
   icon,
   selected,
   onPress,
+  styles,
 }: {
   label: string;
   icon: React.ReactNode;
   selected: boolean;
   onPress: () => void;
+  styles: any;
 }) {
   return (
     <Pressable
@@ -125,74 +206,3 @@ function PaymentOption({
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
-  nav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.md,
-    backgroundColor: DARK.card,
-    borderBottomWidth: 1,
-    borderBottomColor: DARK.border,
-    gap: SPACING.sm,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: DARK.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
-  content: { padding: SPACING.base, gap: SPACING.md },
-  sectionLabel: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.text },
-  option: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    gap: SPACING.md,
-    borderWidth: 1,
-    borderColor: DARK.border,
-  },
-  optionSelected: { borderColor: BRAND.gold },
-  optionIcon: { width: 24, height: 24, justifyContent: 'center', alignItems: 'center' },
-  optionLabel: { flex: 1, fontFamily: FONT.sans, fontWeight: '500', fontSize: 15, color: DARK.textMuted },
-  optionLabelSelected: { color: DARK.text },
-  radio: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: DARK.border,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  radioSelected: { borderColor: BRAND.gold },
-  radioInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: BRAND.gold },
-  summary: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    marginTop: SPACING.md,
-  },
-  summaryLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: DARK.text },
-  summaryValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: BRAND.gold },
-  placeBtn: {
-    height: 52,
-    borderRadius: RADIUS.md,
-    backgroundColor: BRAND.gold,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: SPACING.sm,
-  },
-  placeBtnDisabled: { opacity: 0.5 },
-  placeBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: DARK.bg },
-});
