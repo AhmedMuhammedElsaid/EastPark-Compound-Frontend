@@ -3,14 +3,7 @@ import * as Haptics from 'expo-haptics';
 import LottieView from 'lottie-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
@@ -21,17 +14,20 @@ export default function ConfirmationScreen() {
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
 
   // Entry animations
-  const scale = useSharedValue(0);
-  const opacity = useSharedValue(0);
+  const scale = React.useRef(new Animated.Value(0)).current;
+  const opacity = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
-    scale.value = withSpring(1, { damping: 12, stiffness: 120 });
-    opacity.value = withDelay(200, withTiming(1, { duration: 400 }));
+    Animated.spring(scale, { toValue: 1, damping: 12, stiffness: 120, useNativeDriver: true }).start();
+    Animated.sequence([
+      Animated.delay(200),
+      Animated.timing(opacity, { toValue: 1, duration: 400, useNativeDriver: true }),
+    ]).start();
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }, [opacity, scale]);
 
-  const iconStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
-  const contentStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  const iconStyle = { transform: [{ scale }] };
+  const contentStyle = { opacity };
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom + SPACING.xl, paddingTop: insets.top }]}>

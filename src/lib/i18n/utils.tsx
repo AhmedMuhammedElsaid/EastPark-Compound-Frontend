@@ -1,21 +1,22 @@
 import type TranslateOptions from 'i18next';
 import type { Language, resources } from './resources';
 import type { RecursiveKeyOf } from './types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from 'i18next';
 import memoize from 'lodash.memoize';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { I18nManager, NativeModules, Platform } from 'react-native';
 
-import { useMMKVString } from 'react-native-mmkv';
 import RNRestart from 'react-native-restart';
-import { storage } from '../storage';
 
 type DefaultLocale = typeof resources.en.translation;
 export type TxKeyPath = RecursiveKeyOf<DefaultLocale>;
 
 export const LOCAL = 'local';
 
-export const getLanguage = () => storage.getString(LOCAL); // 'Marc' getItem<Language | undefined>(LOCAL);
+// Synchronous fallback — AsyncStorage is async so this returns null on init.
+// i18n init falls back to getLocales()[0]?.languageTag which is correct.
+export const getLanguage = (): Language | null => null;
 
 export const translate = memoize(
   (key: TxKeyPath, options = undefined) =>
@@ -26,6 +27,7 @@ export const translate = memoize(
 
 export function changeLanguage(lang: Language) {
   i18n.changeLanguage(lang);
+  AsyncStorage.setItem(LOCAL, lang);
   if (lang === 'ar') {
     I18nManager.forceRTL(true);
   }
@@ -43,15 +45,20 @@ export function changeLanguage(lang: Language) {
 }
 
 export function useSelectedLanguage() {
-  const [language, setLang] = useMMKVString(LOCAL);
+  const [language, setLanguageState] = useState<Language | undefined>(undefined);
+
+  useEffect(() => {
+    AsyncStorage.getItem(LOCAL).then((val) => {
+      if (val) setLanguageState(val as Language);
+    });
+  }, []);
 
   const setLanguage = useCallback(
     (lang: Language) => {
-      setLang(lang);
-      if (lang !== undefined)
-        changeLanguage(lang as Language);
+      setLanguageState(lang);
+      changeLanguage(lang);
     },
-    [setLang],
+    [],
   );
 
   return { language: language as Language, setLanguage };

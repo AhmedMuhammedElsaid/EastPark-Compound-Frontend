@@ -9,7 +9,7 @@ import 'tsx/cjs';
 import Env from './env';
 
 // Leave blank until EAS project is initialized: eas init
-const EAS_PROJECT_ID = '';
+const EAS_PROJECT_ID = '062399ed-48df-4d4f-ba1a-a0801a86b1bc';
 
 const appIconBadgeConfig: AppIconBadgeConfig = {
   enabled: Env.EXPO_PUBLIC_APP_ENV !== 'production',
@@ -29,6 +29,7 @@ const appIconBadgeConfig: AppIconBadgeConfig = {
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
+  owner: 'ahmedmuhammedelsaid',
   name: Env.EXPO_PUBLIC_NAME,
   description: 'EastPark — Residential Compound Super-App',
   scheme: Env.EXPO_PUBLIC_SCHEME,

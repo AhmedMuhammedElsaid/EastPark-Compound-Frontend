@@ -1,33 +1,17 @@
 import type { TypedUseSelectorHook } from 'react-redux';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
-import { storage } from '@/lib/storage';
 
 import authReducer from './slices/authSlice';
 import cartReducer from './slices/cartSlice';
 import preferencesReducer from './slices/preferencesSlice';
 
-// MMKV-backed storage adapter for redux-persist
-const mmkvStorage = {
-  setItem: (key: string, value: string) => {
-    storage.set(key, value);
-    return Promise.resolve(true);
-  },
-  getItem: (key: string) => {
-    const value = storage.getString(key);
-    return Promise.resolve(value ?? null);
-  },
-  removeItem: (key: string) => {
-    storage.remove(key);
-    return Promise.resolve();
-  },
-};
-
 const authPersistConfig = {
   key: 'auth',
-  storage: mmkvStorage,
+  storage: AsyncStorage,
   // Tokens kept in SecureStore; Redux holds in-memory copy only for interceptors.
   // We still persist user + isAuthenticated for UI state (tokens re-read from SecureStore on startup).
   blacklist: ['showAuthWall', 'authWallConfig', 'accessToken', 'refreshToken'],
@@ -35,14 +19,14 @@ const authPersistConfig = {
 
 const cartPersistConfig = {
   key: 'cart',
-  storage: mmkvStorage,
+  storage: AsyncStorage,
   // Don't persist conflict-sheet transient state
   blacklist: ['pendingItem', 'pendingShopId', 'pendingShopName', 'showConflictSheet'],
 };
 
 const preferencesPersistConfig = {
   key: 'preferences',
-  storage: mmkvStorage,
+  storage: AsyncStorage,
 };
 
 export const store = configureStore({

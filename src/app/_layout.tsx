@@ -26,9 +26,6 @@ import '../global.css';
 // Inject Redux store into the Axios client for 401 token refresh + logout dispatch
 injectStore(store);
 
-// Restore theme from MMKV before first render
-loadSelectedTheme();
-
 SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({ duration: 500, fade: true });
 
@@ -65,6 +62,7 @@ export default function RootLayout() {
 function Providers({ children }: { children: React.ReactNode }) {
   useAuthRehydration();
   const theme = useThemeConfig();
+  React.useEffect(() => { loadSelectedTheme(); }, []);
   return (
     <GestureHandlerRootView
       style={styles.container}

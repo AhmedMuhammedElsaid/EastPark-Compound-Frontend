@@ -1,12 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import { Animated, StyleSheet, View } from 'react-native';
 
 import { DARK, RADIUS } from '@/theme/tokens';
 
@@ -19,31 +12,27 @@ type Props = {
 
 /**
  * Skeleton shimmer — pulsing opacity animation.
- * Used on all list screens instead of spinners (per DESIGN.md).
+ * Uses React Native's built-in Animated API (no reanimated) for Expo Go compatibility.
  * Colors: dark-card (#221f1c) → dark-elevated (#2e2a26) — warm, never grey.
  */
 export function Skeleton({ width = '100%', height = 16, borderRadius = RADIUS.sm, style }: Props) {
-  const opacity = useSharedValue(0.5);
+  const opacity = React.useRef(new Animated.Value(0.5)).current;
 
   React.useEffect(() => {
-    opacity.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 700 }),
-        withTiming(0.5, { duration: 700 }),
-      ),
-      -1,
-      false,
-    );
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, { toValue: 1, duration: 700, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 0.5, duration: 700, useNativeDriver: true }),
+      ]),
+    ).start();
+    return () => opacity.stopAnimation();
   }, [opacity]);
-
-  const animStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 
   return (
     <Animated.View
       style={[
         styles.base,
-        { width: width as any, height, borderRadius },
-        animStyle,
+        { width: width as any, height, borderRadius, opacity },
         style,
       ]}
     />
