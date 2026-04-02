@@ -102,7 +102,8 @@
     "react-native-nitro-modules": "^0.33.2",
     "react-native-otp-textinput": "^1.1.5",
     "react-native-pdf": "^6.7.6",
-    "react-native-reanimated": "~3.16.2",
+    "react-native-reanimated": "~4.1.1",
+    "react-native-worklets": "0.5.1",
     "react-native-reanimated-carousel": "^4.0.3",
     "react-native-restart": "0.0.27",
     "react-native-safe-area-context": "5.6.2",
@@ -176,6 +177,11 @@
         "eslint-config-expo",
         "redux-persist"
       ]
+    }
+  },
+  "pnpm": {
+    "overrides": {
+      "react-native-worklets": "0.5.1"
     }
   }
 }
