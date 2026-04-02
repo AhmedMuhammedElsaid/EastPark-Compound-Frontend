@@ -17,6 +17,7 @@ export const LIGHT = {
   bg: '#faf8f5',
   card: '#ffffff',
   surface: '#faf8f5',
+  elevated: '#f2e8d8', // modals, sheets, segment controls — warm tint above card
   primary: '#b8966a',
   primaryDark: '#9e7d52',
   primaryText: '#7a5e38',
