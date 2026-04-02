@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import { DARK } from '@/theme/tokens';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 
 /**
  * Profile stack layout.
@@ -8,11 +8,12 @@ import { DARK } from '@/theme/tokens';
  * This matches the design: guests can reach profile but see a sign-in prompt.
  */
 export default function ProfileLayout() {
+  const colors = useAppColors();
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: DARK.bg },
+        contentStyle: { backgroundColor: colors.bg },
       }}
     />
   );

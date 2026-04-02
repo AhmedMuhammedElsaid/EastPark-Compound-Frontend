@@ -9,25 +9,27 @@ import {
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { BRAND, DARK } from '@/theme/tokens';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { BRAND } from '@/theme/tokens';
 
 export default function TabsLayout() {
   const { t } = useTranslation();
+  const colors = useAppColors();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: DARK.card,
-          borderTopColor: DARK.border,
+          backgroundColor: colors.card,
+          borderTopColor: colors.border,
           borderTopWidth: 1,
           height: 64,
           paddingBottom: 8,
           paddingTop: 6,
         },
         tabBarActiveTintColor: BRAND.gold,
-        tabBarInactiveTintColor: DARK.textMuted,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: {
           fontFamily: 'Cairo',
           fontSize: 11,
