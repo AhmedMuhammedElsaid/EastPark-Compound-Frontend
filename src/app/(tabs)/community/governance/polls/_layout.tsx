@@ -1,9 +1,10 @@
 import { Stack } from 'expo-router';
 
-import { DARK } from '@/theme/tokens';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 
 export default function PollsLayout() {
+  const colors = useAppColors();
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: DARK.bg } }} />
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }} />
   );
 }

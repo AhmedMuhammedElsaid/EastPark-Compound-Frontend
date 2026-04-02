@@ -1,7 +1,7 @@
 import { Redirect, Stack } from 'expo-router';
 
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAppSelector } from '@/store';
-import { DARK } from '@/theme/tokens';
 
 /**
  * Orders stack — auth-guarded.
@@ -9,6 +9,7 @@ import { DARK } from '@/theme/tokens';
  */
 export default function OrdersLayout() {
   const isAuthenticated = useAppSelector(s => s.auth.isAuthenticated);
+  const colors = useAppColors();
 
   if (!isAuthenticated) {
     return <Redirect href="/(auth)/login" />;
@@ -18,7 +19,7 @@ export default function OrdersLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: DARK.bg },
+        contentStyle: { backgroundColor: colors.bg },
       }}
     />
   );

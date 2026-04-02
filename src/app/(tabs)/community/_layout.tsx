@@ -1,13 +1,14 @@
 import { Stack } from 'expo-router';
 
-import { DARK } from '@/theme/tokens';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 
 export default function CommunityLayout() {
+  const colors = useAppColors();
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: DARK.bg },
+        contentStyle: { backgroundColor: colors.bg },
       }}
     />
   );
