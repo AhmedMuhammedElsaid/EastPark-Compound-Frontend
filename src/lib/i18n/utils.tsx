@@ -8,6 +8,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { I18nManager, NativeModules, Platform } from 'react-native';
 
 import RNRestart from 'react-native-restart';
+import { store } from '@/store';
+import { setLanguage as setLanguageAction } from '@/store/slices/preferencesSlice';
 
 type DefaultLocale = typeof resources.en.translation;
 export type TxKeyPath = RecursiveKeyOf<DefaultLocale>;
@@ -27,13 +29,11 @@ export const translate = memoize(
 
 export function changeLanguage(lang: Language) {
   i18n.changeLanguage(lang);
+  // Persist in both Redux (redux-persist → AsyncStorage) and direct AsyncStorage for legacy reads
+  store.dispatch(setLanguageAction(lang));
   AsyncStorage.setItem(LOCAL, lang);
-  if (lang === 'ar') {
-    I18nManager.forceRTL(true);
-  }
-  else {
-    I18nManager.forceRTL(false);
-  }
+  I18nManager.allowRTL(lang === 'ar');
+  I18nManager.forceRTL(lang === 'ar');
   if (Platform.OS === 'ios' || Platform.OS === 'android') {
     if (__DEV__)
       NativeModules.DevSettings.reload();

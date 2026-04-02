@@ -21,10 +21,8 @@ i18n.use(initReactI18next).init({
   },
 });
 
-// Is it a RTL language?
-export const isRTL: boolean = i18n.dir() === 'rtl';
-
-I18nManager.allowRTL(isRTL);
-I18nManager.forceRTL(isRTL);
+// RTL is controlled by the persisted language preference (applied in Providers after Redux rehydration).
+// Do NOT call I18nManager here — the language isn't known yet at module init time.
+export const isRTL: boolean = I18nManager.isRTL;
 
 export default i18n;

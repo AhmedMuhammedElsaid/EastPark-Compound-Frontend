@@ -5,7 +5,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { I18nManager, StyleSheet } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -17,9 +17,10 @@ import { CartConflictSheet } from '@/components/cart/cart-conflict-sheet';
 import { useThemeConfig } from '@/components/ui/use-theme-config';
 import { useAuthRehydration } from '@/lib/hooks/use-auth-rehydration';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
+import i18n from '@/lib/i18n';
 import { injectStore } from '@/services/api/client';
 import { asyncStoragePersister, queryClient } from '@/services/query/client';
-import { persistor, store } from '@/store';
+import { persistor, store, useAppSelector } from '@/store';
 // Global CSS must be imported before other app modules
 import '../global.css';
 
@@ -62,9 +63,22 @@ export default function RootLayout() {
 function Providers({ children }: { children: React.ReactNode }) {
   useAuthRehydration();
   const theme = useThemeConfig();
+  const savedLanguage = useAppSelector(s => s.preferences.language);
+
+  // Restore theme from AsyncStorage on mount
   React.useEffect(() => {
     loadSelectedTheme();
   }, []);
+
+  // After redux-persist rehydrates, apply the saved language to i18n and RTL.
+  // This runs on first mount (initial state 'ar') and again after rehydration with persisted value.
+  React.useEffect(() => {
+    if (savedLanguage && i18n.language !== savedLanguage) {
+      i18n.changeLanguage(savedLanguage);
+      I18nManager.allowRTL(savedLanguage === 'ar');
+      I18nManager.forceRTL(savedLanguage === 'ar');
+    }
+  }, [savedLanguage]);
   
   return (
     <GestureHandlerRootView
