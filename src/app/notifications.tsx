@@ -50,7 +50,7 @@ export default function NotificationsScreen() {
     return <Redirect href="/(auth)/login" />;
   }
 
-  const notifications = data?.pages.flatMap(p => p.data.data.data) ?? [];
+  const notifications = data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   function handleNotificationPress(notification: AppNotification) {

@@ -53,7 +53,7 @@ export default function DirectoryScreen() {
       initialPageParam: undefined,
     });
 
-  const shops = data?.pages.flatMap(p => p.data.data.data) ?? [];
+  const shops = data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

@@ -61,7 +61,7 @@ export default function InvitationsScreen() {
     );
   }
 
-  const invitations = data?.pages.flatMap(p => p.data.data.data) ?? [];
+  const invitations = data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

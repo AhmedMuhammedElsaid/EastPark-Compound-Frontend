@@ -212,7 +212,7 @@ function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string
     initialPageParam: undefined,
   });
 
-  const products = data?.pages.flatMap((p: any) => p.data.data.data) ?? [];
+  const products = data?.pages.flatMap((p: any) => p.data.data.data).filter(Boolean) ?? [];
 
   if (isLoading) {
     return (
@@ -312,7 +312,7 @@ function ReviewsTabContent({ shopId }: { shopId: string }) {
     initialPageParam: undefined,
   });
 
-  const reviews = data?.pages.flatMap((p: any) => p.data.data.data) ?? [];
+  const reviews = data?.pages.flatMap((p: any) => p.data.data.data).filter(Boolean) ?? [];
 
   if (isLoading) {
     return (

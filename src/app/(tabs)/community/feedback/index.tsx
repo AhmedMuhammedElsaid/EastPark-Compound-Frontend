@@ -38,7 +38,7 @@ export default function FeedbackListScreen() {
       initialPageParam: undefined,
     });
 
-  const items = data?.pages.flatMap(p => p.data.data.data) ?? [];
+  const items = data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

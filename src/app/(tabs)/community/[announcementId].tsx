@@ -87,7 +87,7 @@ function CommentsSection({ announcementId }: { announcementId: string }) {
       initialPageParam: undefined,
     });
 
-  const comments = data?.pages.flatMap(p => p.data.data.data) ?? [];
+  const comments = data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
 
   if (isLoading) {
     return (

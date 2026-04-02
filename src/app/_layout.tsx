@@ -62,7 +62,10 @@ export default function RootLayout() {
 function Providers({ children }: { children: React.ReactNode }) {
   useAuthRehydration();
   const theme = useThemeConfig();
-  React.useEffect(() => { loadSelectedTheme(); }, []);
+  React.useEffect(() => {
+    loadSelectedTheme();
+  }, []);
+  
   return (
     <GestureHandlerRootView
       style={styles.container}

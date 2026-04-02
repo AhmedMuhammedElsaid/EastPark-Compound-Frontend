@@ -44,8 +44,8 @@ export default function GovernanceScreen() {
     initialPageParam: undefined,
   });
 
-  const polls = pollsQuery.data?.pages.flatMap(p => p.data.data.data) ?? [];
-  const elections = electionsQuery.data?.pages.flatMap(p => p.data.data.data) ?? [];
+  const polls = pollsQuery.data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
+  const elections = electionsQuery.data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
