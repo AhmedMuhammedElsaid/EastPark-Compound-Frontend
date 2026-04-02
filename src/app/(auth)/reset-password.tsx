@@ -11,8 +11,9 @@ import { AuthInput } from '@/components/auth/auth-input';
 import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { authApi } from '@/services/api/auth';
-import { DARK, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
+import { FONT, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const schema = z
   .object({
@@ -26,9 +27,57 @@ const schema = z
 
 type FormData = z.infer<typeof schema>;
 
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    header: {
+      alignItems: 'center' as const,
+      marginTop: SPACING.xl,
+      marginBottom: SPACING['2xl'],
+    },
+    title: {
+      fontFamily: FONT.sans,
+      fontWeight: '700',
+      fontSize: 24,
+      color: colors.text,
+      textAlign: 'center' as const,
+      marginBottom: SPACING.xs,
+    },
+    subtitle: {
+      fontFamily: FONT.sans,
+      fontSize: 14,
+      color: colors.textMuted,
+      textAlign: 'center' as const,
+      marginBottom: SPACING.xl,
+    },
+    form: { gap: SPACING.xs, marginBottom: SPACING.sm },
+    errorCard: {
+      flex: 1,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      gap: SPACING.md,
+      paddingHorizontal: SPACING.lg,
+    },
+    errorTitle: {
+      fontFamily: FONT.sans,
+      fontWeight: '700',
+      fontSize: 20,
+      color: colors.text,
+      textAlign: 'center' as const,
+    },
+    errorBody: {
+      fontFamily: FONT.sans,
+      fontSize: 14,
+      color: colors.textMuted,
+      textAlign: 'center' as const,
+    },
+  }), [colors]);
+}
+
 export default function ResetPasswordScreen() {
   const { t } = useTranslation();
   const { token } = useLocalSearchParams<{ token: string }>();
+  const styles = useStyles();
 
   const {
     control,
@@ -131,48 +180,3 @@ export default function ResetPasswordScreen() {
     </AuthScreenWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    alignItems: 'center',
-    marginTop: SPACING.xl,
-    marginBottom: SPACING['2xl'],
-  },
-  title: {
-    fontFamily: FONT.sans,
-    fontWeight: '700',
-    fontSize: 24,
-    color: DARK.text,
-    textAlign: 'center',
-    marginBottom: SPACING.xs,
-  },
-  subtitle: {
-    fontFamily: FONT.sans,
-    fontSize: 14,
-    color: DARK.textMuted,
-    textAlign: 'center',
-    marginBottom: SPACING.xl,
-  },
-  form: { gap: SPACING.xs, marginBottom: SPACING.sm },
-
-  errorCard: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: SPACING.md,
-    paddingHorizontal: SPACING.lg,
-  },
-  errorTitle: {
-    fontFamily: FONT.sans,
-    fontWeight: '700',
-    fontSize: 20,
-    color: DARK.text,
-    textAlign: 'center',
-  },
-  errorBody: {
-    fontFamily: FONT.sans,
-    fontSize: 14,
-    color: DARK.textMuted,
-    textAlign: 'center',
-  },
-});

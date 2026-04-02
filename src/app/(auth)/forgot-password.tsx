@@ -11,10 +11,11 @@ import { AuthInput } from '@/components/auth/auth-input';
 import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { authApi } from '@/services/api/auth';
 import { ArrowLeft, EnvelopeSimple } from 'phosphor-react-native';
 
-import { BRAND, DARK, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const schema = z.object({
   email: z.string().email('auth.errors.invalid_email'),
@@ -22,8 +23,66 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    header: {
+      alignItems: 'center' as const,
+      marginTop: SPACING.xl,
+      marginBottom: SPACING['2xl'],
+    },
+    title: {
+      fontFamily: FONT.sans,
+      fontWeight: '700',
+      fontSize: 24,
+      color: colors.text,
+      textAlign: 'center' as const,
+      marginBottom: SPACING.xs,
+    },
+    subtitle: {
+      fontFamily: FONT.sans,
+      fontSize: 14,
+      color: colors.textMuted,
+      textAlign: 'center' as const,
+      marginBottom: SPACING.xl,
+      lineHeight: 22,
+    },
+    form: { marginBottom: SPACING.sm },
+    footer: { alignItems: 'center' as const, marginTop: SPACING.lg },
+    backLinkRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: SPACING.xs },
+    backLink: {
+      fontFamily: FONT.sans,
+      fontSize: 14,
+      color: colors.textMuted,
+    },
+    successCard: {
+      flex: 1,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      gap: SPACING.md,
+      paddingHorizontal: SPACING.lg,
+    },
+    successTitle: {
+      fontFamily: FONT.sans,
+      fontWeight: '700',
+      fontSize: 22,
+      color: colors.text,
+      textAlign: 'center' as const,
+    },
+    successBody: {
+      fontFamily: FONT.sans,
+      fontSize: 14,
+      color: colors.textMuted,
+      textAlign: 'center' as const,
+      lineHeight: 22,
+    },
+  }), [colors]);
+}
+
 export default function ForgotPasswordScreen() {
   const { t } = useTranslation();
+  const colors = useAppColors();
+  const styles = useStyles();
   const [sent, setSent] = React.useState(false);
   const [sentEmail, setSentEmail] = React.useState('');
 
@@ -112,65 +171,10 @@ export default function ForgotPasswordScreen() {
 
       <View style={styles.footer}>
         <Pressable onPress={() => router.back()} hitSlop={8} style={styles.backLinkRow}>
-          <ArrowLeft size={14} color={DARK.textMuted} />
+          <ArrowLeft size={14} color={colors.textMuted} />
           <Text style={styles.backLink}>{t('common.back')}</Text>
         </Pressable>
       </View>
     </AuthScreenWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    alignItems: 'center',
-    marginTop: SPACING.xl,
-    marginBottom: SPACING['2xl'],
-  },
-  title: {
-    fontFamily: FONT.sans,
-    fontWeight: '700',
-    fontSize: 24,
-    color: DARK.text,
-    textAlign: 'center',
-    marginBottom: SPACING.xs,
-  },
-  subtitle: {
-    fontFamily: FONT.sans,
-    fontSize: 14,
-    color: DARK.textMuted,
-    textAlign: 'center',
-    marginBottom: SPACING.xl,
-    lineHeight: 22,
-  },
-  form: { marginBottom: SPACING.sm },
-  footer: { alignItems: 'center', marginTop: SPACING.lg },
-  backLinkRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
-  backLink: {
-    fontFamily: FONT.sans,
-    fontSize: 14,
-    color: DARK.textMuted,
-  },
-
-  // Success state
-  successCard: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: SPACING.md,
-    paddingHorizontal: SPACING.lg,
-  },
-  successTitle: {
-    fontFamily: FONT.sans,
-    fontWeight: '700',
-    fontSize: 22,
-    color: DARK.text,
-    textAlign: 'center',
-  },
-  successBody: {
-    fontFamily: FONT.sans,
-    fontSize: 14,
-    color: DARK.textMuted,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-});

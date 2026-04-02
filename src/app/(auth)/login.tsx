@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
+import { setSecureItem } from '@/lib/secure-storage';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -12,12 +12,13 @@ import { AuthInput } from '@/components/auth/auth-input';
 import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { authApi } from '@/services/api/auth';
 import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
 import { registerPushToken } from '@/services/push';
 import { useAppDispatch } from '@/store';
 import { login } from '@/store/slices/authSlice';
-import { BRAND, DARK, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const schema = z.object({
   email: z.string().email('auth.errors.invalid_email'),
@@ -25,9 +26,27 @@ const schema = z.object({
 });
 type FormData = z.infer<typeof schema>;
 
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    header: { alignItems: 'center' as const, marginTop: SPACING.xl, marginBottom: SPACING['2xl'] },
+    title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 26, color: colors.text, textAlign: 'center' as const, marginBottom: SPACING.xs },
+    subtitle: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, textAlign: 'center' as const, marginBottom: SPACING.xl },
+    form: { gap: SPACING.xs },
+    forgotRow: { alignSelf: 'flex-end' as const, marginTop: SPACING.xs, marginBottom: SPACING.sm },
+    forgotText: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: '500' },
+    footer: { flexDirection: 'row' as const, justifyContent: 'center' as const, alignItems: 'center' as const, marginTop: SPACING.lg },
+    footerText: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted },
+    footerLink: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: '600' },
+    eyeIcon: { fontSize: 16 },
+    bottomPad: { height: SPACING['2xl'] },
+  }), [colors]);
+}
+
 export default function LoginScreen() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const styles = useStyles();
   const [showPassword, setShowPassword] = React.useState(false);
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -38,8 +57,8 @@ export default function LoginScreen() {
     try {
       const res = await authApi.login({ email, password });
       const { user, accessToken, refreshToken } = res.data.data;
-      await SecureStore.setItemAsync(SECURE_KEY_ACCESS, accessToken);
-      await SecureStore.setItemAsync(SECURE_KEY_REFRESH, refreshToken);
+      await setSecureItem(SECURE_KEY_ACCESS, accessToken);
+      await setSecureItem(SECURE_KEY_REFRESH, refreshToken);
       dispatch(login({ user, accessToken, refreshToken }));
       await registerPushToken();
       router.replace('/(tabs)');
@@ -83,6 +102,7 @@ type LoginFormProps = {
 
 function LoginForm({ control, errors, showPassword, onTogglePassword, onSubmitEditing }: LoginFormProps) {
   const { t } = useTranslation();
+  const styles = useStyles();
   return (
     <View style={styles.form}>
       <Controller
@@ -112,17 +132,3 @@ function LoginForm({ control, errors, showPassword, onTogglePassword, onSubmitEd
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: { alignItems: 'center', marginTop: SPACING.xl, marginBottom: SPACING['2xl'] },
-  title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 26, color: DARK.text, textAlign: 'center', marginBottom: SPACING.xs },
-  subtitle: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, textAlign: 'center', marginBottom: SPACING.xl },
-  form: { gap: SPACING.xs },
-  forgotRow: { alignSelf: 'flex-end', marginTop: SPACING.xs, marginBottom: SPACING.sm },
-  forgotText: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: '500' },
-  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: SPACING.lg },
-  footerText: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted },
-  footerLink: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: '600' },
-  eyeIcon: { fontSize: 16 },
-  bottomPad: { height: SPACING['2xl'] },
-});

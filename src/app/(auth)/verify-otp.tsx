@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
+import { setSecureItem } from '@/lib/secure-storage';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -9,19 +9,39 @@ import OTPTextInput from 'react-native-otp-textinput';
 import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { authApi } from '@/services/api/auth';
 import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
 import { registerPushToken } from '@/services/push';
 import { useAppDispatch } from '@/store';
 import { login } from '@/store/slices/authSlice';
-import { BRAND, DARK, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const RESEND_COOLDOWN = 60;
+
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    header: { alignItems: 'center' as const, marginTop: SPACING.xl, marginBottom: SPACING['2xl'] },
+    title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 24, color: colors.text, textAlign: 'center' as const, marginBottom: SPACING.sm },
+    subtitle: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, textAlign: 'center' as const },
+    emailHint: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: BRAND.gold, textAlign: 'center' as const, marginTop: SPACING.xs, marginBottom: SPACING['2xl'] },
+    otpContainer: { alignItems: 'center' as const, marginBottom: SPACING.xl },
+    otpRow: { justifyContent: 'center' as const, gap: SPACING.sm },
+    otpBox: { width: 48, height: 56, backgroundColor: colors.card, borderRadius: 8, borderWidth: 1.5, borderColor: colors.border, color: colors.text, fontFamily: FONT.sans, fontSize: 22, fontWeight: '700' },
+    resendRow: { alignItems: 'center' as const, marginTop: SPACING.lg },
+    resendLink: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: '600' },
+    resendTimer: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted },
+    resendDisabled: { opacity: 0.5 },
+  }), [colors]);
+}
 
 export default function VerifyOtpScreen() {
   const { t } = useTranslation();
   const { email } = useLocalSearchParams<{ email: string }>();
   const dispatch = useAppDispatch();
+  const colors = useAppColors();
+  const styles = useStyles();
   const [otp, setOtp] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [resending, setResending] = React.useState(false);
@@ -41,8 +61,8 @@ export default function VerifyOtpScreen() {
     try {
       const res = await authApi.verifyOtp(email, otp);
       const { user, accessToken, refreshToken } = res.data.data;
-      await SecureStore.setItemAsync(SECURE_KEY_ACCESS, accessToken);
-      await SecureStore.setItemAsync(SECURE_KEY_REFRESH, refreshToken);
+      await setSecureItem(SECURE_KEY_ACCESS, accessToken);
+      await setSecureItem(SECURE_KEY_REFRESH, refreshToken);
       dispatch(login({ user, accessToken, refreshToken }));
       await registerPushToken();
       router.replace('/(tabs)');
@@ -79,7 +99,7 @@ export default function VerifyOtpScreen() {
       <Text style={styles.subtitle}>{t('auth.otp_sent')}</Text>
       <Text style={styles.emailHint}>{email}</Text>
       <View style={styles.otpContainer}>
-        <OTPTextInput inputCount={6} handleTextChange={setOtp} tintColor={BRAND.gold} offTintColor={DARK.border} textInputStyle={styles.otpBox as any} containerStyle={styles.otpRow} keyboardType="numeric" />
+        <OTPTextInput inputCount={6} handleTextChange={setOtp} tintColor={BRAND.gold} offTintColor={colors.border} textInputStyle={styles.otpBox as any} containerStyle={styles.otpRow} keyboardType="numeric" />
       </View>
       <GoldButton label={t('common.confirm')} onPress={handleVerify} loading={loading} disabled={otp.length < 6} />
       <View style={styles.resendRow}>
@@ -90,17 +110,3 @@ export default function VerifyOtpScreen() {
     </AuthScreenWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  header: { alignItems: 'center', marginTop: SPACING.xl, marginBottom: SPACING['2xl'] },
-  title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 24, color: DARK.text, textAlign: 'center', marginBottom: SPACING.sm },
-  subtitle: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, textAlign: 'center' },
-  emailHint: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: BRAND.gold, textAlign: 'center', marginTop: SPACING.xs, marginBottom: SPACING['2xl'] },
-  otpContainer: { alignItems: 'center', marginBottom: SPACING.xl },
-  otpRow: { justifyContent: 'center', gap: SPACING.sm },
-  otpBox: { width: 48, height: 56, backgroundColor: DARK.card, borderRadius: 8, borderWidth: 1.5, borderColor: DARK.border, color: DARK.text, fontFamily: FONT.sans, fontSize: 22, fontWeight: '700' },
-  resendRow: { alignItems: 'center', marginTop: SPACING.lg },
-  resendLink: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: '600' },
-  resendTimer: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted },
-  resendDisabled: { opacity: 0.5 },
-});

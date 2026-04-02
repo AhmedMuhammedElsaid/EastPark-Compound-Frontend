@@ -11,8 +11,9 @@ import { AuthInput } from '@/components/auth/auth-input';
 import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { authApi } from '@/services/api/auth';
-import { BRAND, DARK, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const schema = z.object({
   name: z.string().min(2, 'auth.errors.name_too_short'),
@@ -24,8 +25,24 @@ const schema = z.object({
 }).refine(d => d.password === d.confirmPassword, { message: 'auth.errors.passwords_no_match', path: ['confirmPassword'] });
 type FormData = z.infer<typeof schema>;
 
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => StyleSheet.create({
+    header: { alignItems: 'center' as const, marginTop: SPACING.md, marginBottom: SPACING.lg },
+    title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 24, color: colors.text, textAlign: 'center' as const, marginBottom: SPACING.xs },
+    subtitle: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, textAlign: 'center' as const, marginBottom: SPACING.lg },
+    form: { gap: SPACING.xs },
+    footer: { flexDirection: 'row' as const, justifyContent: 'center' as const, alignItems: 'center' as const, marginTop: SPACING.lg },
+    footerText: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted },
+    footerLink: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: '600' },
+    eyeIcon: { fontSize: 16 },
+    bottomPad: { height: SPACING['2xl'] },
+  }), [colors]);
+}
+
 export default function RegisterScreen() {
   const { t } = useTranslation();
+  const styles = useStyles();
   const [showPassword, setShowPassword] = React.useState(false);
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -67,6 +84,7 @@ export default function RegisterScreen() {
 
 function RegisterFormIdentity({ control, errors }: { control: any; errors: any }) {
   const { t } = useTranslation();
+  const styles = useStyles();
   return (
     <View style={styles.form}>
       <Controller
@@ -104,6 +122,7 @@ function RegisterFormIdentity({ control, errors }: { control: any; errors: any }
 type PwProps = { control: any; errors: any; showPassword: boolean; onTogglePassword: () => void; onSubmitEditing: () => void };
 function RegisterFormPassword({ control, errors, showPassword, onTogglePassword, onSubmitEditing }: PwProps) {
   const { t } = useTranslation();
+  const styles = useStyles();
   return (
     <View style={styles.form}>
       <Controller
@@ -132,15 +151,3 @@ function RegisterFormPassword({ control, errors, showPassword, onTogglePassword,
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: { alignItems: 'center', marginTop: SPACING.md, marginBottom: SPACING.lg },
-  title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 24, color: DARK.text, textAlign: 'center', marginBottom: SPACING.xs },
-  subtitle: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, textAlign: 'center', marginBottom: SPACING.lg },
-  form: { gap: SPACING.xs },
-  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: SPACING.lg },
-  footerText: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted },
-  footerLink: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: '600' },
-  eyeIcon: { fontSize: 16 },
-  bottomPad: { height: SPACING['2xl'] },
-});
