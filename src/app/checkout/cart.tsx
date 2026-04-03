@@ -11,7 +11,7 @@ import { formatCurrency } from '@/lib/formatCurrency';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { clearCart, updateQuantity } from '@/store/slices/cartSlice';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 function useStyles() {
   const colors = useAppColors();
@@ -213,6 +213,7 @@ function CartItemRow({
   onDecrease: () => void;
   styles: any;
 }) {
+  const colors = useAppColors();
   const name = isAr ? item.nameAr : item.name;
 
   return (
@@ -230,7 +231,7 @@ function CartItemRow({
         <Pressable style={styles.qtyBtn} onPress={onDecrease} hitSlop={8}>
           {item.quantity === 1
             ? <Trash size={16} color={SEMANTIC.error} />
-            : <Minus size={16} color={DARK.textMuted} />}
+            : <Minus size={16} color={colors.textMuted} />}
         </Pressable>
         <Text style={styles.qtyValue}>{item.quantity}</Text>
         <Pressable style={styles.qtyBtn} onPress={onIncrease} hitSlop={8}>
