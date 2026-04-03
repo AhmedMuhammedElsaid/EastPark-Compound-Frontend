@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
+import { Eye, EyeSlash } from 'phosphor-react-native';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +36,6 @@ function useStyles() {
     footer: { flexDirection: 'row' as const, justifyContent: 'center' as const, alignItems: 'center' as const, marginTop: SPACING.lg },
     footerText: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted },
     footerLink: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: '600' },
-    eyeIcon: { fontSize: 16 },
     bottomPad: { height: SPACING['2xl'] },
   }), [colors]);
 }
@@ -123,6 +123,7 @@ type PwProps = { control: any; errors: any; showPassword: boolean; onTogglePassw
 function RegisterFormPassword({ control, errors, showPassword, onTogglePassword, onSubmitEditing }: PwProps) {
   const { t } = useTranslation();
   const styles = useStyles();
+  const colors = useAppColors();
   return (
     <View style={styles.form}>
       <Controller
@@ -137,7 +138,7 @@ function RegisterFormPassword({ control, errors, showPassword, onTogglePassword,
             error={errors.password ? t(errors.password.message) : undefined}
             secureTextEntry={!showPassword}
             returnKeyType="next"
-            rightSlot={<Pressable onPress={onTogglePassword} hitSlop={12}><Text style={styles.eyeIcon}>{showPassword ? '🙈' : '👁'}</Text></Pressable>}
+            rightSlot={<Pressable onPress={onTogglePassword} hitSlop={12} accessibilityRole="button" accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}</Pressable>}
           />
         )}
       />

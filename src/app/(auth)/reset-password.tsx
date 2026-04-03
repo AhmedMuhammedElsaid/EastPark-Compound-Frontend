@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
+import { Eye, EyeSlash } from 'phosphor-react-native';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { z } from 'zod';
 
@@ -78,6 +79,9 @@ export default function ResetPasswordScreen() {
   const { t } = useTranslation();
   const { token } = useLocalSearchParams<{ token: string }>();
   const styles = useStyles();
+  const colors = useAppColors();
+  const [showPwd, setShowPwd] = React.useState(false);
+  const [showConfirm, setShowConfirm] = React.useState(false);
 
   const {
     control,
@@ -148,9 +152,14 @@ export default function ResetPasswordScreen() {
               onChangeText={onChange}
               onBlur={onBlur}
               error={errors.password ? t(errors.password.message as string) : undefined}
-              secureTextEntry
+              secureTextEntry={!showPwd}
               autoComplete="new-password"
               returnKeyType="next"
+              rightSlot={
+                <Pressable onPress={() => setShowPwd(v => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={showPwd ? 'Hide password' : 'Show password'}>
+                  {showPwd ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
+                </Pressable>
+              }
             />
           )}
         />
@@ -164,9 +173,14 @@ export default function ResetPasswordScreen() {
               onChangeText={onChange}
               onBlur={onBlur}
               error={errors.confirmPassword ? t(errors.confirmPassword.message as string) : undefined}
-              secureTextEntry
+              secureTextEntry={!showConfirm}
               returnKeyType="done"
               onSubmitEditing={handleSubmit(onSubmit)}
+              rightSlot={
+                <Pressable onPress={() => setShowConfirm(v => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={showConfirm ? 'Hide password' : 'Show password'}>
+                  {showConfirm ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
+                </Pressable>
+              }
             />
           )}
         />

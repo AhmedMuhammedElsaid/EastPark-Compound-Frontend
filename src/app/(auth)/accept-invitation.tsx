@@ -1,10 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
 import { setSecureItem } from '@/lib/secure-storage';
+import { Eye, EyeSlash } from 'phosphor-react-native';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { z } from 'zod';
 
@@ -110,6 +111,9 @@ export default function AcceptInvitationScreen() {
 function InvitationForm({ control, errors, onSubmitEditing }: { control: any; errors: any; onSubmitEditing: () => void }) {
   const { t } = useTranslation();
   const styles = useStyles();
+  const colors = useAppColors();
+  const [showPwd, setShowPwd] = React.useState(false);
+  const [showConfirm, setShowConfirm] = React.useState(false);
   return (
     <View style={styles.form}>
       <Controller
@@ -123,14 +127,41 @@ function InvitationForm({ control, errors, onSubmitEditing }: { control: any; er
         control={control}
         name="password"
         render={({ field: { onChange, onBlur, value } }) => (
-          <AuthInput label={t('auth.password')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.password ? t(errors.password.message) : undefined} secureTextEntry returnKeyType="next" />
+          <AuthInput
+            label={t('auth.password')}
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            error={errors.password ? t(errors.password.message) : undefined}
+            secureTextEntry={!showPwd}
+            returnKeyType="next"
+            rightSlot={
+              <Pressable onPress={() => setShowPwd(v => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={showPwd ? 'Hide password' : 'Show password'}>
+                {showPwd ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
+              </Pressable>
+            }
+          />
         )}
       />
       <Controller
         control={control}
         name="confirmPassword"
         render={({ field: { onChange, onBlur, value } }) => (
-          <AuthInput label={t('auth.confirm_password')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.confirmPassword ? t(errors.confirmPassword.message) : undefined} secureTextEntry returnKeyType="done" onSubmitEditing={onSubmitEditing} />
+          <AuthInput
+            label={t('auth.confirm_password')}
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            error={errors.confirmPassword ? t(errors.confirmPassword.message) : undefined}
+            secureTextEntry={!showConfirm}
+            returnKeyType="done"
+            onSubmitEditing={onSubmitEditing}
+            rightSlot={
+              <Pressable onPress={() => setShowConfirm(v => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={showConfirm ? 'Hide password' : 'Show password'}>
+                {showConfirm ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
+              </Pressable>
+            }
+          />
         )}
       />
     </View>
