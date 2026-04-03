@@ -7,6 +7,7 @@ import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'rea
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'phosphor-react-native';
+import { showMessage } from 'react-native-flash-message';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
@@ -117,6 +118,7 @@ export default function ElectionScreen() {
   const { mutate, isPending } = useMutation({
     mutationFn: (candidateId: string) => governanceApi.voteElection(id, candidateId),
     onSuccess: () => {
+      showMessage({ message: t('governance.vote_submitted'), type: 'success' });
       queryClient.invalidateQueries({ queryKey: ['election', id] });
       queryClient.invalidateQueries({ queryKey: ['elections'] });
     },
@@ -141,7 +143,7 @@ export default function ElectionScreen() {
   const title = isAr ? election.titleAr : election.title;
   const description = isAr ? election.descriptionAr : election.description;
   const showVotes = election.resultsOpen && election.myVote !== null;
-  const maxVotes = Math.max(...election.candidates.map(c => c.votes ?? 0), 1);
+  const totalVotes = election.totalVotes ?? 0;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -172,7 +174,7 @@ export default function ElectionScreen() {
           isAr={isAr}
           myVote={election.myVote}
           showVotes={showVotes}
-          maxVotes={maxVotes}
+          totalVotes={totalVotes}
           onVote={handleVote}
           isPending={isPending}
           styles={styles}
@@ -202,7 +204,7 @@ function CandidateList({
   isAr,
   myVote,
   showVotes,
-  maxVotes,
+  totalVotes,
   onVote,
   isPending,
   styles,
@@ -211,7 +213,7 @@ function CandidateList({
   isAr: boolean;
   myVote: string | null;
   showVotes: boolean;
-  maxVotes: number;
+  totalVotes: number;
   onVote: (id: string, name: string) => void;
   isPending: boolean;
   styles: any;
@@ -222,8 +224,8 @@ function CandidateList({
         const name = isAr ? candidate.nameAr : candidate.name;
         const statement = isAr ? candidate.statementAr : candidate.statement;
         const isSelected = myVote === candidate.id;
-        const pct = showVotes && candidate.votes !== undefined
-          ? Math.round((candidate.votes / maxVotes) * 100)
+        const pct = showVotes && candidate.votes !== undefined && totalVotes > 0
+          ? Math.round((candidate.votes / totalVotes) * 100)
           : 0;
 
         return (

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'phosphor-react-native';
+import { showMessage } from 'react-native-flash-message';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
@@ -106,6 +107,7 @@ export default function PollDetailScreen() {
   const { mutate, isPending } = useMutation({
     mutationFn: (optionId: string) => governanceApi.votePoll(pollId, optionId),
     onSuccess: () => {
+      showMessage({ message: t('governance.vote_submitted'), type: 'success' });
       queryClient.invalidateQueries({ queryKey: ['poll', pollId] });
       queryClient.invalidateQueries({ queryKey: ['polls'] });
     },
@@ -129,7 +131,7 @@ export default function PollDetailScreen() {
 
   const question = isAr ? poll.questionAr : poll.question;
   const showResults = poll.resultsOpen && poll.myVote !== null;
-  const maxVotes = Math.max(...(poll.options.map(o => o.votes ?? 0)), 1);
+  const totalVotes = poll.totalVotes ?? 0;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -156,7 +158,7 @@ export default function PollDetailScreen() {
           poll={poll}
           isAr={isAr}
           showResults={showResults}
-          maxVotes={maxVotes}
+          totalVotes={totalVotes}
           onVote={handleVote}
           isPending={isPending}
           styles={styles}
@@ -185,7 +187,7 @@ function OptionsList({
   poll,
   isAr,
   showResults,
-  maxVotes,
+  totalVotes,
   onVote,
   isPending,
   styles,
@@ -193,7 +195,7 @@ function OptionsList({
   poll: ReturnType<typeof useQuery<any>>['data'] extends undefined ? never : any;
   isAr: boolean;
   showResults: boolean;
-  maxVotes: number;
+  totalVotes: number;
   onVote: (id: string, text: string) => void;
   isPending: boolean;
   styles: any;
@@ -203,8 +205,8 @@ function OptionsList({
       {poll.options.map((option: any) => {
         const text = isAr ? option.textAr : option.text;
         const isSelected = poll.myVote === option.id;
-        const pct = showResults && option.votes !== undefined
-          ? Math.round((option.votes / maxVotes) * 100)
+        const pct = showResults && option.votes !== undefined && totalVotes > 0
+          ? Math.round((option.votes / totalVotes) * 100)
           : 0;
 
         return (
