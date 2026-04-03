@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { CaretRight, EnvelopeSimple } from 'phosphor-react-native';
+import { CaretRight, EnvelopeSimple, Megaphone, ChartBar, Trophy } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
@@ -64,6 +64,9 @@ export default function AdminDashboard() {
 
   const QUICK_ACTIONS = [
     { labelKey: 'admin.invitations', icon: <EnvelopeSimple size={20} color={BRAND.gold} />, route: '/(admin)/invitations' },
+    { labelKey: 'admin.new_announcement', icon: <Megaphone size={20} color={BRAND.gold} />, route: '/(admin)/announcements/new' },
+    { labelKey: 'admin.new_poll', icon: <ChartBar size={20} color={BRAND.gold} />, route: '/(admin)/polls/new' },
+    { labelKey: 'admin.new_election', icon: <Trophy size={20} color={BRAND.gold} />, route: '/(admin)/elections/new' },
   ];
 
   return (

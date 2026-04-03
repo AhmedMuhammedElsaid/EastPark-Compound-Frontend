@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bell, CaretRight, ForkKnife, Package, Storefront } from 'phosphor-react-native';
+import { Bell, CaretRight, ForkKnife, Package } from 'phosphor-react-native';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
@@ -144,12 +144,6 @@ export default function MerchantDashboard() {
             icon={<ForkKnife size={28} color={colors.textMuted} />}
             label={t('merchant.menu')}
             onPress={() => router.push('/(merchant)/menu' as any)}
-            styles={styles}
-          />
-          <QuickActionCard
-            icon={<Storefront size={28} color={colors.textMuted} />}
-            label={t('merchant.shop_profile')}
-            onPress={() => router.push('/(merchant)/shop-profile' as any)}
             styles={styles}
           />
         </View>

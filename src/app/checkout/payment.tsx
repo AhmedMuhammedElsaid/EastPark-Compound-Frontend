@@ -119,6 +119,7 @@ export default function PaymentScreen() {
           await Linking.openURL(payRes.data.data.iframeUrl);
         } catch {
           showMessage({ message: t('common.error'), type: 'danger' });
+          return; // stop here — don't clear cart or navigate on Paymob failure
         }
       }
       dispatch(clearCart());

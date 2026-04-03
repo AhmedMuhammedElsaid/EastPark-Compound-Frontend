@@ -21,7 +21,7 @@ export function CartConflictSheet() {
 
   if (!showConflictSheet) return null;
 
-  const conflictingShop = pendingShopName ?? shopName ?? '';
+  const conflictingShop = shopName ?? pendingShopName ?? '';
 
   return (
     <Modal
