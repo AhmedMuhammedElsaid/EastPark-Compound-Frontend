@@ -23,5 +23,7 @@ export async function registerPushToken() {
       await authApi.updatePushToken(token.data);
     }
   }
-  catch {}
+  catch (err) {
+    if (__DEV__) console.warn('[push] token registration failed', err);
+  }
 }

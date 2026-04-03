@@ -25,8 +25,13 @@ export function useAuthRehydration(): void {
           dispatch(login({ user: data.data, accessToken, refreshToken }));
         }
       }
-      catch {
-        // expired / invalid — the 401 interceptor handles logout + SecureStore cleanup
+      catch (err: any) {
+        if (err?.response?.status === 401) {
+          // legitimate expiry — tokens already cleared by 401 interceptor
+        } else {
+          // network error — don't clear tokens, let user retry
+          if (__DEV__) console.warn('[auth-rehydration] network error on startup', err);
+        }
       }
       finally {
         SplashScreen.hideAsync();
