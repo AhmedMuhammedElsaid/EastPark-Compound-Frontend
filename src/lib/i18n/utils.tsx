@@ -4,11 +4,11 @@ import type { RecursiveKeyOf } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from 'i18next';
 import memoize from 'lodash.memoize';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { I18nManager, NativeModules, Platform } from 'react-native';
 
 import RNRestart from 'react-native-restart';
-import { store } from '@/store';
+import { store, useAppSelector } from '@/store';
 import { setLanguage as setLanguageAction } from '@/store/slices/preferencesSlice';
 
 type DefaultLocale = typeof resources.en.translation;
@@ -45,21 +45,16 @@ export function changeLanguage(lang: Language) {
 }
 
 export function useSelectedLanguage() {
-  const [language, setLanguageState] = useState<Language | undefined>(undefined);
-
-  useEffect(() => {
-    AsyncStorage.getItem(LOCAL).then((val) => {
-      if (val) setLanguageState(val as Language);
-    });
-  }, []);
+  // Read from Redux — persisted via redux-persist, always in sync after rehydration.
+  // This avoids the undefined flash that the old AsyncStorage useEffect caused.
+  const language = useAppSelector(s => s.preferences.language);
 
   const setLanguage = useCallback(
     (lang: Language) => {
-      setLanguageState(lang);
-      changeLanguage(lang);
+      changeLanguage(lang); // dispatches setLanguageAction to Redux + triggers restart
     },
     [],
   );
 
-  return { language: language as Language, setLanguage };
+  return { language, setLanguage };
 }
