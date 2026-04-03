@@ -6,9 +6,10 @@ import { StyleSheet, View } from 'react-native';
 
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { hideAuthWall } from '@/store/slices/authSlice';
-import { DARK, SPACING } from '@/theme/tokens';
+import { SPACING } from '@/theme/tokens';
 
 /**
  * Global auth-wall bottom sheet.
@@ -20,6 +21,8 @@ export function AuthWallSheet() {
   const dispatch = useAppDispatch();
   const showAuthWall = useAppSelector(s => s.auth.showAuthWall);
   const bottomSheetRef = React.useRef<BottomSheetModal>(null);
+  const colors = useAppColors();
+  const styles = useStyles(colors);
 
   React.useEffect(() => {
     if (showAuthWall) {
@@ -88,17 +91,23 @@ export function AuthWallSheet() {
   );
 }
 
-const styles = StyleSheet.create({
-  sheetBg: { backgroundColor: DARK.elevated },
-  handle: { backgroundColor: DARK.border, width: 40 },
-  content: {
-    flex: 1,
-    paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.xl,
-    gap: SPACING.xs,
-  },
-  logoRow: {
-    alignItems: 'center',
-    paddingVertical: SPACING.lg,
-  },
-});
+function useStyles(colors: ReturnType<typeof useAppColors>) {
+  return React.useMemo(
+    () =>
+      StyleSheet.create({
+        sheetBg: { backgroundColor: colors.elevated },
+        handle: { backgroundColor: colors.border, width: 40 },
+        content: {
+          flex: 1,
+          paddingHorizontal: SPACING.lg,
+          paddingBottom: SPACING.xl,
+          gap: SPACING.xs,
+        },
+        logoRow: {
+          alignItems: 'center',
+          paddingVertical: SPACING.lg,
+        },
+      }),
+    [colors],
+  );
+}

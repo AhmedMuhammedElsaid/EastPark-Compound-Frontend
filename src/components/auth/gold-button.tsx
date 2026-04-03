@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
 type Variant = 'filled' | 'outline' | 'ghost';
 
@@ -28,6 +29,8 @@ export function GoldButton({
   disabled = false,
   fullWidth = true,
 }: Props) {
+  const colors = useAppColors();
+  const styles = useStyles(colors);
   const [pressed, setPressed] = React.useState(false);
 
   const containerStyle = [
@@ -61,7 +64,7 @@ export function GoldButton({
         {loading
           ? (
               <ActivityIndicator
-                color={variant === 'filled' ? DARK.bg : BRAND.gold}
+                color={variant === 'filled' ? colors.bg : BRAND.gold}
                 size="small"
               />
             )
@@ -73,42 +76,48 @@ export function GoldButton({
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    height: 52,
-    borderRadius: RADIUS.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: SPACING.xs,
-  },
-  fullWidth: { alignSelf: 'stretch' },
-  inner: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
+function useStyles(colors: ReturnType<typeof useAppColors>) {
+  return React.useMemo(
+    () =>
+      StyleSheet.create({
+        base: {
+          height: 52,
+          borderRadius: RADIUS.md,
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginVertical: SPACING.xs,
+        },
+        fullWidth: { alignSelf: 'stretch' },
+        inner: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
 
-  // filled
-  filled: { backgroundColor: BRAND.gold },
-  filledPressed: { backgroundColor: BRAND.goldDark },
-  filledText: { color: DARK.bg },
+        // filled
+        filled: { backgroundColor: BRAND.gold },
+        filledPressed: { backgroundColor: BRAND.goldDark },
+        filledText: { color: colors.bg },
 
-  // outline
-  outline: {
-    borderWidth: 1.5,
-    borderColor: BRAND.gold,
-    backgroundColor: 'transparent',
-  },
-  outlineText: { color: BRAND.gold },
+        // outline
+        outline: {
+          borderWidth: 1.5,
+          borderColor: BRAND.gold,
+          backgroundColor: 'transparent',
+        },
+        outlineText: { color: BRAND.gold },
 
-  // ghost
-  ghost: { backgroundColor: 'transparent' },
-  ghostText: { color: DARK.textMuted },
+        // ghost
+        ghost: { backgroundColor: 'transparent' },
+        ghostText: { color: colors.textMuted },
 
-  // disabled
-  disabled: { opacity: 0.4 },
-  disabledText: {},
+        // disabled
+        disabled: { opacity: 0.4 },
+        disabledText: {},
 
-  label: {
-    fontFamily: FONT.sans,
-    fontWeight: '600',
-    fontSize: 16,
-    letterSpacing: 0.2,
-  },
-});
+        label: {
+          fontFamily: FONT.sans,
+          fontWeight: '600',
+          fontSize: 16,
+          letterSpacing: 0.2,
+        },
+      }),
+    [colors],
+  );
+}

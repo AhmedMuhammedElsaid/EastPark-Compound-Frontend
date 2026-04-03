@@ -4,8 +4,9 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import type { Shop } from '@/services/api/shops';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 type Props = { shop: Shop };
 
@@ -16,6 +17,8 @@ type Props = { shop: Shop };
  */
 export function ShopCard({ shop }: Props) {
   const { t, i18n } = useTranslation();
+  const colors = useAppColors();
+  const styles = useStyles(colors);
   const isAr = i18n.language === 'ar';
 
   const coverPhoto = shop.photos.find((p) => p.isPrimary) ?? shop.photos[0];
@@ -72,84 +75,90 @@ export function ShopCard({ shop }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: DARK.card,
-    borderRadius: RADIUS.md,
-    marginBottom: SPACING.md,
-    overflow: 'hidden',
-    shadowColor: BRAND.gold,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.10,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  imageContainer: {
-    width: '100%',
-    height: 160,
-    position: 'relative',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  imagePlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: DARK.elevated,
-  },
-  badge: {
-    position: 'absolute',
-    top: SPACING.sm,
-    right: SPACING.sm,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 3,
-    borderRadius: RADIUS.full,
-  },
-  badgeOpen: { backgroundColor: SEMANTIC.success },
-  badgeClosed: { backgroundColor: DARK.elevated, borderWidth: 1, borderColor: DARK.border },
-  badgeText: {
-    fontFamily: FONT.sans,
-    fontWeight: '600',
-    fontSize: 11,
-    color: DARK.text,
-    letterSpacing: 0.5,
-  },
-  body: {
-    padding: SPACING.md,
-    gap: SPACING.xs,
-    position: 'relative',
-  },
-  name: {
-    fontFamily: FONT.sans,
-    fontWeight: '600',
-    fontSize: 16,
-    color: DARK.text,
-  },
-  meta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  category: {
-    fontFamily: FONT.sans,
-    fontSize: 13,
-    color: DARK.textMuted,
-  },
-  dot: { color: DARK.textMuted, fontSize: 13 },
-  ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  ratingText: {
-    fontFamily: FONT.sans,
-    fontSize: 13,
-    color: DARK.text,
-  },
-  reviewCount: {
-    fontFamily: FONT.sans,
-    fontSize: 12,
-    color: DARK.textMuted,
-  },
-  closedOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(13,12,11,0.5)',
-    borderRadius: RADIUS.md,
-  },
-});
+function useStyles(colors: ReturnType<typeof useAppColors>) {
+  return React.useMemo(
+    () =>
+      StyleSheet.create({
+        card: {
+          backgroundColor: colors.card,
+          borderRadius: RADIUS.md,
+          marginBottom: SPACING.md,
+          overflow: 'hidden',
+          shadowColor: BRAND.gold,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.10,
+          shadowRadius: 8,
+          elevation: 3,
+        },
+        imageContainer: {
+          width: '100%',
+          height: 160,
+          position: 'relative',
+        },
+        image: {
+          width: '100%',
+          height: '100%',
+        },
+        imagePlaceholder: {
+          width: '100%',
+          height: '100%',
+          backgroundColor: colors.elevated,
+        },
+        badge: {
+          position: 'absolute',
+          top: SPACING.sm,
+          right: SPACING.sm,
+          paddingHorizontal: SPACING.sm,
+          paddingVertical: 3,
+          borderRadius: RADIUS.full,
+        },
+        badgeOpen: { backgroundColor: SEMANTIC.success },
+        badgeClosed: { backgroundColor: colors.elevated, borderWidth: 1, borderColor: colors.border },
+        badgeText: {
+          fontFamily: FONT.sans,
+          fontWeight: '600',
+          fontSize: 11,
+          color: colors.text,
+          letterSpacing: 0.5,
+        },
+        body: {
+          padding: SPACING.md,
+          gap: SPACING.xs,
+          position: 'relative',
+        },
+        name: {
+          fontFamily: FONT.sans,
+          fontWeight: '600',
+          fontSize: 16,
+          color: colors.text,
+        },
+        meta: {
+          flexDirection: 'row',
+          alignItems: 'center',
+        },
+        category: {
+          fontFamily: FONT.sans,
+          fontSize: 13,
+          color: colors.textMuted,
+        },
+        dot: { color: colors.textMuted, fontSize: 13 },
+        ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+        ratingText: {
+          fontFamily: FONT.sans,
+          fontSize: 13,
+          color: colors.text,
+        },
+        reviewCount: {
+          fontFamily: FONT.sans,
+          fontSize: 12,
+          color: colors.textMuted,
+        },
+        closedOverlay: {
+          ...StyleSheet.absoluteFillObject,
+          backgroundColor: `${colors.bg}80`,
+          borderRadius: RADIUS.md,
+        },
+      }),
+    [colors],
+  );
+}

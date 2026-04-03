@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
-import { DARK, RADIUS } from '@/theme/tokens';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { RADIUS } from '@/theme/tokens';
 
 type Props = {
   width?: number | string;
@@ -16,6 +17,7 @@ type Props = {
  * Colors: dark-card (#221f1c) → dark-elevated (#2e2a26) — warm, never grey.
  */
 export function Skeleton({ width = '100%', height = 16, borderRadius = RADIUS.sm, style }: Props) {
+  const colors = useAppColors();
   const opacity = React.useRef(new Animated.Value(0.5)).current;
 
   React.useEffect(() => {
@@ -31,7 +33,7 @@ export function Skeleton({ width = '100%', height = 16, borderRadius = RADIUS.sm
   return (
     <Animated.View
       style={[
-        styles.base,
+        { backgroundColor: colors.card },
         { width: width as any, height, borderRadius, opacity },
         style,
       ]}
@@ -54,9 +56,6 @@ export function ShopCardSkeleton() {
 }
 
 const styles = StyleSheet.create({
-  base: {
-    backgroundColor: DARK.card,
-  },
   cardSkeleton: {
     marginBottom: 16,
     borderRadius: RADIUS.md,

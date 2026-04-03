@@ -2,7 +2,8 @@ import * as React from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { DARK, SPACING } from '@/theme/tokens';
+import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { SPACING } from '@/theme/tokens';
 
 type Props = {
   children: React.ReactNode;
@@ -15,6 +16,8 @@ type Props = {
  */
 export function AuthScreenWrapper({ children, scrollable = true }: Props) {
   const insets = useSafeAreaInsets();
+  const colors = useAppColors();
+  const styles = useStyles(colors);
 
   return (
     <KeyboardAvoidingView
@@ -50,8 +53,14 @@ export function AuthScreenWrapper({ children, scrollable = true }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  bg: { flex: 1, backgroundColor: DARK.bg },
-  scroll: { flexGrow: 1, paddingHorizontal: SPACING.base },
-});
+function useStyles(colors: ReturnType<typeof useAppColors>) {
+  return React.useMemo(
+    () =>
+      StyleSheet.create({
+        flex: { flex: 1 },
+        bg: { flex: 1, backgroundColor: colors.bg },
+        scroll: { flexGrow: 1, paddingHorizontal: SPACING.base },
+      }),
+    [colors],
+  );
+}

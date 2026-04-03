@@ -2,8 +2,9 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import type { ShopCategory } from '@/services/api/shops';
-import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
 type Category = ShopCategory | 'ALL';
 
@@ -28,6 +29,9 @@ const CATEGORIES: { key: Category; labelKey: string }[] = [
  */
 export function CategoryChips({ selected, onSelect }: Props) {
   const { t } = useTranslation();
+  const colors = useAppColors();
+  const styles = useStyles(colors);
+
   return (
     <View style={styles.wrapper}>
       <ScrollView
@@ -56,37 +60,43 @@ export function CategoryChips({ selected, onSelect }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    backgroundColor: DARK.bg,
-    paddingVertical: SPACING.sm,
-  },
-  scroll: {
-    paddingHorizontal: SPACING.base,
-    gap: SPACING.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  chip: {
-    height: 36,
-    paddingHorizontal: SPACING.md,
-    borderRadius: RADIUS.full,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  chipActive: {
-    backgroundColor: BRAND.gold,
-  },
-  chipInactive: {
-    borderWidth: 1,
-    borderColor: DARK.border,
-    backgroundColor: 'transparent',
-  },
-  label: {
-    fontFamily: FONT.sans,
-    fontWeight: '500',
-    fontSize: 13,
-  },
-  labelActive: { color: DARK.bg },
-  labelInactive: { color: DARK.textMuted },
-});
+function useStyles(colors: ReturnType<typeof useAppColors>) {
+  return React.useMemo(
+    () =>
+      StyleSheet.create({
+        wrapper: {
+          backgroundColor: colors.bg,
+          paddingVertical: SPACING.sm,
+        },
+        scroll: {
+          paddingHorizontal: SPACING.base,
+          gap: SPACING.sm,
+          flexDirection: 'row',
+          alignItems: 'center',
+        },
+        chip: {
+          height: 36,
+          paddingHorizontal: SPACING.md,
+          borderRadius: RADIUS.full,
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        chipActive: {
+          backgroundColor: BRAND.gold,
+        },
+        chipInactive: {
+          borderWidth: 1,
+          borderColor: colors.border,
+          backgroundColor: 'transparent',
+        },
+        label: {
+          fontFamily: FONT.sans,
+          fontWeight: '500',
+          fontSize: 13,
+        },
+        labelActive: { color: colors.bg },
+        labelInactive: { color: colors.textMuted },
+      }),
+    [colors],
+  );
+}

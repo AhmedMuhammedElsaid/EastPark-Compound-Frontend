@@ -2,9 +2,10 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { clearAndAdd, dismissConflict } from '@/store/slices/cartSlice';
-import { BRAND, DARK, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
 /**
  * Global modal that appears when the user tries to add a product from a
@@ -15,6 +16,8 @@ export function CartConflictSheet() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { showConflictSheet, pendingShopName, shopName } = useAppSelector((s) => s.cart);
+  const colors = useAppColors();
+  const styles = useStyles(colors);
 
   if (!showConflictSheet) return null;
 
@@ -55,33 +58,39 @@ export function CartConflictSheet() {
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.xl,
-  },
-  sheet: {
-    backgroundColor: DARK.elevated,
-    borderRadius: RADIUS.lg,
-    padding: SPACING.xl,
-    width: '100%',
-    gap: SPACING.md,
-  },
-  title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: DARK.text },
-  body: { fontFamily: FONT.sans, fontSize: 14, color: DARK.textMuted, lineHeight: 22 },
-  actions: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.sm },
-  btn: {
-    flex: 1,
-    height: 48,
-    borderRadius: RADIUS.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  btnOutline: { borderWidth: 1, borderColor: DARK.border },
-  btnOutlineText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: DARK.textMuted },
-  btnGold: { backgroundColor: BRAND.gold },
-  btnGoldText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: DARK.bg },
-});
+function useStyles(colors: ReturnType<typeof useAppColors>) {
+  return React.useMemo(
+    () =>
+      StyleSheet.create({
+        overlay: {
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingHorizontal: SPACING.xl,
+        },
+        sheet: {
+          backgroundColor: colors.elevated,
+          borderRadius: RADIUS.lg,
+          padding: SPACING.xl,
+          width: '100%',
+          gap: SPACING.md,
+        },
+        title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+        body: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, lineHeight: 22 },
+        actions: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.sm },
+        btn: {
+          flex: 1,
+          height: 48,
+          borderRadius: RADIUS.md,
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        btnOutline: { borderWidth: 1, borderColor: colors.border },
+        btnOutlineText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.textMuted },
+        btnGold: { backgroundColor: BRAND.gold },
+        btnGoldText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: colors.bg },
+      }),
+    [colors],
+  );
+}
