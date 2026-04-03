@@ -10,12 +10,14 @@
 
 **All 7 phases + all 38 AppGaps + 3 deep-audit passes + FE-BE wiring: 100% complete.**
 
-Last commits: `3ea3f75` → `8e8634c` (continuation pass). Branch: `main`.
+Last commits: `8e8634c` → `81140a4` (continuation pass). Branch: `main`.
 
-Deep audit fixed: Paymob 3-step flow, push token endpoint/projectId, token persist blacklist, admin redirect guards, 30+ emoji→Phosphor icons, all ← arrows replaced, `formatCurrency` everywhere, N+1 fetch fixed via TanStack Query `initialData`, `rgba`→token colors.
+Deep audit fixed: Paymob 3-step flow, push token endpoint/projectId, token persist blacklist, admin redirect guards, 30+ emoji→Phosphor icons, all ← arrows replaced, `formatCurrency` locale-aware (ar-EG/en-US), N+1 fetch fixed via TanStack Query `initialData`, `rgba`→token colors, theme+language reactivity (useAppColors hook), auth-wall message rendering, Socket.io cleanup, cross-user cache isolation (queryClient.clear on login/logout), haptics on all primary buttons.
 
 **Remaining user action (manual — requires Expo account):**
-- `eas init` in this directory → paste `EAS_PROJECT_ID` into `app.config.ts`
+- `EAS_PROJECT_ID` is populated (`062399ed-48df-4d4f-ba1a-a0801a86b1bc`) — no further `eas init` needed.
+
+See `Documentation/FixedBugs.md` for the full list of bugs fixed in April 2026 audit passes.
 
 ---
 
@@ -239,11 +241,37 @@ await Linking.openURL(iframeUrl);
 // 4. Clear cart + navigate to confirmation (payment status confirmed via webhook)
 ```
 
+### Cache Isolation on Auth State Change
+```typescript
+// On login (login.tsx, verify-otp.tsx, accept-invitation.tsx)
+queryClient.clear(); // wipe previous user's cached data
+dispatch(login({ user, accessToken, refreshToken }));
+
+// On logout (profile/index.tsx handleLogout, client.ts 401 interceptor)
+queryClient.clear();
+dispatch(logout());
+router.replace('/(auth)/login');
+```
+
 ### Design tokens (never raw colors)
 ```typescript
 import { BRAND, DARK, SEMANTIC, FONT, SPACING, RADIUS } from '@/theme/tokens';
 // Transparent overlays: `${BRAND.gold}22` (13% opacity) — NEVER rgba()
 ```
+
+### Theme Reactivity Pattern
+
+All screens use `useStyles()` + `useAppColors()` — never static `StyleSheet.create({DARK.*})`:
+```typescript
+// src/lib/hooks/use-app-colors.ts
+import { useUniwind } from 'uniwind';
+import { DARK, LIGHT } from '@/theme/tokens';
+export function useAppColors() {
+  const { theme } = useUniwind();
+  return theme === 'dark' ? DARK : LIGHT;
+}
+```
+Zero static `DARK.*` references remain in screen/component files. The `preferencesSlice` (Redux + redux-persist) is the single source of truth for both `language` and `theme` preferences.
 
 ---
 
@@ -287,7 +315,7 @@ import { BRAND, DARK, SEMANTIC, FONT, SPACING, RADIUS } from '@/theme/tokens';
 | `simulator` | dev client | simulator | iOS simulator testing |
 
 `appVersionSource: "remote"` — version managed by EAS, not `package.json`.
-`EAS_PROJECT_ID` is currently `''` — run `eas init` to populate before any build.
+`EAS_PROJECT_ID` is populated (`062399ed-48df-4d4f-ba1a-a0801a86b1bc`) — no further `eas init` needed.
 
 ---
 
