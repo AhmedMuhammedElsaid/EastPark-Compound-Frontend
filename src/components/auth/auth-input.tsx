@@ -18,7 +18,7 @@ type Props = TextInputProps & {
  */
 export function AuthInput({ ref, label, error, rightSlot, ...props }: Props & { ref?: React.Ref<TextInput> }) {
   const colors = useAppColors();
-  const styles = useStyles(colors);
+  const styles = useStyles(colors, !!rightSlot);
   const [focused, setFocused] = React.useState(false);
 
   const inputStyle = [
@@ -52,7 +52,7 @@ export function AuthInput({ ref, label, error, rightSlot, ...props }: Props & { 
   );
 }
 
-function useStyles(colors: ReturnType<typeof useAppColors>) {
+function useStyles(colors: ReturnType<typeof useAppColors>, hasRightSlot: boolean) {
   return React.useMemo(
     () =>
       StyleSheet.create({
@@ -72,7 +72,7 @@ function useStyles(colors: ReturnType<typeof useAppColors>) {
           borderColor: colors.border,
           borderRadius: RADIUS.md,
           paddingHorizontal: SPACING.base,
-          paddingRight: SPACING['4xl'],
+          paddingRight: hasRightSlot ? SPACING['4xl'] : SPACING.base,
           fontFamily: FONT.sans,
           fontSize: 15,
           color: colors.text,
@@ -101,6 +101,6 @@ function useStyles(colors: ReturnType<typeof useAppColors>) {
           marginTop: SPACING.xs,
         },
       }),
-    [colors],
+    [colors, hasRightSlot],
   );
 }

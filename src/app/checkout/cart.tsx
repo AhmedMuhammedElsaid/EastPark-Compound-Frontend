@@ -4,14 +4,14 @@ import * as Haptics from 'expo-haptics';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { ArrowLeft, ShoppingCart, Trash } from 'phosphor-react-native';
+import { ArrowLeft, Minus, Plus, ShoppingCart, Trash } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { clearCart, updateQuantity } from '@/store/slices/cartSlice';
-import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 function useStyles() {
   const colors = useAppColors();
@@ -187,7 +187,7 @@ function CartNav({ shopName, onClear, styles, colors }: { shopName?: string; onC
   const { t } = useTranslation();
   return (
     <View style={styles.nav}>
-      <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back">
+      <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
         <ArrowLeft size={18} color={colors.text} />
       </Pressable>
       <Text style={styles.navTitle}>{shopName || t('cart.title')}</Text>
@@ -230,11 +230,11 @@ function CartItemRow({
         <Pressable style={styles.qtyBtn} onPress={onDecrease} hitSlop={8}>
           {item.quantity === 1
             ? <Trash size={16} color={SEMANTIC.error} />
-            : <Text style={styles.qtyBtnText}>−</Text>}
+            : <Minus size={16} color={DARK.textMuted} />}
         </Pressable>
         <Text style={styles.qtyValue}>{item.quantity}</Text>
         <Pressable style={styles.qtyBtn} onPress={onIncrease} hitSlop={8}>
-          <Text style={styles.qtyBtnText}>+</Text>
+          <Plus size={16} color={BRAND.gold} />
         </Pressable>
         <Text style={styles.itemSubtotal}>{formatCurrency(item.price * item.quantity)}</Text>
       </View>
