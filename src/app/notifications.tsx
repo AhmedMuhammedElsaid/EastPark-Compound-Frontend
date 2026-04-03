@@ -3,7 +3,7 @@ import type { AppNotification } from '@/services/api/notifications';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Redirect, router } from 'expo-router';
-import { ArrowLeft, Bell } from 'phosphor-react-native';
+import { ArrowLeft, BellSlash } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -80,8 +80,9 @@ function useStyles() {
       marginTop: 5,
       flexShrink: 0,
     },
-    empty: { alignItems: 'center' as const, paddingTop: 100, gap: SPACING.md },
-    emptyText: { fontFamily: FONT.sans, fontSize: 15, color: colors.textMuted },
+    empty: { alignItems: 'center' as const, paddingTop: 100, gap: SPACING.md, paddingHorizontal: SPACING.xl },
+    emptyTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text, textAlign: 'center' as const },
+    emptySubtitle: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, textAlign: 'center' as const, lineHeight: 22 },
     skeletonPad: { padding: SPACING.base },
   }), [colors]);
 }
@@ -260,8 +261,9 @@ function EmptyState({ styles, colors }: { styles: any; colors: any }) {
   const { t } = useTranslation();
   return (
     <View style={styles.empty}>
-      <Bell size={48} color={colors.textMuted} />
-      <Text style={styles.emptyText}>{t('notifications.empty')}</Text>
+      <BellSlash size={48} color={colors.textMuted} />
+      <Text style={styles.emptyTitle}>{t('notifications.empty')}</Text>
+      <Text style={styles.emptySubtitle}>{t('notifications.empty_subtitle')}</Text>
     </View>
   );
 }

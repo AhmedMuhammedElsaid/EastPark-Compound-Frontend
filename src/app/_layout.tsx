@@ -2,7 +2,8 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 import { ThemeProvider } from '@react-navigation/native';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
+import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { I18nManager, StyleSheet } from 'react-native';
@@ -64,6 +65,7 @@ function Providers({ children }: { children: React.ReactNode }) {
   useAuthRehydration();
   const theme = useThemeConfig();
   const savedLanguage = useAppSelector(s => s.preferences.language);
+  const router = useRouter();
 
   // Restore theme from AsyncStorage on mount
   React.useEffect(() => {
@@ -79,7 +81,37 @@ function Providers({ children }: { children: React.ReactNode }) {
       I18nManager.forceRTL(savedLanguage === 'ar');
     }
   }, [savedLanguage]);
-  
+
+  // Navigate to the relevant screen when user taps a push notification.
+  React.useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const data = response.notification.request.content.data as {
+        type?: string;
+        referenceId?: string;
+      };
+      if (!data?.type || !data?.referenceId) return;
+
+      switch (data.type) {
+        case 'ORDER_UPDATE':
+          router.push(`/(tabs)/orders/${data.referenceId}` as any);
+          break;
+        case 'ANNOUNCEMENT':
+          router.push(`/(tabs)/community/${data.referenceId}` as any);
+          break;
+        case 'FEEDBACK_REPLY':
+          router.push(`/(tabs)/community/feedback/${data.referenceId}` as any);
+          break;
+        case 'POLL':
+          router.push(`/(tabs)/community/governance/polls/${data.referenceId}` as any);
+          break;
+        case 'ELECTION':
+          router.push(`/(tabs)/community/governance/elections/${data.referenceId}` as any);
+          break;
+      }
+    });
+    return () => subscription.remove();
+  }, [router]);
+
   return (
     <GestureHandlerRootView
       style={styles.container}

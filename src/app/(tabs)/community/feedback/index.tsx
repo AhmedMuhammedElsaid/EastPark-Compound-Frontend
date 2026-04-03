@@ -3,7 +3,7 @@ import type { Feedback, FeedbackStatus } from '@/services/api/community';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { ArrowLeft, ChatCircle, EnvelopeSimple, Plus } from 'phosphor-react-native';
+import { ArrowLeft, ChatCircle, Plus } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -186,7 +186,7 @@ function FeedbackEmpty({ styles, colors }: { styles: any; colors: any }) {
   const { t } = useTranslation();
   return (
     <View style={styles.empty}>
-      <EnvelopeSimple size={48} color={colors.textMuted} />
+      <ChatCircle size={48} color={colors.textMuted} />
       <Text style={styles.emptyTitle}>{t('feedback.empty')}</Text>
       <Text style={styles.emptyBody}>{t('feedback.empty_subtitle')}</Text>
     </View>

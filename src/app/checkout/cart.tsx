@@ -4,13 +4,14 @@ import * as Haptics from 'expo-haptics';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 import { ArrowLeft, Minus, Plus, ShoppingCart, Trash } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { clearCart, updateQuantity } from '@/store/slices/cartSlice';
+import { clearCart, removeItem, updateQuantity } from '@/store/slices/cartSlice';
 import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 function useStyles() {
@@ -77,6 +78,14 @@ function useStyles() {
     qtyBtnText: { fontSize: 16, color: colors.text },
     qtyValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text },
     itemSubtotal: { fontFamily: FONT.sans, fontSize: 12, color: BRAND.gold, fontWeight: '600' },
+    deleteAction: {
+      width: 80,
+      backgroundColor: SEMANTIC.error,
+      borderRadius: RADIUS.md,
+      marginBottom: SPACING.md,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
     footer: {
       position: 'absolute' as const,
       bottom: 0,
@@ -155,6 +164,10 @@ export default function CartScreen() {
               }
               dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity - 1 }));
             }}
+            onDelete={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              dispatch(removeItem(item.productId));
+            }}
             styles={styles}
           />
         ))}
@@ -205,40 +218,55 @@ function CartItemRow({
   isAr,
   onIncrease,
   onDecrease,
+  onDelete,
   styles,
 }: {
   item: any;
   isAr: boolean;
   onIncrease: () => void;
   onDecrease: () => void;
+  onDelete: () => void;
   styles: any;
 }) {
   const colors = useAppColors();
   const name = isAr ? item.nameAr : item.name;
 
+  const renderRightActions = () => (
+    <Pressable
+      style={styles.deleteAction}
+      onPress={onDelete}
+      accessibilityRole="button"
+      accessibilityLabel="Delete item"
+    >
+      <Trash size={22} color="#ffffff" weight="bold" />
+    </Pressable>
+  );
+
   return (
-    <View style={styles.itemRow}>
-      {item.imageUrl
-        ? <Image source={{ uri: item.imageUrl }} style={styles.itemImg} resizeMode="cover" />
-        : <View style={styles.itemImgPlaceholder} />}
+    <Swipeable renderRightActions={renderRightActions} overshootRight={false}>
+      <View style={styles.itemRow}>
+        {item.imageUrl
+          ? <Image source={{ uri: item.imageUrl }} style={styles.itemImg} resizeMode="cover" />
+          : <View style={styles.itemImgPlaceholder} />}
 
-      <View style={styles.itemInfo}>
-        <Text style={styles.itemName} numberOfLines={2}>{name}</Text>
-        <Text style={styles.itemPrice}>{formatCurrency(item.price)}</Text>
-      </View>
+        <View style={styles.itemInfo}>
+          <Text style={styles.itemName} numberOfLines={2}>{name}</Text>
+          <Text style={styles.itemPrice}>{formatCurrency(item.price)}</Text>
+        </View>
 
-      <View style={styles.qtyControls}>
-        <Pressable style={styles.qtyBtn} onPress={onDecrease} hitSlop={8}>
-          {item.quantity === 1
-            ? <Trash size={16} color={SEMANTIC.error} />
-            : <Minus size={16} color={colors.textMuted} />}
-        </Pressable>
-        <Text style={styles.qtyValue}>{item.quantity}</Text>
-        <Pressable style={styles.qtyBtn} onPress={onIncrease} hitSlop={8}>
-          <Plus size={16} color={BRAND.gold} />
-        </Pressable>
-        <Text style={styles.itemSubtotal}>{formatCurrency(item.price * item.quantity)}</Text>
+        <View style={styles.qtyControls}>
+          <Pressable style={styles.qtyBtn} onPress={onDecrease} hitSlop={8}>
+            {item.quantity === 1
+              ? <Trash size={16} color={SEMANTIC.error} />
+              : <Minus size={16} color={colors.textMuted} />}
+          </Pressable>
+          <Text style={styles.qtyValue}>{item.quantity}</Text>
+          <Pressable style={styles.qtyBtn} onPress={onIncrease} hitSlop={8}>
+            <Plus size={16} color={BRAND.gold} />
+          </Pressable>
+          <Text style={styles.itemSubtotal}>{formatCurrency(item.price * item.quantity)}</Text>
+        </View>
       </View>
-    </View>
+    </Swipeable>
   );
 }
