@@ -17,6 +17,7 @@ import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { authApi } from '@/services/api/auth';
 import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
 import { registerPushToken } from '@/services/push';
+import { queryClient } from '@/services/query/client';
 import { useAppDispatch } from '@/store';
 import { login } from '@/store/slices/authSlice';
 import { BRAND, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
@@ -59,6 +60,7 @@ export default function LoginScreen() {
       const { user, accessToken, refreshToken } = res.data.data;
       await setSecureItem(SECURE_KEY_ACCESS, accessToken);
       await setSecureItem(SECURE_KEY_REFRESH, refreshToken);
+      queryClient.clear();
       dispatch(login({ user, accessToken, refreshToken }));
       await registerPushToken();
       router.replace('/(tabs)');

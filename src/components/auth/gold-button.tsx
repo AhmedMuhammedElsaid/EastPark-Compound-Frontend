@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import * as React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -53,7 +54,10 @@ export function GoldButton({
   return (
     <Pressable
       onPress={onPress}
-      onPressIn={() => setPressed(true)}
+      onPressIn={() => {
+        setPressed(true);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }}
       onPressOut={() => setPressed(false)}
       disabled={disabled || loading}
       style={containerStyle}
