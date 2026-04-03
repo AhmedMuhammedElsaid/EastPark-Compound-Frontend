@@ -101,6 +101,7 @@ export default function GovernanceScreen() {
     queryFn: ({ pageParam }) => governanceApi.getPolls({ cursor: pageParam, limit: 20 }),
     getNextPageParam: last => last.data.data.nextCursor ?? undefined,
     initialPageParam: undefined,
+    enabled: tab === 'polls',
   });
 
   const electionsQuery = useInfiniteQuery<
@@ -114,6 +115,7 @@ export default function GovernanceScreen() {
     queryFn: ({ pageParam }) => governanceApi.getElections({ cursor: pageParam, limit: 20 }),
     getNextPageParam: last => last.data.data.nextCursor ?? undefined,
     initialPageParam: undefined,
+    enabled: tab === 'elections',
   });
 
   const polls = pollsQuery.data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];

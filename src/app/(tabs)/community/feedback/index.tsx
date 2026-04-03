@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { communityApi } from '@/services/api/community';
+import { useAppSelector } from '@/store';
 import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 const STATUS_COLOR: Record<FeedbackStatus, string> = {
@@ -82,6 +83,7 @@ export default function FeedbackListScreen() {
   const insets = useSafeAreaInsets();
   const styles = useStyles();
   const colors = useAppColors();
+  const isAuthenticated = useAppSelector(s => s.auth.isAuthenticated);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
@@ -95,6 +97,7 @@ export default function FeedbackListScreen() {
       queryFn: ({ pageParam }) => communityApi.getFeedback({ cursor: pageParam, limit: 20 }),
       getNextPageParam: last => last.data.data.nextCursor ?? undefined,
       initialPageParam: undefined,
+      enabled: isAuthenticated,
     });
 
   const items = data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
