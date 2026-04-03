@@ -1,8 +1,8 @@
 # EastPark Frontend — Bug Fix Log
 
-> Recorded after a comprehensive two-pass audit (April 2026).
+> Recorded after a comprehensive two-pass audit + maintenance pass (April 2026).
 > All bugs were fixed in commits on branch `main`.
-> Last commits: `085f3ed`, `81140a4`.
+> Last commits: `0c74e20`, `bfcdf92`, `fb400e1`, `d9fcdf6`, `43025a1`.
 
 ---
 
@@ -13,7 +13,81 @@ These are known gaps that require backend work before the frontend feature works
 | Issue | Frontend Status | Backend Requirement |
 |---|---|---|
 | **Delete account self-service** | Frontend calls `DELETE /user` correctly via `usersApi.deleteAccount()` | Backend currently exposes this route as admin-only (`DELETE /admin/user/:id`). Needs a resident self-service `DELETE /user` endpoint |
-| **Merchant pending order count** | Dashboard fetches `limit: 5` and shows `.length` — accurate only when ≤5 pending orders exist | Needs a count endpoint (e.g. `GET /merchant/orders/count?status=PLACED`) or `totalCount` field in list response |
+| **Merchant pending order count** | ~~Dashboard fetches `limit: 5` and shows `.length`~~ → Now shows `5+` when `nextCursor` is truthy (commit `d9fcdf6`). Frontend workaround in place. | For an exact count, add `GET /merchant/orders/count?status=PLACED` or `totalCount` in list response |
+| **Notification deep-link data payload** | `_layout.tsx` listener reads `{ type, referenceId }` from notification data (commit `43025a1`) | Backend must include structured `data: { type, referenceId }` in all `sendPushNotification()` calls |
+| **Single product fetch** | Edit screen uses `initialData` from list cache (N+1 fixed in prior audit) | For cold-launch efficiency, add `GET /merchant/products/:id` |
+
+---
+
+## April 2026 — Maintenance Pass (Section 1 TD + Section 2 UX)
+
+Commits: `0c74e20`, `bfcdf92`, `fb400e1`, `d9fcdf6`, `43025a1`
+
+### TD-1: `getSavedShops` URL — No Change Needed
+Backend confirmed: `UserSavedShopsController` uses `@Controller({ path: '/users/me/saved-shops', version: '1' })`. Frontend `shops.ts` line 73 already uses `/users/me/saved-shops`. Correct.
+
+### TD-2: `use-auth-rehydration.ts` Bare Catch
+**File:** `src/lib/hooks/use-auth-rehydration.ts` — `commit 0c74e20`
+Replaced empty `catch {}` with a branching catch: 401 → pass through silently (interceptor already cleared tokens); any other error → `console.warn('[auth-rehydration] network error on startup', err)` in `__DEV__` without clearing tokens, so valid credentials survive network outages on cold launch.
+
+### TD-3: `registerPushToken` Silent Catch
+**File:** `src/services/push/index.ts` — `commit 0c74e20`
+Added `if (__DEV__) console.warn('[push] token registration failed', err)` in catch. Push failures remain non-fatal but now surface during development.
+
+### TD-4: Role Badge in `accept-invitation.tsx` Reads URL Param
+**File:** `src/app/(auth)/accept-invitation.tsx` — `commit fb400e1`
+Added `confirmedRole` state set from `res.data.data.user.role` in `onSubmit`. Badge now only renders after API responds — reflects what the backend assigned, not the URL claim.
+
+### TD-5: TypeScript `any` in Auth Form Props
+**Files:** `login.tsx`, `register.tsx`, `reset-password.tsx`, `accept-invitation.tsx` — `commit fb400e1`
+All sub-form components now use `Control<FormData>` and `FieldErrors<FormData>` from `react-hook-form` instead of `any`.
+
+### TD-6: `forgot-password.tsx` No Retry Path
+**File:** `src/app/(auth)/forgot-password.tsx` — `commit fb400e1`
+Added "Try a different email" pressable on the success card that calls `setSent(false)`, returning to the email input without navigation. Translation key `auth.forgot.tryDifferentEmail` added to EN + AR.
+
+### TD-7: `register.tsx` Generic Server Error Catch
+**File:** `src/app/(auth)/register.tsx` — `commit fb400e1`
+Replaced single `EMAIL_TAKEN` check with `errorMap` record covering `EMAIL_TAKEN`, `INVALID_PHONE`, `INVALID_UNIT`. Falls back to `common.error`. Added `auth.errors.invalid_unit` translation key (AR + EN). `auth.errors.invalid_phone` already existed — not duplicated.
+
+### TD-8: Profile `useStyles()` Called Per Sub-Component
+**File:** `src/app/(tabs)/profile/index.tsx` — `commit bfcdf92`
+Found a pre-existing bug: `useStyles()` was calling `useMemo(() => StyleSheet.create(...))` but the `return { styles, colors }` was dead code after it. Fixed by introducing `buildStyles(colors)` as a plain function, with `useStyles()` as the only hook calling `useAppColors()` once. `ProfileScreen` is the sole caller — passes `styles` + `colors` as props to all 7 sub-components.
+
+### TD-9: Merchant Order Status Progression Capped at READY
+**File:** `src/app/(merchant)/orders/[orderId].tsx` — `commit d9fcdf6`
+Removed `READY → ON_THE_WAY` and `ON_THE_WAY → DELIVERED` from `NEXT_STATUS` map. Merchants now control: `PLACED → CONFIRMED → PREPARING → READY` only. `ON_THE_WAY`/`DELIVERED` are set by delivery/logistics or webhook.
+
+### UX-1: OTP Auto-Submit on 6th Digit
+**File:** `src/app/(auth)/verify-otp.tsx` — `commit fb400e1`
+`handleVerify(code?: string)` now reads `code ?? otp` to avoid stale-state closure on auto-submit. `OTPTextInput.handleTextChange` calls `setOtp(code)` + `handleVerify(code)` when `code.length === 6`. Manual confirm button still works via `handleVerify()` with no argument.
+
+### UX-2: Merchant Dashboard Pending Count Overflow Indicator
+**File:** `src/app/(merchant)/dashboard.tsx` — `commit d9fcdf6`
+Added `hasMore = !!ordersData?.data.data.nextCursor` and `displayCount = hasMore ? "5+" : "5"`. Used in banner text and stat card. Translation key `merchant.pending_count_waiting` added.
+
+### UX-3: Haptics on Auth + Profile Interactive Elements
+**Files:** all auth screens, `profile/index.tsx` — `commits fb400e1`, `bfcdf92`
+`Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)` added to every non-GoldButton `Pressable` that performs navigation or state change. Covered: forgot-password link, sign-up/sign-in links, retry-email pressable, password show/hide toggles, language segment, theme segment, Logout, Delete Account, ProfileRow nav items.
+
+### UX-4: Cart Swipe-to-Delete
+**File:** `src/app/checkout/cart.tsx` — `commit 43025a1`
+Wrapped `CartItemRow` in `Swipeable` from `react-native-gesture-handler`. Right action: 80px wide, `SEMANTIC.error` background, `Trash` Phosphor icon. On press: `Haptics.impactAsync(ImpactFeedbackStyle.Medium)` + `dispatch(removeItem(item.productId))`.
+
+### UX-5: Contextual Empty States
+**Files:** `notifications/index.tsx`, `community/feedback/index.tsx`, `translations/` — `commit 43025a1`
+- Notifications: `BellSlash` icon + "You're all caught up" / "No new notifications"
+- Feedback: `ChatCircle` icon + "No feedback submitted yet" / "Tap below to share"
+- Orders: already used `Package` + correct keys — only translation values updated
+- All keys added to `en.json` + `ar.json`
+
+### UX-6: Notification Deep Linking
+**File:** `src/app/_layout.tsx` — `commit 43025a1`
+Added `Notifications.addNotificationResponseReceivedListener` in root layout. Routes based on `data.type` + `data.referenceId`: `ORDER_UPDATE` → orders/:id, `ANNOUNCEMENT` → community/:id, `FEEDBACK_REPLY` → feedback/:id, `POLL` → polls/:id, `ELECTION` → elections/:id. Subscription cleaned up on unmount.
+
+### UX-8: Merchant Shop Profile Editor
+**Files:** `src/app/(merchant)/shop-profile.tsx` (NEW), `src/services/api/merchant.ts`, `dashboard.tsx` — `commit d9fcdf6`
+Full RHF + Zod screen: Basic Info (name/nameAr, description/descriptionAr), Contact (phone, WhatsApp), Working Hours (Mon–Sun toggle + HH:MM inputs). Backend note: `PATCH /merchant/shop` does not exist — correctly uses `PATCH /shops/:id` which accepts `MERCHANT` role with ownership enforcement. `merchantApi.updateShop()` added. Dashboard Storefront quick-action card restored. 7 new translation keys in EN + AR.
 
 ---
 
