@@ -1,4 +1,5 @@
 import type { Order, OrderStatus } from '@/services/api/orders';
+import type { Socket } from 'socket.io-client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
@@ -128,22 +129,30 @@ export default function OrderDetailScreen() {
     if (!orderId)
       return;
     let mounted = true;
+    let socketRef: Socket | null = null;
+
+    const handler = (update: { orderId: string; status: OrderStatus }) => {
+      if (!mounted) return;
+      if (update.orderId === orderId) {
+        queryClient.invalidateQueries({ queryKey: ['order', orderId] });
+        queryClient.invalidateQueries({ queryKey: ['orders'] });
+      }
+    };
 
     getOrdersSocket().then((socket) => {
       if (!mounted)
         return;
+      socketRef = socket;
       joinOrderRoom(orderId);
-      socket.on('order_status_updated', (update: { orderId: string; status: OrderStatus }) => {
-        if (update.orderId === orderId) {
-          queryClient.invalidateQueries({ queryKey: ['order', orderId] });
-          queryClient.invalidateQueries({ queryKey: ['orders'] });
-        }
-      });
+      socket.on('order_status_updated', handler);
     });
 
     return () => {
       mounted = false;
       leaveOrderRoom(orderId);
+      if (socketRef) {
+        socketRef.off('order_status_updated', handler);
+      }
     };
   }, [orderId, queryClient]);
 

@@ -15,6 +15,7 @@ import { GoldButton } from '@/components/auth/gold-button';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { authApi } from '@/services/api/auth';
 import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
+import { registerPushToken } from '@/services/push';
 import { useAppDispatch } from '@/store';
 import { login } from '@/store/slices/authSlice';
 import { BRAND, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
@@ -62,6 +63,7 @@ export default function AcceptInvitationScreen() {
       await setSecureItem(SECURE_KEY_ACCESS, accessToken);
       await setSecureItem(SECURE_KEY_REFRESH, refreshToken);
       dispatch(login({ user, accessToken, refreshToken }));
+      await registerPushToken();
       router.replace(
         user.role === 'MERCHANT'
           ? '/(merchant)/dashboard'
