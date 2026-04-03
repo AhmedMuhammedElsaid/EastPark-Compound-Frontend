@@ -7,6 +7,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ArrowLeft, InboxSimple } from 'phosphor-react-native';
+import i18n from '@/lib/i18n';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -205,7 +206,8 @@ function MerchantOrderCard({ order, styles, colors }: { order: MerchantOrder; st
   const statusColor = (order.status === 'DELIVERED' || order.status === 'CANCELLED')
     ? colors.elevated
     : (STATUS_COLOR[order.status] ?? colors.elevated);
-  const time = new Date(order.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-GB';
+  const time = new Date(order.createdAt).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
 
   return (
     <Pressable

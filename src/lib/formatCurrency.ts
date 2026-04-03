@@ -1,13 +1,16 @@
-export function formatCurrency(amount: number, currency = 'EGP', locale?: string): string {
+import i18n from '@/lib/i18n';
+
+export function formatCurrency(amount: number, currencyCode = 'EGP'): string {
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-US';
   try {
-    return new Intl.NumberFormat(locale ?? 'en-US', {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency,
-      minimumFractionDigits: 2,
+      currency: currencyCode,
+      minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     }).format(amount);
   }
   catch {
-    return `${currency} ${amount.toFixed(2)}`;
+    return `${currencyCode} ${amount.toFixed(2)}`;
   }
 }

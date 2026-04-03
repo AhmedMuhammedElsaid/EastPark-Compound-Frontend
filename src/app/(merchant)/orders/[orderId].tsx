@@ -5,6 +5,8 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ArrowLeft } from 'phosphor-react-native';
+import i18n from '@/lib/i18n';
+import { showMessage } from 'react-native-flash-message';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -128,6 +130,7 @@ export default function MerchantOrderDetailScreen() {
       queryClient.invalidateQueries({ queryKey: ['merchant-order', orderId] });
       queryClient.invalidateQueries({ queryKey: ['merchant-orders'] });
     },
+    onError: () => showMessage({ message: t('common.error'), type: 'danger', backgroundColor: SEMANTIC.error }),
   });
 
   const { mutate: rejectOrder, isPending: rejecting } = useMutation({
@@ -137,6 +140,7 @@ export default function MerchantOrderDetailScreen() {
       queryClient.invalidateQueries({ queryKey: ['merchant-orders'] });
       router.back();
     },
+    onError: () => showMessage({ message: t('common.error'), type: 'danger', backgroundColor: SEMANTIC.error }),
   });
 
   if (isLoading || !order)
@@ -144,7 +148,8 @@ export default function MerchantOrderDetailScreen() {
 
   const nextStatus = NEXT_STATUS[order.status];
   const isActive = order.status !== 'DELIVERED' && order.status !== 'CANCELLED';
-  const time = new Date(order.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-GB';
+  const time = new Date(order.createdAt).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
