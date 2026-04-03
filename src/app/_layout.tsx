@@ -39,7 +39,7 @@ export const unstable_settings = {
 export default function RootLayout() {
   return (
     <ReduxProvider store={store}>
-      <PersistGate persistor={persistor}>
+      <PersistGate persistor={persistor} loading={null}>
         <PersistQueryClientProvider
           client={queryClient}
           persistOptions={{ persister: asyncStoragePersister }}

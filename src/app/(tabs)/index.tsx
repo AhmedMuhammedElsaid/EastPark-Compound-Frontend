@@ -103,9 +103,9 @@ export default function HomeScreen() {
             {t(greetKey)}
             {user ? `, ${user.name.split(' ')[0]}` : ''}
           </Text>
-          {user && (
+          {user?.unitNumber ? (
             <Text style={styles.unitText}>{t('checkout.unit', { number: user.unitNumber })}</Text>
-          )}
+          ) : null}
         </View>
 
         {/* Quick actions */}

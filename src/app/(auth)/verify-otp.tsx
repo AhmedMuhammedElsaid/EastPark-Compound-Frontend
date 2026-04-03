@@ -2,7 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { setSecureItem } from '@/lib/secure-storage';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import OTPTextInput from 'react-native-otp-textinput';
 
@@ -48,6 +48,12 @@ export default function VerifyOtpScreen() {
   const [cooldown, setCooldown] = React.useState(0);
 
   React.useEffect(() => {
+    if (!email) {
+      router.replace('/(auth)/register');
+    }
+  }, [email]);
+
+  React.useEffect(() => {
     if (cooldown <= 0)
       return;
     const timer = setInterval(() => setCooldown(c => Math.max(0, c - 1)), 1000);
@@ -55,8 +61,9 @@ export default function VerifyOtpScreen() {
   }, [cooldown]);
 
   async function handleVerify() {
-    if (otp.length < 6)
+    if (otp.length < 6 || !email)
       return;
+    Keyboard.dismiss();
     setLoading(true);
     try {
       const res = await authApi.verifyOtp(email, otp);
@@ -76,7 +83,7 @@ export default function VerifyOtpScreen() {
   }
 
   async function handleResend() {
-    if (cooldown > 0 || resending)
+    if (cooldown > 0 || resending || !email)
       return;
     setResending(true);
     try {
@@ -91,6 +98,9 @@ export default function VerifyOtpScreen() {
       setResending(false);
     }
   }
+
+  if (!email)
+    return null;
 
   return (
     <AuthScreenWrapper>

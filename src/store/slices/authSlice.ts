@@ -9,8 +9,8 @@ export interface AuthUser {
   role: 'RESIDENT' | 'MERCHANT' | 'ADMIN';
   isVerified: boolean;
   avatarUrl: string | null;
-  unitNumber: string;
-  phone: string;
+  unitNumber?: string;
+  phone?: string;
 }
 
 interface AuthWallConfig {

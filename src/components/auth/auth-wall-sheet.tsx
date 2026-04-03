@@ -2,14 +2,14 @@ import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { hideAuthWall } from '@/store/slices/authSlice';
-import { SPACING } from '@/theme/tokens';
+import { FONT, SPACING } from '@/theme/tokens';
 
 /**
  * Global auth-wall bottom sheet.
@@ -20,6 +20,7 @@ export function AuthWallSheet() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const showAuthWall = useAppSelector(s => s.auth.showAuthWall);
+  const authWallConfig = useAppSelector(s => s.auth.authWallConfig);
   const bottomSheetRef = React.useRef<BottomSheetModal>(null);
   const colors = useAppColors();
   const styles = useStyles(colors);
@@ -69,6 +70,10 @@ export function AuthWallSheet() {
           <BrandMark size="sm" />
         </View>
 
+        {authWallConfig?.message ? (
+          <Text style={styles.message}>{authWallConfig.message}</Text>
+        ) : null}
+
         <GoldButton
           label={t('auth.login')}
           onPress={handleLogin}
@@ -101,11 +106,18 @@ function useStyles(colors: ReturnType<typeof useAppColors>) {
           flex: 1,
           paddingHorizontal: SPACING.lg,
           paddingBottom: SPACING.xl,
-          gap: SPACING.xs,
+          gap: SPACING.sm,
         },
         logoRow: {
           alignItems: 'center',
           paddingVertical: SPACING.lg,
+        },
+        message: {
+          fontFamily: FONT.sans,
+          fontSize: 14,
+          color: colors.textMuted,
+          textAlign: 'center',
+          marginBottom: SPACING.xs,
         },
       }),
     [colors],

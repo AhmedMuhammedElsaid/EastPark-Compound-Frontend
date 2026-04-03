@@ -204,7 +204,7 @@ function AuthenticatedProfile({ user }: { user: any }) {
 
 // ─── Section sub-components ───────────────────────────────────────────────────
 
-function UserAvatar({ name, unitNumber, email }: { name: string; unitNumber: string; email: string }) {
+function UserAvatar({ name, unitNumber, email }: { name: string; unitNumber?: string; email: string }) {
   const { t } = useTranslation();
   const { styles } = useStyles();
   const initial = name.charAt(0).toUpperCase();
@@ -216,7 +216,7 @@ function UserAvatar({ name, unitNumber, email }: { name: string; unitNumber: str
       <View style={styles.avatarInfo}>
         <Text style={styles.userName}>{name}</Text>
         <Text style={styles.userEmail}>{email}</Text>
-        <Text style={styles.userUnit}>{t('checkout.unit', { number: unitNumber })}</Text>
+        {unitNumber ? <Text style={styles.userUnit}>{t('checkout.unit', { number: unitNumber })}</Text> : null}
       </View>
     </View>
   );
