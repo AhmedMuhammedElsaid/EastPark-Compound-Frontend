@@ -265,7 +265,14 @@
     "shop_profile": "ملف المحل",
     "status_open": "مفتوح",
     "total": "الإجمالي",
-    "update_status": "تحديث الحالة"
+    "update_status": "تحديث الحالة",
+    "field_phone": "رقم الهاتف",
+    "field_whatsapp": "رقم واتساب",
+    "pending_count_waiting": "{{count}} طلبات جديدة بانتظارك",
+    "section_basic_info": "المعلومات الأساسية",
+    "section_contact": "بيانات التواصل",
+    "section_working_hours": "ساعات العمل",
+    "shop_saved": "تم حفظ ملف المحل"
   },
   "notifications": {
     "empty": "لا توجد إشعارات بعد",

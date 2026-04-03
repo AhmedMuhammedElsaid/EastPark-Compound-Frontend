@@ -8,6 +8,14 @@ export interface MerchantShop {
   descriptionAr: string | null;
   isOpen: boolean;
   phone: string | null;
+  whatsapp?: string | null;
+  workingHours?: Record<string, WorkingHoursDay> | null;
+}
+
+export interface WorkingHoursDay {
+  open: string;   // HH:MM format e.g. "09:00"
+  close: string;  // HH:MM format e.g. "22:00"
+  closed: boolean;
 }
 
 export interface Product {
@@ -38,6 +46,16 @@ export interface MerchantOrder {
   user: { name: string; unitNumber: string };
 }
 
+export interface ShopUpdatePayload {
+  name?: string;
+  nameAr?: string;
+  description?: string;
+  descriptionAr?: string;
+  phone?: string;
+  whatsapp?: string;
+  workingHours?: Record<string, WorkingHoursDay>;
+}
+
 export const merchantApi = {
   // Shop
   getMyShop: () =>
@@ -45,6 +63,13 @@ export const merchantApi = {
 
   toggleShopOpen: (isOpen: boolean) =>
     client.patch<{ data: MerchantShop }>('/merchant/shop', { isOpen }),
+
+  // TODO: backend endpoint is PATCH /shops/:id (merchant can update own shop).
+  // The frontend calls this as /shops/:shopId — get the shopId from getMyShop() first.
+  // There is no dedicated /merchant/shop PATCH route; the generic PATCH /shops/:id
+  // accepts MERCHANT role for their own shop.
+  updateShop: (shopId: string, data: ShopUpdatePayload) =>
+    client.patch<{ data: MerchantShop }>(`/shops/${shopId}`, data),
 
   // Products
   getMyProducts: (params?: { cursor?: string; limit?: number; includeUnavailable?: boolean }) =>

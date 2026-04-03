@@ -265,7 +265,14 @@
     "shop_profile": "Shop profile",
     "status_open": "Open",
     "total": "Total",
-    "update_status": "Update status"
+    "update_status": "Update status",
+    "field_phone": "Phone number",
+    "field_whatsapp": "WhatsApp number",
+    "pending_count_waiting": "{{count}} new orders waiting",
+    "section_basic_info": "Basic Info",
+    "section_contact": "Contact",
+    "section_working_hours": "Working Hours",
+    "shop_saved": "Shop profile saved"
   },
   "notifications": {
     "empty": "You're all caught up",

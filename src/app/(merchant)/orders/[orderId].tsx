@@ -15,13 +15,14 @@ import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { merchantApi } from '@/services/api/merchant';
 import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
-// Status pipeline for merchant actions
+// Merchants control: PLACED → CONFIRMED → PREPARING → READY
+// ON_THE_WAY and DELIVERED are set by delivery/logistics or webhook
 const NEXT_STATUS: Record<string, string | null> = {
   PLACED: 'CONFIRMED',
   CONFIRMED: 'PREPARING',
   PREPARING: 'READY',
-  READY: 'ON_THE_WAY',
-  ON_THE_WAY: 'DELIVERED',
+  READY: null,
+  ON_THE_WAY: null,
   DELIVERED: null,
   CANCELLED: null,
 };

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bell, CaretRight, ForkKnife, Package } from 'phosphor-react-native';
+import { Bell, CaretRight, ForkKnife, Package, Storefront } from 'phosphor-react-native';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
@@ -86,6 +86,8 @@ export default function MerchantDashboard() {
 
   const shop = shopData?.data.data;
   const pendingCount = ordersData?.data.data.data.length ?? 0;
+  const hasMore = !!ordersData?.data.data.nextCursor;
+  const displayCount = hasMore ? `${pendingCount}+` : `${pendingCount}`;
 
   const { mutate: toggleOpen } = useMutation({
     mutationFn: (open: boolean) => merchantApi.toggleShopOpen(open),
@@ -125,9 +127,7 @@ export default function MerchantDashboard() {
           <Pressable style={styles.alertBanner} onPress={() => router.push('/(merchant)/orders' as any)}>
             <Bell size={20} color={SEMANTIC.warning} />
             <Text style={styles.alertText}>
-              {pendingCount}
-              {' '}
-              {t('merchant.pending_orders_waiting')}
+              {t('merchant.pending_count_waiting', { count: displayCount })}
             </Text>
             <CaretRight size={18} color={colors.textMuted} />
           </Pressable>
@@ -146,11 +146,17 @@ export default function MerchantDashboard() {
             onPress={() => router.push('/(merchant)/menu' as any)}
             styles={styles}
           />
+          <QuickActionCard
+            icon={<Storefront size={28} color={colors.textMuted} />}
+            label={t('merchant.shop_profile')}
+            onPress={() => router.push('/(merchant)/shop-profile' as any)}
+            styles={styles}
+          />
         </View>
 
         <View style={styles.statsRow}>
           <StatCard label={t('merchant.status_open')} value={shop.isOpen ? t('common.open') : t('common.closed')} accent={shop.isOpen ? SEMANTIC.success : colors.textMuted} styles={styles} />
-          <StatCard label={t('merchant.pending')} value={String(pendingCount)} accent={pendingCount > 0 ? SEMANTIC.warning : colors.textMuted} styles={styles} />
+          <StatCard label={t('merchant.pending')} value={displayCount} accent={pendingCount > 0 ? SEMANTIC.warning : colors.textMuted} styles={styles} />
         </View>
       </ScrollView>
     </View>
