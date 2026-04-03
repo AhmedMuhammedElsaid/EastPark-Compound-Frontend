@@ -7,6 +7,7 @@ import { BookmarkSimple, CaretRight, ChatCircle, Package, SignOut, Storefront, U
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
@@ -18,11 +19,17 @@ import { usersApi } from '@/services/api/users';
 import { queryClient } from '@/services/query/client';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { logout } from '@/store/slices/authSlice';
-import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, DARK, FONT, LIGHT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
-function useStyles() {
-  const colors = useAppColors();
-  return React.useMemo(() => StyleSheet.create({
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type AppColors = typeof DARK | typeof LIGHT;
+type AppStyles = ReturnType<typeof buildStyles>;
+
+// ─── Style factory (pure — no hook calls) ─────────────────────────────────────
+
+function buildStyles(colors: AppColors) {
+  return StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
     header: { paddingHorizontal: SPACING.base, paddingVertical: SPACING.md },
     headerTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 24, color: colors.text },
@@ -100,14 +107,23 @@ function useStyles() {
     segmentActive: { backgroundColor: colors.card },
     segmentText: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, fontWeight: '500' },
     segmentTextActive: { color: colors.text, fontWeight: '600' },
-  }), [colors]);
+  });
+}
+
+// ─── Single hook — called once at the top level ───────────────────────────────
+
+function useStyles(): { styles: AppStyles; colors: AppColors } {
+  const colors = useAppColors();
+  const styles = React.useMemo(() => buildStyles(colors), [colors]);
   return { styles, colors };
 }
+
+// ─── Root screen — only place useStyles() is called ──────────────────────────
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { styles } = useStyles();
+  const { styles, colors } = useStyles();
   const user = useAppSelector(s => s.auth.user);
   const isAuthenticated = useAppSelector(s => s.auth.isAuthenticated);
 
@@ -121,8 +137,8 @@ export default function ProfileScreen() {
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + SPACING.xl }]}
       >
         {isAuthenticated && user
-          ? <AuthenticatedProfile user={user} />
-          : <GuestProfile />}
+          ? <AuthenticatedProfile user={user} styles={styles} colors={colors} />
+          : <GuestProfile styles={styles} colors={colors} />}
       </ScrollView>
     </View>
   );
@@ -130,25 +146,32 @@ export default function ProfileScreen() {
 
 // ─── Auth/Guest views ─────────────────────────────────────────────────────────
 
-function GuestProfile() {
+function GuestProfile({ styles, colors }: { styles: AppStyles; colors: AppColors }) {
   const { t } = useTranslation();
-  const { styles, colors } = useStyles();
   return (
     <>
       <View style={styles.guestCard}>
         <User size={32} color={colors.textMuted} />
         <Text style={styles.guestPrompt}>{t('profile.guest_prompt')}</Text>
         <Text style={styles.guestSubtitle}>{t('profile.guest_subtitle')}</Text>
-        <Pressable style={styles.signInBtn} onPress={() => router.push('/(auth)/login' as any)} accessibilityRole="button" accessibilityLabel={t('auth.login')}>
+        <Pressable
+          style={styles.signInBtn}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            router.push('/(auth)/login' as any);
+          }}
+          accessibilityRole="button"
+          accessibilityLabel={t('auth.login')}
+        >
           <Text style={styles.signInBtnText}>{t('auth.login')}</Text>
         </Pressable>
       </View>
-      <PreferencesSection />
+      <PreferencesSection styles={styles} />
     </>
   );
 }
 
-function AuthenticatedProfile({ user }: { user: any }) {
+function AuthenticatedProfile({ user, styles, colors }: { user: any; styles: AppStyles; colors: AppColors }) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { mutate: deleteAccount } = useMutation({
@@ -194,19 +217,18 @@ function AuthenticatedProfile({ user }: { user: any }) {
 
   return (
     <>
-      <UserAvatar name={user.name} unitNumber={user.unitNumber} email={user.email} />
-      <AccountSection role={user.role} />
-      <PreferencesSection />
-      <DangerSection onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} />
+      <UserAvatar name={user.name} unitNumber={user.unitNumber} email={user.email} styles={styles} />
+      <AccountSection role={user.role} styles={styles} colors={colors} />
+      <PreferencesSection styles={styles} />
+      <DangerSection onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} styles={styles} />
     </>
   );
 }
 
 // ─── Section sub-components ───────────────────────────────────────────────────
 
-function UserAvatar({ name, unitNumber, email }: { name: string; unitNumber?: string; email: string }) {
+function UserAvatar({ name, unitNumber, email, styles }: { name: string; unitNumber?: string; email: string; styles: AppStyles }) {
   const { t } = useTranslation();
-  const { styles } = useStyles();
   const initial = name.charAt(0).toUpperCase();
   return (
     <View style={styles.avatarCard}>
@@ -222,25 +244,23 @@ function UserAvatar({ name, unitNumber, email }: { name: string; unitNumber?: st
   );
 }
 
-function AccountSection({ role }: { role: string }) {
+function AccountSection({ role, styles, colors }: { role: string; styles: AppStyles; colors: AppColors }) {
   const { t } = useTranslation();
-  const { styles, colors } = useStyles();
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{t('profile.account')}</Text>
       {role === 'MERCHANT' && (
-        <ProfileRow icon={<Storefront size={20} color={colors.text} />} label={t('profile.manage_shop')} onPress={() => router.push('/(merchant)/dashboard' as any)} />
+        <ProfileRow icon={<Storefront size={20} color={colors.text} />} label={t('profile.manage_shop')} onPress={() => router.push('/(merchant)/dashboard' as any)} styles={styles} colors={colors} />
       )}
-      <ProfileRow icon={<Package size={20} color={colors.text} />} label={t('profile.my_orders')} onPress={() => router.push('/(tabs)/orders' as any)} />
-      <ProfileRow icon={<ChatCircle size={20} color={colors.text} />} label={t('profile.my_feedback')} onPress={() => router.push('/(tabs)/community/feedback' as any)} />
-      <ProfileRow icon={<BookmarkSimple size={20} color={colors.text} />} label={t('profile.saved_shops')} onPress={() => router.push('/(tabs)/directory' as any)} />
+      <ProfileRow icon={<Package size={20} color={colors.text} />} label={t('profile.my_orders')} onPress={() => router.push('/(tabs)/orders' as any)} styles={styles} colors={colors} />
+      <ProfileRow icon={<ChatCircle size={20} color={colors.text} />} label={t('profile.my_feedback')} onPress={() => router.push('/(tabs)/community/feedback' as any)} styles={styles} colors={colors} />
+      <ProfileRow icon={<BookmarkSimple size={20} color={colors.text} />} label={t('profile.saved_shops')} onPress={() => router.push('/(tabs)/directory' as any)} styles={styles} colors={colors} />
     </View>
   );
 }
 
-function PreferencesSection() {
+function PreferencesSection({ styles }: { styles: AppStyles }) {
   const { t } = useTranslation();
-  const { styles } = useStyles();
   const { language, setLanguage } = useSelectedLanguage();
   const { selectedTheme, setSelectedTheme } = useSelectedTheme();
 
@@ -258,7 +278,10 @@ function PreferencesSection() {
           <Pressable
             key={lang}
             style={[styles.segment, language === lang && styles.segmentActive]}
-            onPress={() => setLanguage(lang)}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setLanguage(lang);
+            }}
             accessibilityRole="radio"
             accessibilityLabel={lang === 'en' ? t('profile.english') : t('profile.arabic')}
             accessibilityState={{ checked: language === lang }}
@@ -276,7 +299,10 @@ function PreferencesSection() {
           <Pressable
             key={value}
             style={[styles.segment, selectedTheme === value && styles.segmentActive]}
-            onPress={() => setSelectedTheme(value)}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setSelectedTheme(value);
+            }}
             accessibilityRole="radio"
             accessibilityLabel={label}
             accessibilityState={{ checked: selectedTheme === value }}
@@ -291,16 +317,31 @@ function PreferencesSection() {
   );
 }
 
-function DangerSection({ onLogout, onDeleteAccount }: { onLogout: () => void; onDeleteAccount: () => void }) {
+function DangerSection({ onLogout, onDeleteAccount, styles }: { onLogout: () => void; onDeleteAccount: () => void; styles: AppStyles }) {
   const { t } = useTranslation();
-  const { styles } = useStyles();
   return (
     <View style={styles.section}>
-      <Pressable style={[styles.row, styles.rowDanger]} onPress={onLogout} accessibilityRole="button" accessibilityLabel={t('auth.logout')}>
+      <Pressable
+        style={[styles.row, styles.rowDanger]}
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          onLogout();
+        }}
+        accessibilityRole="button"
+        accessibilityLabel={t('auth.logout')}
+      >
         <SignOut size={20} color={SEMANTIC.error} />
         <Text style={styles.rowLabelDanger}>{t('auth.logout')}</Text>
       </Pressable>
-      <Pressable style={[styles.row, styles.rowDanger]} onPress={onDeleteAccount} accessibilityRole="button" accessibilityLabel={t('profile.delete_account')}>
+      <Pressable
+        style={[styles.row, styles.rowDanger]}
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          onDeleteAccount();
+        }}
+        accessibilityRole="button"
+        accessibilityLabel={t('profile.delete_account')}
+      >
         <WarningOctagon size={20} color={SEMANTIC.error} />
         <Text style={styles.rowLabelDanger}>{t('profile.delete_account')}</Text>
       </Pressable>
@@ -308,14 +349,20 @@ function DangerSection({ onLogout, onDeleteAccount }: { onLogout: () => void; on
   );
 }
 
-function ProfileRow({ icon, label, onPress }: { icon: React.ReactNode; label: string; onPress: () => void }) {
-  const { styles, colors } = useStyles();
+function ProfileRow({ icon, label, onPress, styles, colors }: { icon: React.ReactNode; label: string; onPress: () => void; styles: AppStyles; colors: AppColors }) {
   return (
-    <Pressable style={styles.row} onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
+    <Pressable
+      style={styles.row}
+      onPress={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        onPress();
+      }}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+    >
       <View style={styles.rowIconWrap}>{icon}</View>
       <Text style={styles.rowLabel}>{label}</Text>
       <CaretRight size={16} color={colors.textMuted} />
     </Pressable>
   );
 }
-
