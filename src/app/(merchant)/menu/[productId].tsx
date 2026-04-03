@@ -11,6 +11,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'phosphor-react-native';
 import { z } from 'zod';
+import { showMessage } from 'react-native-flash-message';
 
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { merchantApi } from '@/services/api/merchant';
@@ -145,6 +146,7 @@ export default function ProductFormScreen() {
       queryClient.invalidateQueries({ queryKey: ['merchant-products'] });
       router.back();
     },
+    onError: () => showMessage({ message: t('common.error'), type: 'danger', backgroundColor: SEMANTIC.error }),
   });
 
   return (
@@ -153,7 +155,7 @@ export default function ProductFormScreen() {
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
           <ArrowLeft size={18} color={colors.text} />
         </Pressable>
-        <Text style={styles.navTitle}>{isNew ? t('merchant.new_product') : t('common.save')}</Text>
+        <Text style={styles.navTitle}>{isNew ? t('merchant.new_product') : t('merchant.edit_product')}</Text>
       </View>
 
       <ScrollView

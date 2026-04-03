@@ -5,6 +5,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { ArrowLeft, ForkKnife, Pencil, Plus, Trash } from 'phosphor-react-native';
+import { showMessage } from 'react-native-flash-message';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -85,11 +86,13 @@ export default function MerchantMenuScreen() {
     mutationFn: ({ productId, isAvailable }: { productId: string; isAvailable: boolean }) =>
       merchantApi.updateProduct(productId, { isAvailable }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['merchant-products'] }),
+    onError: () => showMessage({ message: t('common.error'), type: 'danger', backgroundColor: SEMANTIC.error }),
   });
 
   const { mutate: deleteProduct } = useMutation({
     mutationFn: (productId: string) => merchantApi.deleteProduct(productId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['merchant-products'] }),
+    onError: () => showMessage({ message: t('common.error'), type: 'danger', backgroundColor: SEMANTIC.error }),
   });
 
   function handleDelete(product: Product) {
