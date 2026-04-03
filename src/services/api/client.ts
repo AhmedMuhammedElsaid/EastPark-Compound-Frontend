@@ -8,8 +8,10 @@
 import type { InternalAxiosRequestConfig } from 'axios';
 
 import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
 import Env from 'env';
+import { router } from 'expo-router';
+import { deleteSecureItem, getSecureItem, setSecureItem } from '@/lib/secure-storage';
+import { queryClient } from '@/services/query/client';
 
 import { logout, updateTokens } from '@/store/slices/authSlice';
 
@@ -30,7 +32,7 @@ export const client = axios.create({
 
 // ─── Request interceptor — attach Bearer token ────────────────────────────────
 client.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
-  const token = await SecureStore.getItemAsync(SECURE_KEY_ACCESS);
+  const token = await getSecureItem(SECURE_KEY_ACCESS);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -81,7 +83,7 @@ client.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const refreshToken = await SecureStore.getItemAsync(SECURE_KEY_REFRESH);
+      const refreshToken = await getSecureItem(SECURE_KEY_REFRESH);
       if (!refreshToken) throw new Error('No refresh token');
 
       const { data } = await axios.post(
@@ -92,8 +94,8 @@ client.interceptors.response.use(
       const { accessToken, refreshToken: newRefresh } = data.data;
 
       // Persist new tokens
-      await SecureStore.setItemAsync(SECURE_KEY_ACCESS, accessToken);
-      await SecureStore.setItemAsync(SECURE_KEY_REFRESH, newRefresh);
+      await setSecureItem(SECURE_KEY_ACCESS, accessToken);
+      await setSecureItem(SECURE_KEY_REFRESH, newRefresh);
 
       // Update Redux in-memory copy
       storeRef?.dispatch(updateTokens({ accessToken, refreshToken: newRefresh }));
@@ -107,9 +109,11 @@ client.interceptors.response.use(
       processQueue(refreshError, null);
 
       // Refresh failed — force logout
-      await SecureStore.deleteItemAsync(SECURE_KEY_ACCESS);
-      await SecureStore.deleteItemAsync(SECURE_KEY_REFRESH);
+      await deleteSecureItem(SECURE_KEY_ACCESS);
+      await deleteSecureItem(SECURE_KEY_REFRESH);
       storeRef?.dispatch(logout());
+      queryClient.clear();
+      router.replace('/(auth)/login');
 
       return Promise.reject(refreshError);
     }

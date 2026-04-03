@@ -7,7 +7,7 @@
 
 import type { Socket } from 'socket.io-client';
 
-import * as SecureStore from 'expo-secure-store';
+import { getSecureItem } from '@/lib/secure-storage';
 import { io } from 'socket.io-client';
 import Env from 'env';
 
@@ -18,7 +18,7 @@ let socket: Socket | null = null;
 export async function getOrdersSocket(): Promise<Socket> {
   if (socket?.connected) return socket;
 
-  const token = await SecureStore.getItemAsync(SECURE_KEY_ACCESS);
+  const token = await getSecureItem(SECURE_KEY_ACCESS);
 
   socket = io(`${Env.EXPO_PUBLIC_SOCKET_URL}/orders`, {
     auth: { token },

@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store';
+import { getSecureItem } from '@/lib/secure-storage';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 
@@ -18,8 +18,8 @@ export function useAuthRehydration(): void {
   React.useEffect(() => {
     async function rehydrate() {
       try {
-        const accessToken = await SecureStore.getItemAsync(SECURE_KEY_ACCESS);
-        const refreshToken = await SecureStore.getItemAsync(SECURE_KEY_REFRESH);
+        const accessToken = await getSecureItem(SECURE_KEY_ACCESS);
+        const refreshToken = await getSecureItem(SECURE_KEY_REFRESH);
         if (accessToken && refreshToken) {
           const { data } = await usersApi.getProfile();
           dispatch(login({ user: data.data, accessToken, refreshToken }));

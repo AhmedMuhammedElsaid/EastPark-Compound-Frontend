@@ -1,7 +1,8 @@
 import type { ColorSchemeType } from '@/lib/hooks/use-selected-theme';
 import { useMutation } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { deleteSecureItem } from '@/lib/secure-storage';
+import { deleteSecureItem, getSecureItem } from '@/lib/secure-storage';
+import { showMessage } from 'react-native-flash-message';
 import { BookmarkSimple, CaretRight, ChatCircle, Package, SignOut, Storefront, User, WarningOctagon } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,8 +12,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useSelectedTheme } from '@/lib/hooks/use-selected-theme';
 import { useSelectedLanguage } from '@/lib/i18n';
+import { authApi } from '@/services/api/auth';
 import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
 import { usersApi } from '@/services/api/users';
+import { queryClient } from '@/services/query/client';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { logout } from '@/store/slices/authSlice';
 import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
@@ -154,6 +157,11 @@ function AuthenticatedProfile({ user }: { user: any }) {
       await deleteSecureItem(SECURE_KEY_ACCESS);
       await deleteSecureItem(SECURE_KEY_REFRESH);
       dispatch(logout());
+      queryClient.clear();
+      router.replace('/(auth)/login' as any);
+    },
+    onError: () => {
+      showMessage({ message: t('profile.delete_account_error'), type: 'danger' });
     },
   });
 
@@ -163,9 +171,15 @@ function AuthenticatedProfile({ user }: { user: any }) {
       {
         text: t('auth.logout'),
         onPress: async () => {
+          const refreshToken = await getSecureItem(SECURE_KEY_REFRESH);
+          if (refreshToken) {
+            try { await authApi.logout(refreshToken); } catch {}
+          }
           await deleteSecureItem(SECURE_KEY_ACCESS);
           await deleteSecureItem(SECURE_KEY_REFRESH);
           dispatch(logout());
+          queryClient.clear();
+          router.replace('/(auth)/login' as any);
         },
       },
     ]);

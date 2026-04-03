@@ -297,6 +297,7 @@
     "delete_account": "Delete account",
     "delete_account_button": "Delete account",
     "delete_account_confirm": "This will permanently delete your account and all data. This cannot be undone.",
+    "delete_account_error": "Could not delete account. Please try again.",
     "edit": "Edit profile",
     "english": "English",
     "guest_prompt": "Sign in to access your profile",
