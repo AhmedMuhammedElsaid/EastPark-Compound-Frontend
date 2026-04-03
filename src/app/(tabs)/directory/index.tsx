@@ -140,6 +140,7 @@ export default function DirectoryScreen() {
               data={shops}
               keyExtractor={item => item.id}
               renderItem={({ item }) => <ShopCard shop={item} />}
+              estimatedItemSize={220}
               onEndReached={() => {
                 if (hasNextPage && !isFetchingNextPage)
                   fetchNextPage();

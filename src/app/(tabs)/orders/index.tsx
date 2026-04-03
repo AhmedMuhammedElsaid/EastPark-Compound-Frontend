@@ -99,6 +99,7 @@ export default function OrdersScreen() {
               data={orders}
               keyExtractor={item => item.id}
               renderItem={({ item }) => <OrderCard order={item} isAr={isAr} colors={colors} styles={styles} />}
+              estimatedItemSize={120}
               onEndReached={() => {
                 if (hasNextPage && !isFetchingNextPage)
                   fetchNextPage();
