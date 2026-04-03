@@ -1,8 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { Eye, EyeSlash } from 'phosphor-react-native';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import type { Control, FieldErrors } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
@@ -40,6 +42,12 @@ function useStyles() {
   }), [colors]);
 }
 
+const errorMap: Record<string, string> = {
+  EMAIL_TAKEN: 'auth.errors.email_taken',
+  INVALID_PHONE: 'auth.errors.invalid_phone',
+  INVALID_UNIT: 'auth.errors.invalid_unit',
+};
+
 export default function RegisterScreen() {
   const { t } = useTranslation();
   const styles = useStyles();
@@ -55,8 +63,9 @@ export default function RegisterScreen() {
       router.push({ pathname: '/(auth)/verify-otp', params: { email } });
     }
     catch (err: any) {
-      const msg = err?.response?.data?.message === 'EMAIL_TAKEN' ? t('auth.errors.email_taken') : t('common.error');
-      showMessage({ message: msg, type: 'danger', backgroundColor: SEMANTIC.error });
+      const serverMsg = err?.response?.data?.message;
+      const key = (serverMsg && errorMap[serverMsg]) ? errorMap[serverMsg] : 'common.error';
+      showMessage({ message: t(key), type: 'danger', backgroundColor: SEMANTIC.error });
     }
   }
 
@@ -73,7 +82,13 @@ export default function RegisterScreen() {
           {t('auth.already_have_account')}
           {' '}
         </Text>
-        <Pressable onPress={() => router.replace('/(auth)/login')} hitSlop={8}>
+        <Pressable
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            router.replace('/(auth)/login');
+          }}
+          hitSlop={8}
+        >
           <Text style={styles.footerLink}>{t('auth.login')}</Text>
         </Pressable>
       </View>
@@ -82,7 +97,7 @@ export default function RegisterScreen() {
   );
 }
 
-function RegisterFormIdentity({ control, errors }: { control: any; errors: any }) {
+function RegisterFormIdentity({ control, errors }: { control: Control<FormData>; errors: FieldErrors<FormData> }) {
   const { t } = useTranslation();
   const styles = useStyles();
   return (
@@ -91,35 +106,35 @@ function RegisterFormIdentity({ control, errors }: { control: any; errors: any }
         control={control}
         name="name"
         render={({ field: { onChange, onBlur, value } }) => (
-          <AuthInput label={t('auth.name')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.name ? t(errors.name.message) : undefined} autoComplete="name" returnKeyType="next" />
+          <AuthInput label={t('auth.name')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.name ? t(errors.name.message as string) : undefined} autoComplete="name" returnKeyType="next" />
         )}
       />
       <Controller
         control={control}
         name="email"
         render={({ field: { onChange, onBlur, value } }) => (
-          <AuthInput label={t('auth.email')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.email ? t(errors.email.message) : undefined} keyboardType="email-address" autoComplete="email" returnKeyType="next" />
+          <AuthInput label={t('auth.email')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.email ? t(errors.email.message as string) : undefined} keyboardType="email-address" autoComplete="email" returnKeyType="next" />
         )}
       />
       <Controller
         control={control}
         name="phone"
         render={({ field: { onChange, onBlur, value } }) => (
-          <AuthInput label={t('auth.phone')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.phone ? t(errors.phone.message) : undefined} keyboardType="phone-pad" returnKeyType="next" />
+          <AuthInput label={t('auth.phone')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.phone ? t(errors.phone.message as string) : undefined} keyboardType="phone-pad" returnKeyType="next" />
         )}
       />
       <Controller
         control={control}
         name="unitNumber"
         render={({ field: { onChange, onBlur, value } }) => (
-          <AuthInput label={t('auth.unit_number')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.unitNumber ? t(errors.unitNumber.message) : undefined} returnKeyType="next" />
+          <AuthInput label={t('auth.unit_number')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.unitNumber ? t(errors.unitNumber.message as string) : undefined} returnKeyType="next" />
         )}
       />
     </View>
   );
 }
 
-type PwProps = { control: any; errors: any; showPassword: boolean; onTogglePassword: () => void; onSubmitEditing: () => void };
+type PwProps = { control: Control<FormData>; errors: FieldErrors<FormData>; showPassword: boolean; onTogglePassword: () => void; onSubmitEditing: () => void };
 function RegisterFormPassword({ control, errors, showPassword, onTogglePassword, onSubmitEditing }: PwProps) {
   const { t } = useTranslation();
   const styles = useStyles();
@@ -135,7 +150,7 @@ function RegisterFormPassword({ control, errors, showPassword, onTogglePassword,
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
-            error={errors.password ? t(errors.password.message) : undefined}
+            error={errors.password ? t(errors.password.message as string) : undefined}
             secureTextEntry={!showPassword}
             returnKeyType="next"
             rightSlot={<Pressable onPress={onTogglePassword} hitSlop={12} accessibilityRole="button" accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}</Pressable>}
@@ -146,7 +161,7 @@ function RegisterFormPassword({ control, errors, showPassword, onTogglePassword,
         control={control}
         name="confirmPassword"
         render={({ field: { onChange, onBlur, value } }) => (
-          <AuthInput label={t('auth.confirm_password')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.confirmPassword ? t(errors.confirmPassword.message) : undefined} secureTextEntry={!showPassword} returnKeyType="done" onSubmitEditing={onSubmitEditing} />
+          <AuthInput label={t('auth.confirm_password')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.confirmPassword ? t(errors.confirmPassword.message as string) : undefined} secureTextEntry={!showPassword} returnKeyType="done" onSubmitEditing={onSubmitEditing} />
         )}
       />
     </View>

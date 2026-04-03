@@ -49,11 +49,15 @@
       "invalid_email": "Enter a valid email address",
       "invalid_otp": "Invalid or expired code",
       "invalid_phone": "Enter a valid phone number",
+      "invalid_unit": "Invalid unit number",
       "login_failed": "Incorrect email or password",
       "name_too_short": "Name must be at least 2 characters",
       "password_too_short": "Password must be at least 8 characters",
       "passwords_no_match": "Passwords do not match",
       "unit_required": "Unit number is required"
+    },
+    "forgot": {
+      "tryDifferentEmail": "Try a different email"
     },
     "forgot_password": "Forgot password?",
     "forgot_password_body": "Enter your email and we'll send you a link to reset your password",
@@ -199,8 +203,8 @@
     "anonymous": "Submit anonymously",
     "anonymous_subtitle": "Your name will not be shown to the admin",
     "category": "Category",
-    "empty": "No submissions yet",
-    "empty_subtitle": "Use EastPark to report issues and suggestions",
+    "empty": "No feedback submitted yet",
+    "empty_subtitle": "Tap the button below to share your thoughts",
     "feedback_body": "Description",
     "feedback_title": "Title",
     "new": "Submit feedback",
@@ -264,8 +268,8 @@
     "update_status": "Update status"
   },
   "notifications": {
-    "empty": "No notifications yet",
-    "empty_subtitle": "You'll see order updates, announcements, and more here",
+    "empty": "You're all caught up",
+    "empty_subtitle": "No new notifications",
     "mark_all_read": "Mark all as read",
     "time_now": "now",
     "time_minutes": "{{count}}m",
@@ -285,7 +289,7 @@
     "cancel_order": "Cancel order",
     "cash_on_delivery": "Cash on delivery",
     "empty": "No orders yet",
-    "empty_subtitle": "Your order history will appear here",
+    "empty_subtitle": "Browse the directory to place your first order",
     "paid": "Paid",
     "reorder": "Reorder",
     "title": "My Orders",

@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -76,6 +77,13 @@ function useStyles() {
       textAlign: 'center' as const,
       lineHeight: 22,
     },
+    tryDifferentEmail: {
+      fontFamily: FONT.sans,
+      fontSize: 14,
+      color: colors.textMuted,
+      textAlign: 'center' as const,
+      marginTop: SPACING.sm,
+    },
   }), [colors]);
 }
 
@@ -128,8 +136,21 @@ export default function ForgotPasswordScreen() {
         <GoldButton
           variant="outline"
           label={t('auth.back_to_login')}
-          onPress={() => router.replace('/(auth)/login')}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            router.replace('/(auth)/login');
+          }}
         />
+        <Pressable
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            setSent(false);
+          }}
+          hitSlop={8}
+          style={{ alignItems: 'center', marginTop: SPACING.sm }}
+        >
+          <Text style={styles.tryDifferentEmail}>{t('auth.forgot.tryDifferentEmail')}</Text>
+        </Pressable>
       </AuthScreenWrapper>
     );
   }
@@ -170,7 +191,14 @@ export default function ForgotPasswordScreen() {
       />
 
       <View style={styles.footer}>
-        <Pressable onPress={() => router.back()} hitSlop={8} style={styles.backLinkRow}>
+        <Pressable
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            router.back();
+          }}
+          hitSlop={8}
+          style={styles.backLinkRow}
+        >
           <ArrowLeft size={14} color={colors.textMuted} />
           <Text style={styles.backLink}>{t('common.back')}</Text>
         </Pressable>

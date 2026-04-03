@@ -1,9 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { setSecureItem } from '@/lib/secure-storage';
 import { Eye, EyeSlash } from 'phosphor-react-native';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import type { Control, FieldErrors } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
@@ -26,7 +28,7 @@ const schema = z.object({
   email: z.string().email('auth.errors.invalid_email'),
   password: z.string().min(8, 'auth.errors.password_too_short'),
 });
-type FormData = z.infer<typeof schema>;
+type LoginFormData = z.infer<typeof schema>;
 
 function useStyles() {
   const colors = useAppColors();
@@ -49,12 +51,12 @@ export default function LoginScreen() {
   const dispatch = useAppDispatch();
   const styles = useStyles();
   const [showPassword, setShowPassword] = React.useState(false);
-  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormData>({
     resolver: zodResolver(schema),
     defaultValues: { email: '', password: '' },
   });
 
-  async function onSubmit({ email, password }: FormData) {
+  async function onSubmit({ email, password }: LoginFormData) {
     try {
       const res = await authApi.login({ email, password });
       const { user, accessToken, refreshToken } = res.data.data;
@@ -76,7 +78,14 @@ export default function LoginScreen() {
       <Text style={styles.title}>{t('auth.login')}</Text>
       <Text style={styles.subtitle}>{t('auth.welcome_back')}</Text>
       <LoginForm control={control} errors={errors} showPassword={showPassword} onTogglePassword={() => setShowPassword(v => !v)} onSubmitEditing={handleSubmit(onSubmit)} />
-      <Pressable onPress={() => router.push('/(auth)/forgot-password')} style={styles.forgotRow} hitSlop={8}>
+      <Pressable
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          router.push('/(auth)/forgot-password');
+        }}
+        style={styles.forgotRow}
+        hitSlop={8}
+      >
         <Text style={styles.forgotText}>{t('auth.forgot_password')}</Text>
       </Pressable>
       <GoldButton label={t('auth.login')} onPress={handleSubmit(onSubmit)} loading={isSubmitting} />
@@ -85,7 +94,13 @@ export default function LoginScreen() {
           {t('auth.no_account')}
           {' '}
         </Text>
-        <Pressable onPress={() => router.replace('/(auth)/register')} hitSlop={8}>
+        <Pressable
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            router.replace('/(auth)/register');
+          }}
+          hitSlop={8}
+        >
           <Text style={styles.footerLink}>{t('auth.register')}</Text>
         </Pressable>
       </View>
@@ -95,8 +110,8 @@ export default function LoginScreen() {
 }
 
 type LoginFormProps = {
-  control: any;
-  errors: any;
+  control: Control<LoginFormData>;
+  errors: FieldErrors<LoginFormData>;
   showPassword: boolean;
   onTogglePassword: () => void;
   onSubmitEditing: () => void;
@@ -112,7 +127,7 @@ function LoginForm({ control, errors, showPassword, onTogglePassword, onSubmitEd
         control={control}
         name="email"
         render={({ field: { onChange, onBlur, value } }) => (
-          <AuthInput label={t('auth.email')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.email ? t(errors.email.message) : undefined} keyboardType="email-address" autoComplete="email" returnKeyType="next" />
+          <AuthInput label={t('auth.email')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.email ? t(errors.email.message as string) : undefined} keyboardType="email-address" autoComplete="email" returnKeyType="next" />
         )}
       />
       <Controller
@@ -124,7 +139,7 @@ function LoginForm({ control, errors, showPassword, onTogglePassword, onSubmitEd
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
-            error={errors.password ? t(errors.password.message) : undefined}
+            error={errors.password ? t(errors.password.message as string) : undefined}
             secureTextEntry={!showPassword}
             returnKeyType="done"
             onSubmitEditing={onSubmitEditing}

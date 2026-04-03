@@ -61,13 +61,14 @@ export default function VerifyOtpScreen() {
     return () => clearInterval(timer);
   }, [cooldown]);
 
-  async function handleVerify() {
-    if (otp.length < 6 || !email)
+  async function handleVerify(code?: string) {
+    const otpToVerify = code ?? otp;
+    if (otpToVerify.length < 6 || !email)
       return;
     Keyboard.dismiss();
     setLoading(true);
     try {
-      const res = await authApi.verifyOtp(email, otp);
+      const res = await authApi.verifyOtp(email, otpToVerify);
       const { user, accessToken, refreshToken } = res.data.data;
       await setSecureItem(SECURE_KEY_ACCESS, accessToken);
       await setSecureItem(SECURE_KEY_REFRESH, refreshToken);
@@ -111,9 +112,20 @@ export default function VerifyOtpScreen() {
       <Text style={styles.subtitle}>{t('auth.otp_sent')}</Text>
       <Text style={styles.emailHint}>{email}</Text>
       <View style={styles.otpContainer}>
-        <OTPTextInput inputCount={6} handleTextChange={setOtp} tintColor={BRAND.gold} offTintColor={colors.border} textInputStyle={styles.otpBox as any} containerStyle={styles.otpRow} keyboardType="numeric" />
+        <OTPTextInput
+          inputCount={6}
+          handleTextChange={(code) => {
+            setOtp(code);
+            if (code.length === 6) handleVerify(code);
+          }}
+          tintColor={BRAND.gold}
+          offTintColor={colors.border}
+          textInputStyle={styles.otpBox as any}
+          containerStyle={styles.otpRow}
+          keyboardType="numeric"
+        />
       </View>
-      <GoldButton label={t('common.confirm')} onPress={handleVerify} loading={loading} disabled={otp.length < 6} />
+      <GoldButton label={t('common.confirm')} onPress={() => handleVerify()} loading={loading} disabled={otp.length < 6} />
       <View style={styles.resendRow}>
         {cooldown > 0
           ? <Text style={styles.resendTimer}>{t('auth.resend_in', { seconds: cooldown })}</Text>

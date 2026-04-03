@@ -1,9 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { setSecureItem } from '@/lib/secure-storage';
 import { Eye, EyeSlash } from 'phosphor-react-native';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import type { Control, FieldErrors } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
@@ -47,9 +49,11 @@ function useStyles() {
 
 export default function AcceptInvitationScreen() {
   const { t } = useTranslation();
-  const { token, role } = useLocalSearchParams<{ token: string; role?: string }>();
+  const { token } = useLocalSearchParams<{ token: string; role?: string }>();
   const dispatch = useAppDispatch();
   const styles = useStyles();
+  // confirmedRole is set from the API response, not from the URL param, to reflect what the backend actually assigned
+  const [confirmedRole, setConfirmedRole] = React.useState<string | null>(null);
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { name: '', password: '', confirmPassword: '' },
@@ -61,6 +65,7 @@ export default function AcceptInvitationScreen() {
     try {
       const res = await authApi.acceptInvitation(token, name, password);
       const { user, accessToken, refreshToken } = res.data.data;
+      setConfirmedRole(user.role);
       await setSecureItem(SECURE_KEY_ACCESS, accessToken);
       await setSecureItem(SECURE_KEY_REFRESH, refreshToken);
       dispatch(login({ user, accessToken, refreshToken }));
@@ -96,11 +101,13 @@ export default function AcceptInvitationScreen() {
     <AuthScreenWrapper>
       <View style={styles.header}><BrandMark size="md" /></View>
       <Text style={styles.title}>{t('auth.accept_invitation')}</Text>
-      <View style={styles.roleBadgeRow}>
-        <View style={styles.roleBadge}>
-          <Text style={styles.roleBadgeText}>{role === 'ADMIN' ? t('auth.role_admin') : t('auth.role_merchant')}</Text>
+      {confirmedRole != null && (
+        <View style={styles.roleBadgeRow}>
+          <View style={styles.roleBadge}>
+            <Text style={styles.roleBadgeText}>{confirmedRole === 'ADMIN' ? t('auth.role_admin') : t('auth.role_merchant')}</Text>
+          </View>
         </View>
-      </View>
+      )}
       <InvitationForm control={control} errors={errors} onSubmitEditing={handleSubmit(onSubmit)} />
       <GoldButton label={t('auth.complete_setup')} onPress={handleSubmit(onSubmit)} loading={isSubmitting} />
       <View style={styles.bottomPad} />
@@ -108,7 +115,7 @@ export default function AcceptInvitationScreen() {
   );
 }
 
-function InvitationForm({ control, errors, onSubmitEditing }: { control: any; errors: any; onSubmitEditing: () => void }) {
+function InvitationForm({ control, errors, onSubmitEditing }: { control: Control<FormData>; errors: FieldErrors<FormData>; onSubmitEditing: () => void }) {
   const { t } = useTranslation();
   const styles = useStyles();
   const colors = useAppColors();
@@ -120,7 +127,7 @@ function InvitationForm({ control, errors, onSubmitEditing }: { control: any; er
         control={control}
         name="name"
         render={({ field: { onChange, onBlur, value } }) => (
-          <AuthInput label={t('auth.name')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.name ? t(errors.name.message) : undefined} autoComplete="name" returnKeyType="next" />
+          <AuthInput label={t('auth.name')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.name ? t(errors.name.message as string) : undefined} autoComplete="name" returnKeyType="next" />
         )}
       />
       <Controller
@@ -132,11 +139,11 @@ function InvitationForm({ control, errors, onSubmitEditing }: { control: any; er
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
-            error={errors.password ? t(errors.password.message) : undefined}
+            error={errors.password ? t(errors.password.message as string) : undefined}
             secureTextEntry={!showPwd}
             returnKeyType="next"
             rightSlot={
-              <Pressable onPress={() => setShowPwd(v => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={showPwd ? 'Hide password' : 'Show password'}>
+              <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowPwd(v => !v); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={showPwd ? 'Hide password' : 'Show password'}>
                 {showPwd ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
               </Pressable>
             }
@@ -152,12 +159,12 @@ function InvitationForm({ control, errors, onSubmitEditing }: { control: any; er
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
-            error={errors.confirmPassword ? t(errors.confirmPassword.message) : undefined}
+            error={errors.confirmPassword ? t(errors.confirmPassword.message as string) : undefined}
             secureTextEntry={!showConfirm}
             returnKeyType="done"
             onSubmitEditing={onSubmitEditing}
             rightSlot={
-              <Pressable onPress={() => setShowConfirm(v => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={showConfirm ? 'Hide password' : 'Show password'}>
+              <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowConfirm(v => !v); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={showConfirm ? 'Hide password' : 'Show password'}>
                 {showConfirm ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
               </Pressable>
             }
