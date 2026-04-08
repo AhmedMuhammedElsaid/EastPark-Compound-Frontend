@@ -13,8 +13,6 @@ import { setLanguage as setLanguageAction } from '@/store/slices/preferencesSlic
 type DefaultLocale = typeof resources.en.translation;
 export type TxKeyPath = RecursiveKeyOf<DefaultLocale>;
 
-export const LOCAL = 'local';
-
 // Synchronous fallback — AsyncStorage is async so this returns null on init.
 // i18n init falls back to getLocales()[0]?.languageTag which is correct.
 export const getLanguage = (): Language | null => null;

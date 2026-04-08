@@ -123,9 +123,9 @@ export default function InvitationsScreen() {
   const [showForm, setShowForm] = React.useState(false);
 
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery<
-    AxiosResponse<{ data: { data: Invitation[]; nextCursor: string | null } }>,
+    AxiosResponse<{ data: { items: Invitation[]; nextCursor: string | null } }>,
     Error,
-    { pages: AxiosResponse<{ data: { data: Invitation[]; nextCursor: string | null } }>[] },
+    { pages: AxiosResponse<{ data: { items: Invitation[]; nextCursor: string | null } }>[] },
     string[],
     string | undefined
   >({

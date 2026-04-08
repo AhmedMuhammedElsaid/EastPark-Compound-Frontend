@@ -106,9 +106,9 @@ export default function NotificationsScreen() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
-      AxiosResponse<{ data: { data: AppNotification[]; nextCursor: string | null } }>,
+      AxiosResponse<{ data: { items: AppNotification[]; nextCursor: string | null } }>,
       Error,
-      { pages: AxiosResponse<{ data: { data: AppNotification[]; nextCursor: string | null } }>[] },
+      { pages: AxiosResponse<{ data: { items: AppNotification[]; nextCursor: string | null } }>[] },
       string[],
       string | undefined
     >({

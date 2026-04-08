@@ -87,9 +87,9 @@ export default function CommunityScreen() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
-      AxiosResponse<{ data: { data: Announcement[]; nextCursor: string | null } }>,
+      AxiosResponse<{ data: { items: Announcement[]; nextCursor: string | null } }>,
       Error,
-      { pages: AxiosResponse<{ data: { data: Announcement[]; nextCursor: string | null } }>[] },
+      { pages: AxiosResponse<{ data: { items: Announcement[]; nextCursor: string | null } }>[] },
       string[],
       string | undefined
     >({

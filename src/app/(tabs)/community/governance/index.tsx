@@ -91,9 +91,9 @@ export default function GovernanceScreen() {
   const [tab, setTab] = React.useState<'polls' | 'elections'>('polls');
 
   const pollsQuery = useInfiniteQuery<
-    AxiosResponse<{ data: { data: Poll[]; nextCursor: string | null } }>,
+    AxiosResponse<{ data: { items: Poll[]; nextCursor: string | null } }>,
     Error,
-    { pages: AxiosResponse<{ data: { data: Poll[]; nextCursor: string | null } }>[] },
+    { pages: AxiosResponse<{ data: { items: Poll[]; nextCursor: string | null } }>[] },
     string[],
     string | undefined
   >({
@@ -105,9 +105,9 @@ export default function GovernanceScreen() {
   });
 
   const electionsQuery = useInfiniteQuery<
-    AxiosResponse<{ data: { data: Election[]; nextCursor: string | null } }>,
+    AxiosResponse<{ data: { items: Election[]; nextCursor: string | null } }>,
     Error,
-    { pages: AxiosResponse<{ data: { data: Election[]; nextCursor: string | null } }>[] },
+    { pages: AxiosResponse<{ data: { items: Election[]; nextCursor: string | null } }>[] },
     string[],
     string | undefined
   >({

@@ -165,9 +165,9 @@ function CommentsSection({ announcementId, styles }: { announcementId: string; s
   const { t } = useTranslation();
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage }
     = useInfiniteQuery<
-      AxiosResponse<{ data: { data: Comment[]; nextCursor: string | null } }>,
+      AxiosResponse<{ data: { items: Comment[]; nextCursor: string | null } }>,
       Error,
-      { pages: AxiosResponse<{ data: { data: Comment[]; nextCursor: string | null } }>[] },
+      { pages: AxiosResponse<{ data: { items: Comment[]; nextCursor: string | null } }>[] },
       string[],
       string | undefined
     >({

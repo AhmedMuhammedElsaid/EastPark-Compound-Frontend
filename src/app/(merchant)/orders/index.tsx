@@ -106,9 +106,9 @@ export default function MerchantOrdersScreen() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch }
     = useInfiniteQuery<
-      AxiosResponse<{ data: { data: MerchantOrder[]; nextCursor: string | null } }>,
+      AxiosResponse<{ data: { items: MerchantOrder[]; nextCursor: string | null } }>,
       Error,
-      { pages: AxiosResponse<{ data: { data: MerchantOrder[]; nextCursor: string | null } }>[] },
+      { pages: AxiosResponse<{ data: { items: MerchantOrder[]; nextCursor: string | null } }>[] },
       string[],
       string | undefined
     >({

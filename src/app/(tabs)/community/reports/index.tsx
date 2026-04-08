@@ -74,9 +74,9 @@ export default function ReportsScreen() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
-      AxiosResponse<{ data: { data: Report[]; nextCursor: string | null } }>,
+      AxiosResponse<{ data: { items: Report[]; nextCursor: string | null } }>,
       Error,
-      { pages: AxiosResponse<{ data: { data: Report[]; nextCursor: string | null } }>[] },
+      { pages: AxiosResponse<{ data: { items: Report[]; nextCursor: string | null } }>[] },
       string[],
       string | undefined
     >({

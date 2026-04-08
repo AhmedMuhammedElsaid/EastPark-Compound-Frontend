@@ -64,9 +64,9 @@ export default function OrdersScreen() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
-      AxiosResponse<{ data: { data: Order[]; nextCursor: string | null } }>,
+      AxiosResponse<{ data: { items: Order[]; nextCursor: string | null } }>,
       Error,
-      { pages: AxiosResponse<{ data: { data: Order[]; nextCursor: string | null } }>[] },
+      { pages: AxiosResponse<{ data: { items: Order[]; nextCursor: string | null } }>[] },
       string[],
       string | undefined
     >({

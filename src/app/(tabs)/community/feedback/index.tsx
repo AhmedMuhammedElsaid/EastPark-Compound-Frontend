@@ -87,9 +87,9 @@ export default function FeedbackListScreen() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
-      AxiosResponse<{ data: { data: Feedback[]; nextCursor: string | null } }>,
+      AxiosResponse<{ data: { items: Feedback[]; nextCursor: string | null } }>,
       Error,
-      { pages: AxiosResponse<{ data: { data: Feedback[]; nextCursor: string | null } }>[] },
+      { pages: AxiosResponse<{ data: { items: Feedback[]; nextCursor: string | null } }>[] },
       string[],
       string | undefined
     >({

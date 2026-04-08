@@ -5,8 +5,10 @@
 
 ## Status
 
-✅ All 7 phases + all 38 AppGaps + deep-audit passes + FE-BE wiring resolved.
-Last commits: `3ea3f75` → `8e8634c` (continuation pass). Branch: main.
+✅ All 7 phases + all 38 AppGaps + deep-audit passes + FE-BE wiring + maintenance pass resolved.
+Last commits: `3ea3f75` → `1a27086` (maintenance pass + docs). Branch: main.
+- Maintenance pass (April 2026): all 9 TD items + 7/9 UX items fixed — commits `0c74e20`–`43025a1`
+- `EAS_PROJECT_ID` already populated (`062399ed-48df-4d4f-ba1a-a0801a86b1bc`) — `eas init` is done
 
 ## User Roles
 
@@ -53,7 +55,7 @@ src/
 │   │   └── profile/             # Profile or guest CTA
 │   ├── (auth)/                  # login, register, verify-otp, forgot-password, reset-password, accept-invitation
 │   ├── (admin)/                 # Admin dashboard + invitations management
-│   ├── (merchant)/              # Merchant dashboard + menu CRUD + orders
+│   ├── (merchant)/              # Merchant dashboard + menu CRUD + orders + shop-profile
 │   ├── checkout/                # cart, address, payment, confirmation (Lottie)
 │   └── notifications/           # In-app notification feed
 ├── components/ui/               # Skeleton, ErrorState, AuthWallSheet, CartConflictSheet
@@ -120,7 +122,27 @@ const { data } = useQuery({
 
 **RTL:** `I18nManager.forceRTL(true/false)` on language switch + restart prompt.
 
-**Motion:** Spring physics via reanimated. Lottie on key moments (order confirmed, payment success). Skeleton shimmer (never spinners). Haptics on interactive taps.
+**Motion:** Spring physics via reanimated. Lottie on key moments (order confirmed, payment success). Skeleton shimmer (never spinners). Haptics on every interactive tap — `GoldButton` has haptics built-in, never double-add.
+
+**useStyles() canonical pattern:**
+```typescript
+// Pure function — no hooks
+function buildStyles(colors: ReturnType<typeof useAppColors>) {
+  return StyleSheet.create({ ... });
+}
+// Only hook — call once at top-level component, pass styles+colors as props to sub-components
+function useStyles() {
+  const colors = useAppColors();
+  return React.useMemo(() => ({ styles: buildStyles(colors), colors }), [colors]);
+}
+```
+See `profile/index.tsx` as the reference. Never call `useStyles()` in sub-components — pass `styles`/`colors` as props.
+
+**Swipeable cart rows:** `Swipeable` from `react-native-gesture-handler` wraps `CartItemRow`. Right action: `SEMANTIC.error` background + `Trash` Phosphor icon + `Haptics.ImpactFeedbackStyle.Medium`.
+
+**Notification deep linking:** `_layout.tsx` has `addNotificationResponseReceivedListener` routing on `{ type, referenceId }`. Backend must include these fields in all push payloads (B-3 open).
+
+**Merchant order status:** Merchants control `PLACED → CONFIRMED → PREPARING → READY` only. `ON_THE_WAY` and `DELIVERED` are set by delivery/logistics or webhook — not merchant-accessible.
 
 **Paymob flow (3 steps):**
 1. `ordersApi.placeOrder(...)` → returns `orderId`
@@ -205,9 +227,21 @@ pnpm build:production:ios   # EAS production iOS
 ## Known Environment Notes
 
 - All commits use `--no-verify` — WSL cannot run node/pnpm, pre-commit hook always fails
-- `eas init` must be run manually to get `EAS_PROJECT_ID` (paste into `app.config.ts`)
+- `EAS_PROJECT_ID` is already populated (`062399ed-48df-4d4f-ba1a-a0801a86b1bc`) — `eas init` is done
 - `eastpark-frontend/` is its own git repo — commits must be made from inside this directory
-- `deleteAccount` (`DELETE /user`) exists on backend but is admin-only route in current BE implementation — self-delete endpoint needs to be added to backend before this FE feature works end-to-end
+- `deleteAccount` (`DELETE /user`): frontend calls it correctly but backend only exposes `DELETE /admin/user/:id` — self-delete endpoint (B-1) still needs to be added to backend
+- `PATCH /merchant/shop` does not exist in backend — shop profile editor uses `PATCH /shops/:id` (accepts MERCHANT role with ownership enforcement)
+
+## Maintenance Pass — What Was Fixed (April 2026)
+
+All 9 TD + 7/9 UX items from `FRONTENDENHANCEMENTPLAN.md`. Full detail in `Documentation/FixedBugs.md`.
+Commits: `0c74e20`, `bfcdf92`, `fb400e1`, `d9fcdf6`, `43025a1`.
+
+Key fixes: auth TS types, role badge from API response, forgot-pw retry, OTP auto-submit, haptics everywhere, profile useStyles dead-code bug, merchant status cap at READY, pending count 5+ overflow, merchant shop-profile.tsx (new), cart swipe-to-delete, contextual empty states, notification deep linking.
+
+Remaining open: UX-7 (image upload), UX-9 (reorder) — both post-launch. B-1/2/3/5 blocked on backend.
+
+---
 
 ## Deep Audit — What Was Fixed (reference)
 
