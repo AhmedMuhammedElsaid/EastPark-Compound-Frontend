@@ -46,7 +46,7 @@ export const ordersApi = {
     client.post<{ data: Order }>('/orders', payload),
 
   getOrders: (params?: { cursor?: string; limit?: number }) =>
-    client.get<{ data: { data: Order[]; nextCursor: string | null } }>('/orders', { params }),
+    client.get<{ data: { items: Order[]; nextCursor: string | null } }>('/orders', { params }),
 
   getOrder: (orderId: string) =>
     client.get<{ data: Order }>(`/orders/${orderId}`),

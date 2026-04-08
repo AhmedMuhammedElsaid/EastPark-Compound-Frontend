@@ -40,7 +40,7 @@ export interface Election {
 export const governanceApi = {
   // Polls
   getPolls: (params?: { cursor?: string; limit?: number }) =>
-    client.get<{ data: { data: Poll[]; nextCursor: string | null } }>('/polls', { params }),
+    client.get<{ data: { items: Poll[]; nextCursor: string | null } }>('/polls', { params }),
 
   getPoll: (pollId: string) =>
     client.get<{ data: Poll }>(`/polls/${pollId}`),
@@ -50,7 +50,7 @@ export const governanceApi = {
 
   // Elections
   getElections: (params?: { cursor?: string; limit?: number }) =>
-    client.get<{ data: { data: Election[]; nextCursor: string | null } }>('/elections', { params }),
+    client.get<{ data: { items: Election[]; nextCursor: string | null } }>('/elections', { params }),
 
   getElection: (electionId: string) =>
     client.get<{ data: Election }>(`/elections/${electionId}`),

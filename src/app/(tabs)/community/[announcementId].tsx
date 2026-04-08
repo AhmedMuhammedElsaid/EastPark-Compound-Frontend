@@ -178,7 +178,7 @@ function CommentsSection({ announcementId, styles }: { announcementId: string; s
       initialPageParam: undefined,
     });
 
-  const comments = data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
+  const comments = data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? [];
 
   if (isLoading) {
     return (

@@ -100,7 +100,7 @@ export default function FeedbackListScreen() {
       enabled: isAuthenticated,
     });
 
-  const items = data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
+  const items = data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

@@ -104,7 +104,7 @@ export default function CommunityScreen() {
       initialPageParam: undefined,
     });
 
-  const announcements = data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
+  const announcements = data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

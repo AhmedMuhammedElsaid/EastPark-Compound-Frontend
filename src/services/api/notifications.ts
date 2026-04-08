@@ -17,7 +17,7 @@ export interface NotificationPreference {
 
 export const notificationsApi = {
   getNotifications: (params?: { cursor?: string; limit?: number }) =>
-    client.get<{ data: { data: AppNotification[]; nextCursor: string | null } }>('/notifications', { params }),
+    client.get<{ data: { items: AppNotification[]; nextCursor: string | null } }>('/notifications', { params }),
 
   markRead: (notificationId: string) =>
     client.patch<{ data: AppNotification }>(`/notifications/${notificationId}/read`),

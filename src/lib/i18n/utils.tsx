@@ -1,14 +1,13 @@
 import type TranslateOptions from 'i18next';
 import type { Language, resources } from './resources';
 import type { RecursiveKeyOf } from './types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from 'i18next';
 import memoize from 'lodash.memoize';
 import { useCallback } from 'react';
 import { I18nManager, NativeModules, Platform } from 'react-native';
 
 import RNRestart from 'react-native-restart';
-import { store, useAppSelector } from '@/store';
+import { persistor, store, useAppSelector } from '@/store';
 import { setLanguage as setLanguageAction } from '@/store/slices/preferencesSlice';
 
 type DefaultLocale = typeof resources.en.translation;
@@ -27,11 +26,13 @@ export const translate = memoize(
     options ? key + JSON.stringify(options) : key,
 );
 
-export function changeLanguage(lang: Language) {
+export async function changeLanguage(lang: Language) {
   i18n.changeLanguage(lang);
-  // Persist in both Redux (redux-persist → AsyncStorage) and direct AsyncStorage for legacy reads
   store.dispatch(setLanguageAction(lang));
-  AsyncStorage.setItem(LOCAL, lang);
+  // Flush redux-persist to disk BEFORE reloading — the dispatch is sync but the
+  // AsyncStorage write is async. Without flush() the reload races the write and the
+  // language reverts to the old value on the next boot.
+  await persistor.flush();
   I18nManager.allowRTL(lang === 'ar');
   I18nManager.forceRTL(lang === 'ar');
   if (Platform.OS === 'ios' || Platform.OS === 'android') {

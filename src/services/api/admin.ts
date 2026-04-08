@@ -17,5 +17,5 @@ export const adminApi = {
     client.post<{ data: Invitation }>('/admin/invitations', { email, role }),
 
   getInvitations: (params?: { cursor?: string; limit?: number }) =>
-    client.get<{ data: { data: Invitation[]; nextCursor: string | null } }>('/admin/invitations', { params }),
+    client.get<{ data: { items: Invitation[]; nextCursor: string | null } }>('/admin/invitations', { params }),
 };

@@ -88,8 +88,8 @@ export default function HomeScreen() {
     queryFn: () => shopsApi.getShops({ limit: 6 }),
   });
 
-  const announcements = announcementsData?.data.data.data ?? [];
-  const shops = shopsData?.data.data.data ?? [];
+  const announcements = announcementsData?.data.data.items ?? [];
+  const shops = shopsData?.data.data.items ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

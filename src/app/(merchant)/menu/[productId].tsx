@@ -96,9 +96,9 @@ export default function ProductFormScreen() {
     queryKey: ['merchant-product', productId],
     queryFn: () => merchantApi.getMyProducts({ limit: 100, includeUnavailable: true }),
     enabled: !isNew,
-    select: res => res.data.data.data.find(p => p.id === productId),
+    select: res => res.data.data.items.find(p => p.id === productId),
     initialData: () =>
-      queryClient.getQueryData<AxiosResponse<{ data: { data: Product[]; nextCursor: string | null } }>>(['merchant-products']),
+      queryClient.getQueryData<AxiosResponse<{ data: { items: Product[]; nextCursor: string | null } }>>(['merchant-products']),
     initialDataUpdatedAt: () =>
       queryClient.getQueryState(['merchant-products'])?.dataUpdatedAt,
   });

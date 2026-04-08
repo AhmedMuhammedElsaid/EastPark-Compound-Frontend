@@ -24,6 +24,8 @@
     "setup": "pnpm install && pnpm expo install --fix",
     "start:go": "expo start --go",
     "prestart:go": "pnpm run fix:windows-pnpm-bin",
+    "start:tunnel": "expo start --tunnel",
+    "prestart:tunnel": "pnpm run fix:windows-pnpm-bin",
     "start:preview": "cross-env EXPO_PUBLIC_APP_ENV=preview pnpm run start",
     "prebuild:preview": "cross-env EXPO_PUBLIC_APP_ENV=preview STRICT_ENV_VALIDATION=1 pnpm run prebuild",
     "prebuild:development": "cross-env EXPO_PUBLIC_APP_ENV=development STRICT_ENV_VALIDATION=1 pnpm run prebuild",

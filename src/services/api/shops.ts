@@ -38,7 +38,7 @@ export interface Review {
 }
 
 export interface CursorPage<T> {
-  data: T[];
+  items: T[];
   nextCursor: string | null;
 }
 

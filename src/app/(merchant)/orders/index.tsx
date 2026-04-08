@@ -124,7 +124,7 @@ export default function MerchantOrdersScreen() {
       refetchInterval: 15000,
     });
 
-  const orders = data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
+  const orders = data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

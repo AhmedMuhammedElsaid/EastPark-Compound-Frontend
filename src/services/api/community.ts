@@ -52,24 +52,24 @@ export interface Feedback {
 export const communityApi = {
   // Announcements
   getAnnouncements: (params?: { cursor?: string; limit?: number; category?: AnnouncementCategory }) =>
-    client.get<{ data: { data: Announcement[]; nextCursor: string | null } }>('/announcements', { params }),
+    client.get<{ data: { items: Announcement[]; nextCursor: string | null } }>('/announcements', { params }),
 
   getAnnouncement: (id: string) =>
     client.get<{ data: Announcement }>(`/announcements/${id}`),
 
   getComments: (announcementId: string, params?: { cursor?: string; limit?: number }) =>
-    client.get<{ data: { data: Comment[]; nextCursor: string | null } }>(`/announcements/${announcementId}/comments`, { params }),
+    client.get<{ data: { items: Comment[]; nextCursor: string | null } }>(`/announcements/${announcementId}/comments`, { params }),
 
   addComment: (announcementId: string, body: string) =>
     client.post<{ data: Comment }>(`/announcements/${announcementId}/comments`, { body }),
 
   // Reports
   getReports: (params?: { cursor?: string; limit?: number }) =>
-    client.get<{ data: { data: Report[]; nextCursor: string | null } }>('/reports', { params }),
+    client.get<{ data: { items: Report[]; nextCursor: string | null } }>('/reports', { params }),
 
   // Feedback
   getFeedback: (params?: { cursor?: string; limit?: number; status?: FeedbackStatus }) =>
-    client.get<{ data: { data: Feedback[]; nextCursor: string | null } }>('/feedback', { params }),
+    client.get<{ data: { items: Feedback[]; nextCursor: string | null } }>('/feedback', { params }),
 
   getFeedbackItem: (id: string) =>
     client.get<{ data: Feedback }>(`/feedback/${id}`),

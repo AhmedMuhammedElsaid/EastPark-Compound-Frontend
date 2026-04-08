@@ -86,7 +86,7 @@ export default function ReportsScreen() {
       initialPageParam: undefined,
     });
 
-  const reports = data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
+  const reports = data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

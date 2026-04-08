@@ -118,8 +118,8 @@ export default function GovernanceScreen() {
     enabled: tab === 'elections',
   });
 
-  const polls = pollsQuery.data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
-  const elections = electionsQuery.data?.pages.flatMap(p => p.data.data.data).filter(Boolean) ?? [];
+  const polls = pollsQuery.data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? [];
+  const elections = electionsQuery.data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

@@ -73,7 +73,7 @@ export const merchantApi = {
 
   // Products
   getMyProducts: (params?: { cursor?: string; limit?: number; includeUnavailable?: boolean }) =>
-    client.get<{ data: { data: Product[]; nextCursor: string | null } }>('/merchant/products', { params }),
+    client.get<{ data: { items: Product[]; nextCursor: string | null } }>('/merchant/products', { params }),
 
   createProduct: (data: {
     name: string;
@@ -99,7 +99,7 @@ export const merchantApi = {
 
   // Orders (incoming to my shop)
   getIncomingOrders: (params?: { cursor?: string; limit?: number; status?: string }) =>
-    client.get<{ data: { data: MerchantOrder[]; nextCursor: string | null } }>('/merchant/orders', { params }),
+    client.get<{ data: { items: MerchantOrder[]; nextCursor: string | null } }>('/merchant/orders', { params }),
 
   getOrder: (orderId: string) =>
     client.get<{ data: MerchantOrder }>(`/merchant/orders/${orderId}`),

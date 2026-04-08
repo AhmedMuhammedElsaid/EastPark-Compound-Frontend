@@ -85,7 +85,7 @@ export default function MerchantDashboard() {
   });
 
   const shop = shopData?.data.data;
-  const pendingCount = ordersData?.data.data.data.length ?? 0;
+  const pendingCount = ordersData?.data.data.items.length ?? 0;
   const hasMore = !!ordersData?.data.data.nextCursor;
   const displayCount = hasMore ? `${pendingCount}+` : `${pendingCount}`;
 
