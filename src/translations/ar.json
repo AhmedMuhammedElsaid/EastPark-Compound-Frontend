@@ -272,7 +272,16 @@
     "section_basic_info": "المعلومات الأساسية",
     "section_contact": "بيانات التواصل",
     "section_working_hours": "ساعات العمل",
-    "shop_saved": "تم حفظ ملف المحل"
+    "shop_saved": "تم حفظ ملف المحل",
+    "days": {
+      "mon": "إث",
+      "tue": "ثلا",
+      "wed": "أرب",
+      "thu": "خمس",
+      "fri": "جمع",
+      "sat": "سبت",
+      "sun": "أحد"
+    }
   },
   "notifications": {
     "empty": "أنت على اطلاع بكل شيء",

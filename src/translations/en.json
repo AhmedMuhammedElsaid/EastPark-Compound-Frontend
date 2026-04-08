@@ -272,7 +272,16 @@
     "section_basic_info": "Basic Info",
     "section_contact": "Contact",
     "section_working_hours": "Working Hours",
-    "shop_saved": "Shop profile saved"
+    "shop_saved": "Shop profile saved",
+    "days": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    }
   },
   "notifications": {
     "empty": "You're all caught up",

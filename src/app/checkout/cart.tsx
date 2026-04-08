@@ -12,7 +12,7 @@ import { formatCurrency } from '@/lib/formatCurrency';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { clearCart, removeItem, updateQuantity } from '@/store/slices/cartSlice';
-import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, LIGHT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 function useStyles() {
   const colors = useAppColors();
@@ -238,7 +238,7 @@ function CartItemRow({
       accessibilityRole="button"
       accessibilityLabel="Delete item"
     >
-      <Trash size={22} color="#ffffff" weight="bold" />
+      <Trash size={22} color={LIGHT.bg} weight="bold" />
     </Pressable>
   );
 

@@ -400,16 +400,6 @@ function FormField({
 
 // ─── WorkingHoursRow ──────────────────────────────────────────────────────────
 
-const DAY_LABELS: Record<DayKey, string> = {
-  mon: 'Mon',
-  tue: 'Tue',
-  wed: 'Wed',
-  thu: 'Thu',
-  fri: 'Fri',
-  sat: 'Sat',
-  sun: 'Sun',
-};
-
 function WorkingHoursRow({
   day,
   control,
@@ -421,9 +411,10 @@ function WorkingHoursRow({
   styles: any;
   colors: any;
 }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.dayRow}>
-      <Text style={styles.dayLabel}>{DAY_LABELS[day]}</Text>
+      <Text style={styles.dayLabel}>{t(`merchant.days.${day}`)}</Text>
 
       <Controller
         control={control}

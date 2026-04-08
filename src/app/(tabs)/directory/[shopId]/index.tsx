@@ -1,5 +1,5 @@
 import type { AxiosResponse } from 'axios';
-import type { CursorPage, Product, Shop } from '@/services/api/shops';
+import type { CursorPage, Product, Review, Shop } from '@/services/api/shops';
 import type { CartItem } from '@/store/slices/cartSlice';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
@@ -333,19 +333,19 @@ function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string
   const isAr = i18n.language === 'ar';
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery<
-    any,
+    AxiosResponse<{ data: CursorPage<Product> }>,
     Error,
-    any,
+    { pages: AxiosResponse<{ data: CursorPage<Product> }>[] },
     string[],
     string | undefined
   >({
     queryKey: ['shop-products', shopId],
     queryFn: ({ pageParam }) => shopsApi.getProducts(shopId, { cursor: pageParam, limit: 20 }),
-    getNextPageParam: (last: any) => last.data.data.nextCursor ?? undefined,
+    getNextPageParam: last => last.data.data.nextCursor ?? undefined,
     initialPageParam: undefined,
   });
 
-  const products = data?.pages.flatMap((p: any) => p.data.data.items).filter(Boolean) ?? [];
+  const products = data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? [];
 
   if (isLoading) {
     return (
@@ -436,19 +436,19 @@ function ReviewsTabContent({ shopId }: { shopId: string }) {
   const { t } = useTranslation();
   const styles = useStyles();
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery<
-    any,
+    AxiosResponse<{ data: CursorPage<Review> }>,
     Error,
-    any,
+    { pages: AxiosResponse<{ data: CursorPage<Review> }>[] },
     string[],
     string | undefined
   >({
     queryKey: ['shop-reviews', shopId],
     queryFn: ({ pageParam }) => shopsApi.getReviews(shopId, { cursor: pageParam, limit: 20 }),
-    getNextPageParam: (last: any) => last.data.data.nextCursor ?? undefined,
+    getNextPageParam: last => last.data.data.nextCursor ?? undefined,
     initialPageParam: undefined,
   });
 
-  const reviews = data?.pages.flatMap((p: any) => p.data.data.items).filter(Boolean) ?? [];
+  const reviews = data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? [];
 
   if (isLoading) {
     return (

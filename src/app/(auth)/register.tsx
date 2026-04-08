@@ -153,7 +153,7 @@ function RegisterFormPassword({ control, errors, showPassword, onTogglePassword,
             error={errors.password ? t(errors.password.message as string) : undefined}
             secureTextEntry={!showPassword}
             returnKeyType="next"
-            rightSlot={<Pressable onPress={onTogglePassword} hitSlop={12} accessibilityRole="button" accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}</Pressable>}
+            rightSlot={<Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onTogglePassword(); }} hitSlop={12} accessibilityRole="button" accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}</Pressable>}
           />
         )}
       />

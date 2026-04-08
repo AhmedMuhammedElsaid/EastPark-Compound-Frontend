@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { setSecureItem } from '@/lib/secure-storage';
 import * as React from 'react';
@@ -129,7 +130,7 @@ export default function VerifyOtpScreen() {
       <View style={styles.resendRow}>
         {cooldown > 0
           ? <Text style={styles.resendTimer}>{t('auth.resend_in', { seconds: cooldown })}</Text>
-          : <Pressable onPress={handleResend} disabled={resending} hitSlop={8}><Text style={[styles.resendLink, resending && styles.resendDisabled]}>{t('auth.resend_otp')}</Text></Pressable>}
+          : <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); handleResend(); }} disabled={resending} hitSlop={8}><Text style={[styles.resendLink, resending && styles.resendDisabled]}>{t('auth.resend_otp')}</Text></Pressable>}
       </View>
     </AuthScreenWrapper>
   );
