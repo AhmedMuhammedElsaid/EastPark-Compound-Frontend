@@ -2,7 +2,35 @@
 
 > Recorded after a comprehensive two-pass audit + maintenance pass (April 2026).
 > All bugs were fixed in commits on branch `main`.
-> Last commits: `0c74e20`, `bfcdf92`, `fb400e1`, `d9fcdf6`, `43025a1`.
+> Last commits: `0c74e20`, `bfcdf92`, `fb400e1`, `d9fcdf6`, `43025a1`, plus April 2026 review pass (uncommitted).
+
+---
+
+## April 2026 — Review Pass (API Shape + Language Fix)
+
+### Language Switch Race Condition
+**File:** `src/lib/i18n/utils.tsx`
+**Problem:** `changeLanguage()` dispatched `setLanguageAction` to Redux and immediately called `NativeModules.DevSettings.reload()`. Since redux-persist's AsyncStorage write is async, the reload completed before the new language preference was written to disk. On restart, redux-persist rehydrated the old language value — so clicking English while on Arabic appeared to do nothing.
+**Fix:** Made `changeLanguage()` async. Added `await persistor.flush()` before the reload call to force redux-persist to complete its AsyncStorage write. Also removed the unused `AsyncStorage` import and dead `export const LOCAL = 'local'` constant.
+
+### CursorPage API Response Shape Rename
+**Files:** `src/services/api/shops.ts` (interface), all API service files, all 15+ screen files
+**Problem:** The `CursorPage<T>` interface used `data: T[]` as the array field name, but the backend was updated to use `items: T[]`. This caused the triple-nested `.data.data.data` access pattern which was confusing and no longer matched the backend response shape.
+**Fix:**
+- Updated `CursorPage<T>` interface: `data: T[]` → `items: T[]`
+- Updated all API service return types across 8 files (orders, notifications, merchant, community, governance, admin, shops)
+- Updated all screen `flatMap` accessors: `.data.data.data` → `.data.data.items` (15 screen files)
+- Updated all `useInfiniteQuery<...>` type generics: `{ data: T[]; nextCursor }` → `{ items: T[]; nextCursor }` (9 files, 18 occurrences)
+- Updated `queryClient.getQueryData<...>` type in `[productId].tsx` initialData
+
+### .env API URL Had `/v1` Appended
+**File:** `.env`
+**Problem:** `EXPO_PUBLIC_API_URL` was changed to `http://localhost:3000/v1`, but the Axios client (`src/services/api/client.ts` line 28) already appends `/v1` via `baseURL: \`${Env.EXPO_PUBLIC_API_URL}/v1\``. This would have made every API request target `/v1/v1/...` and 404.
+**Fix:** Reverted to `http://localhost:3000` (no `/v1`).
+
+### `start:tunnel` Script Added
+**File:** `package.json`
+Added `start:tunnel` and `prestart:tunnel` scripts for Expo tunnel mode development.
 
 ---
 
