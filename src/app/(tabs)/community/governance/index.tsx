@@ -161,7 +161,6 @@ export default function GovernanceScreen() {
                     data={polls}
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => <PollCard poll={item} styles={styles} />}
-                    estimatedItemSize={120}
                     onEndReached={() => {
                       if (pollsQuery.hasNextPage && !pollsQuery.isFetchingNextPage)
                         pollsQuery.fetchNextPage();
@@ -196,7 +195,6 @@ export default function GovernanceScreen() {
                     data={elections}
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => <ElectionCard election={item} styles={styles} />}
-                    estimatedItemSize={120}
                     onEndReached={() => {
                       if (electionsQuery.hasNextPage && !electionsQuery.isFetchingNextPage)
                         electionsQuery.fetchNextPage();

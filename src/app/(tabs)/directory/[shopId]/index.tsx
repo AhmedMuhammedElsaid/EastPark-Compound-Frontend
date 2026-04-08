@@ -361,7 +361,6 @@ function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string
     <FlashList
       data={products}
       keyExtractor={(item: any) => item.id}
-      estimatedItemSize={80}
       contentContainerStyle={{ padding: SPACING.base }}
       renderItem={({ item }: { item: any }) => (
         <ProductRow product={item} isAr={isAr} shopId={shopId} shopName={shopName} />
@@ -464,7 +463,6 @@ function ReviewsTabContent({ shopId }: { shopId: string }) {
     <FlashList
       data={reviews}
       keyExtractor={(item: any) => item.id}
-      estimatedItemSize={80}
       contentContainerStyle={{ padding: SPACING.base }}
       renderItem={({ item: r }: { item: any }) => (
         <View style={styles.reviewCard}>

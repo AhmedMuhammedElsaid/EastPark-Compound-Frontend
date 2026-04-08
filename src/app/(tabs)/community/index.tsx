@@ -218,7 +218,6 @@ function AnnouncementList({ announcements, isLoading, isFetchingNextPage, isRefe
       data={announcements}
       keyExtractor={item => item.id}
       renderItem={({ item }) => <AnnouncementCard announcement={item} styles={styles} colors={colors} />}
-      estimatedItemSize={150}
       onEndReached={() => {
         if (hasNextPage && !isFetchingNextPage)
           fetchNextPage();
