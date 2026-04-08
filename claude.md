@@ -93,7 +93,7 @@ assets/animations/               # success.json (Lottie — used in checkout/con
 
 **Auth-wall.** Guest action → `requireAuth(() => { ... })` from `useAuthGuard()` hook → dispatches `showAuthWall` → `<AuthWallSheet />` shows → after login, action auto-replays.
 
-**Cursor pagination.** All list screens:
+**Cursor pagination.** All list screens use `CursorPage<T>` shape: `{ items: T[]; nextCursor: string | null }` (NOT `data: T[]`):
 ```typescript
 useInfiniteQuery({
   initialPageParam: undefined,
@@ -101,6 +101,7 @@ useInfiniteQuery({
   getNextPageParam: (last) => last.data.data.nextCursor ?? undefined,
 })
 // FlashList onEndReached → fetchNextPage()
+// Flatten: data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? []
 ```
 
 **N+1 fetch avoidance.** When a detail screen can reuse the list cache, use `initialData` + `initialDataUpdatedAt`:
@@ -108,7 +109,7 @@ useInfiniteQuery({
 const { data } = useQuery({
   queryKey: ['item', id],
   queryFn: () => api.getAll({ limit: 100 }),
-  select: res => res.data.data.data.find(i => i.id === id),
+  select: res => res.data.data.items.find(i => i.id === id),
   initialData: () => queryClient.getQueryData(['items']),
   initialDataUpdatedAt: () => queryClient.getQueryState(['items'])?.dataUpdatedAt,
 });
@@ -120,7 +121,7 @@ const { data } = useQuery({
 
 **Token storage:** expo-secure-store only (SECURE_KEY_ACCESS / SECURE_KEY_REFRESH). Blacklisted from redux-persist: `accessToken`, `refreshToken`, `showAuthWall`, `authWallConfig`.
 
-**RTL:** `I18nManager.forceRTL(true/false)` on language switch + restart prompt.
+**RTL:** `I18nManager.forceRTL(true/false)` on language switch + restart prompt. `changeLanguage()` is async — calls `await persistor.flush()` before reload to prevent race condition where the reload completes before redux-persist writes the new language to disk.
 
 **Motion:** Spring physics via reanimated. Lottie on key moments (order confirmed, payment success). Skeleton shimmer (never spinners). Haptics on every interactive tap — `GoldButton` has haptics built-in, never double-add.
 
