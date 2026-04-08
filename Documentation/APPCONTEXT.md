@@ -10,7 +10,7 @@
 
 **All 7 phases + all 38 AppGaps + 3 deep-audit passes + FE-BE wiring: 100% complete.**
 
-Last commits: `8e8634c` → `81140a4` (continuation pass). Branch: `main`.
+Last commits: `8e8634c` → `1a27086` (maintenance pass + docs) + review pass (uncommitted). Branch: `main`.
 
 Deep audit fixed: Paymob 3-step flow, push token endpoint/projectId, token persist blacklist, admin redirect guards, 30+ emoji→Phosphor icons, all ← arrows replaced, `formatCurrency` locale-aware (ar-EG/en-US), N+1 fetch fixed via TanStack Query `initialData`, `rgba`→token colors, theme+language reactivity (useAppColors hook), auth-wall message rendering, Socket.io cleanup, cross-user cache isolation (queryClient.clear on login/logout), haptics on all primary buttons.
 
@@ -210,6 +210,7 @@ requireAuth(() => { /* action that needs auth */ });
 ```
 
 ### Cursor pagination (all list screens)
+`CursorPage<T>` shape: `{ items: T[]; nextCursor: string | null }` (NOT `data: T[]`).
 ```typescript
 useInfiniteQuery({
   initialPageParam: undefined,
@@ -217,6 +218,7 @@ useInfiniteQuery({
   getNextPageParam: (last) => last.data.data.nextCursor ?? undefined,
 })
 // FlashList onEndReached → fetchNextPage()
+// Flatten: data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? []
 ```
 
 ### N+1 fetch avoidance (detail screens)
@@ -224,7 +226,7 @@ useInfiniteQuery({
 const { data } = useQuery({
   queryKey: ['item', id],
   queryFn: () => api.getAll({ limit: 100 }),
-  select: res => res.data.data.data.find(i => i.id === id),
+  select: res => res.data.data.items.find(i => i.id === id),
   initialData: () => queryClient.getQueryData(['items']),
   initialDataUpdatedAt: () => queryClient.getQueryState(['items'])?.dataUpdatedAt,
 });

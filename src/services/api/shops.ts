@@ -14,7 +14,7 @@ export interface Shop {
   isOpen: boolean;
   averageRating: number | null;
   reviewCount: number;
-  photos: Array<{ id: string; url: string; order: number }>;
+  photos: Array<{ id: string; url: string; order: number; isPrimary: boolean }>;
   workingHours: Record<string, { open: string; close: string; closed: boolean }> | null;
 }
 

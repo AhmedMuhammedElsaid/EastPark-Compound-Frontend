@@ -232,7 +232,7 @@ function NotificationItem({
   colors: any;
 }) {
   const { t } = useTranslation();
-  const timeAgo = formatRelativeTime(notification.createdAt, t as (key: string, opts?: object) => string);
+  const timeAgo = formatRelativeTime(notification.createdAt, (key, opts) => String(t(key as any, opts as any)));
   const typeColor = notification.type === 'GENERAL'
     ? colors.textMuted
     : (TYPE_COLOR[notification.type] ?? colors.textMuted);
