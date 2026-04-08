@@ -268,7 +268,7 @@
     "update_status": "تحديث الحالة",
     "field_phone": "رقم الهاتف",
     "field_whatsapp": "رقم واتساب",
-    "pending_count_waiting": "{{count}} طلبات جديدة بانتظارك",
+    "pending_count_waiting": "{{n}} طلبات جديدة بانتظارك",
     "section_basic_info": "المعلومات الأساسية",
     "section_contact": "بيانات التواصل",
     "section_working_hours": "ساعات العمل",

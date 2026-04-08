@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { ArrowLeft, InboxSimple } from 'phosphor-react-native';
+import { ArrowLeft, Tray } from 'phosphor-react-native';
 import i18n from '@/lib/i18n';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -160,7 +160,7 @@ export default function MerchantOrdersScreen() {
               refreshing={false}
               ListEmptyComponent={(
                 <View style={styles.empty}>
-                  <InboxSimple size={48} color={colors.textMuted} />
+                  <Tray size={48} color={colors.textMuted} />
                   <Text style={styles.emptyText}>{t('common.no_results')}</Text>
                 </View>
               )}

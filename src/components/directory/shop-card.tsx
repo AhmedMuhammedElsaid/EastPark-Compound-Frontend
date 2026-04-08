@@ -21,7 +21,7 @@ export function ShopCard({ shop }: Props) {
   const styles = useStyles(colors);
   const isAr = i18n.language === 'ar';
 
-  const coverPhoto = shop.photos.find((p) => p.isPrimary) ?? shop.photos[0];
+  const coverPhoto = shop.photos.find((p) => p.order === 0) ?? shop.photos[0];
   const displayName = isAr ? shop.nameAr : shop.name;
   const categoryLabel = t(`directory.${shop.category.toLowerCase().replace('_and_', '_')}`);
 

@@ -127,7 +127,7 @@ export default function MerchantDashboard() {
           <Pressable style={styles.alertBanner} onPress={() => router.push('/(merchant)/orders' as any)}>
             <Bell size={20} color={SEMANTIC.warning} />
             <Text style={styles.alertText}>
-              {t('merchant.pending_count_waiting', { count: displayCount })}
+              {t('merchant.pending_count_waiting', { n: displayCount })}
             </Text>
             <CaretRight size={18} color={colors.textMuted} />
           </Pressable>
