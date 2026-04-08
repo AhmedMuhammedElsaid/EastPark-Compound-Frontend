@@ -2,11 +2,26 @@
 
 > Recorded after a comprehensive two-pass audit + maintenance pass (April 2026).
 > All bugs were fixed in commits on branch `main`.
-> Last commits: `0c74e20`, `bfcdf92`, `fb400e1`, `d9fcdf6`, `43025a1`, plus April 2026 review pass (uncommitted).
+> Last commits: `0c74e20` through `a498a15` (review pass + TS fixes + static analysis + Jest fix pass).
 
 ---
 
-## April 2026 — Review Pass (API Shape + Language Fix)
+## April 2026 — Jest Fix Pass
+
+Commits: `23a39fe`, `a498a15`
+
+### `immer` / `react-redux` ESM Parse Error in Jest — `commit 23a39fe` + `commit a498a15`
+**Files:** `jest.config.js`, `jest-setup.ts`
+**Problem:** `input.test.tsx`, `checkbox.test.tsx`, and `select.test.tsx` all failed with `SyntaxError: Unexpected token 'export'` when Jest tried to load `immer/dist/immer.legacy-esm.js` and `react-redux/dist/react-redux.legacy-esm.js`. The root cause: UI components transitively import `@/store` via `src/lib/i18n/utils.tsx` → `src/lib/i18n/index.tsx` → `src/components/ui/text.tsx` → component. Both `@reduxjs/toolkit` and `react-redux` ship ESM-only dist files that Jest's CJS environment cannot parse.
+**Fix:**
+- `jest.config.js`: Added `immer|@reduxjs/toolkit|redux-persist` to `transformIgnorePatterns` allowlist (partial fix — still failed on `react-redux`).
+- `jest-setup.ts`: Added global `jest.mock('@/store', ...)` that provides a minimal in-memory store mock (`store.dispatch`, `store.getState`, `persistor.flush`, `useAppDispatch`, `useAppSelector`). Also mocked `@/store/slices/preferencesSlice` (for `setLanguage`) and `react-native-restart` (native module, unavailable in Jest). This prevents `store/index.ts` from ever being loaded in tests — no ESM chain ever reaches RTK/react-redux.
+
+---
+
+## April 2026 — Review Pass + Static Analysis + TS Fixes
+
+Commits: `296b52f`, `5a66a0c`, `c2c52e6`, `262924c`, `712ef78`, `4fb6d3e`, `1e8a72a`
 
 ### Language Switch Race Condition
 **File:** `src/lib/i18n/utils.tsx`
@@ -27,6 +42,44 @@
 **File:** `.env`
 **Problem:** `EXPO_PUBLIC_API_URL` was changed to `http://localhost:3000/v1`, but the Axios client (`src/services/api/client.ts` line 28) already appends `/v1` via `baseURL: \`${Env.EXPO_PUBLIC_API_URL}/v1\``. This would have made every API request target `/v1/v1/...` and 404.
 **Fix:** Reverted to `http://localhost:3000` (no `/v1`).
+
+### FlashList v2 `estimatedItemSize` Removed — `commit 4fb6d3e`
+**Files:** 6 files (governance, community, directory, orders, select)
+**Problem:** `@shopify/flash-list` v2.0.2 (New Architecture) removed `estimatedItemSize` from `FlashListProps` — item sizes are auto-measured. TS2322 errors on all 8 occurrences.
+**Fix:** Removed the prop from all 8 occurrences across 6 files.
+
+### Shop Photo `isPrimary` Field — `commit 1e8a72a`
+**Files:** `src/services/api/shops.ts`, `src/components/directory/shop-card.tsx`
+**Problem:** `Shop.photos` type was missing `isPrimary: boolean`. Cover photo was selected via `p.order === 0` which didn't match backend behavior.
+**Fix:** Added `isPrimary` to the `ShopPhoto` interface. `shop-card.tsx` now uses `p.isPrimary` to find the cover photo.
+
+### TS Type Fixes — `commit 262924c`
+**Files:** dashboard, merchant orders, notifications, shop-card, translations
+- Dashboard: `count` interpolation key fixed in translation usage
+- Merchant orders: `InboxSimple` icon import (was missing/wrong)
+- Notifications: `formatRelativeTime` t() callback cast fixed with `String(t(key as any, opts as any))` wrapper
+- Translations: count interpolation keys updated in EN + AR
+
+### Static Analysis Fixes — `commit c2c52e6`
+- `shop-profile.tsx`: hardcoded `DAY_LABELS` removed — uses `t('merchant.days.{day}')` for RTL-correct Arabic day names
+- `register.tsx` + `verify-otp.tsx`: haptics added to Eye toggle and resend Pressable
+- `cart.tsx`: Trash icon color `#ffffff` → `LIGHT.bg` token
+- `[shopId]/index.tsx`: `any` generics replaced with `AxiosResponse<{ data: CursorPage<Product|Review> }>`
+- `en.json` + `ar.json`: `merchant.days.{mon-sun}` keys added
+
+### Jest Setup — `commit 712ef78`
+- `jest-setup.ts`: added `@react-native-async-storage/async-storage` mock
+- `login-form.test.tsx`: cleaned up empty test suite
+
+### Hardcoded `rgba()` Replaced (uncommitted)
+**File:** `src/app/(tabs)/directory/[shopId]/index.tsx`
+**Problem:** Two raw `rgba()` calls — `rgba(13,12,11,0.6)` and `rgba(0,0,0,0.2)` — violated token-only color rule.
+**Fix:** Replaced with `` `${DARK.bg}99` `` (60% opacity photo overlay) and `` `${DARK.bg}33` `` (20% opacity cart badge). `DARK.bg` is intentionally pinned (not theme-reactive) because these are overlays on photos that need consistent contrast.
+
+### Production `console.log` Guarded (uncommitted)
+**File:** `src/components/ui/utils.tsx`
+**Problem:** `showError()` had unguarded `console.log(JSON.stringify(error?.response?.data))` that would fire in production builds.
+**Fix:** Wrapped with `if (__DEV__)` guard.
 
 ### `start:tunnel` Script Added
 **File:** `package.json`
