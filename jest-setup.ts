@@ -6,6 +6,39 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
 
+// Mock the Redux store — UI component tests transitively import @/store via i18n/utils.tsx.
+// @reduxjs/toolkit and react-redux ship ESM-only builds that Jest (CJS) cannot parse,
+// so we mock the store module entirely rather than trying to transform those packages.
+jest.mock('@/store', () => {
+  const state = {
+    preferences: { language: 'en', theme: 'dark' },
+    auth: { user: null, accessToken: null, refreshToken: null, isVerified: false, showAuthWall: false, authWallConfig: null },
+    cart: { items: [], shopId: null },
+  };
+  return {
+    store: {
+      dispatch: jest.fn(),
+      getState: jest.fn(() => state),
+      subscribe: jest.fn(() => jest.fn()),
+    },
+    persistor: {
+      flush: jest.fn().mockResolvedValue(undefined),
+      pause: jest.fn(),
+      persist: jest.fn(),
+    },
+    useAppDispatch: () => jest.fn(),
+    useAppSelector: (selector: (s: typeof state) => any) => selector(state),
+  };
+});
+
+jest.mock('@/store/slices/preferencesSlice', () => ({
+  setLanguage: jest.fn((lang: string) => ({ type: 'preferences/setLanguage', payload: lang })),
+  default: (state = { language: 'en', theme: 'dark' }, _action: any) => state,
+}));
+
+// Mock react-native-restart (native module — not available in Jest environment)
+jest.mock('react-native-restart', () => ({ restart: jest.fn() }));
+
 // Mock react-native-worklets first
 jest.mock('react-native-worklets', () => ({
   __esModule: true,
