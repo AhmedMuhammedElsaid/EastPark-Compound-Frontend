@@ -6,8 +6,10 @@
 ## Status
 
 ✅ All 7 phases + all 38 AppGaps + deep-audit passes + FE-BE wiring + maintenance pass resolved.
-Last commits: `3ea3f75` → `1a27086` (maintenance pass + docs). Branch: main.
+Last commits: `3ea3f75` → `a498a15` (maintenance pass + review pass + TS fixes + Jest fix pass). Branch: main.
 - Maintenance pass (April 2026): all 9 TD items + 7/9 UX items fixed — commits `0c74e20`–`43025a1`
+- Review pass + static analysis + TS fixes — commits `2ab46a8`–`1e8a72a`
+- Jest fix pass — commits `23a39fe`, `a498a15` (RTK/react-redux ESM fixed via global store mock)
 - `EAS_PROJECT_ID` already populated (`062399ed-48df-4d4f-ba1a-a0801a86b1bc`) — `eas init` is done
 
 ## User Roles
@@ -232,6 +234,7 @@ pnpm build:production:ios   # EAS production iOS
 - `eastpark-frontend/` is its own git repo — commits must be made from inside this directory
 - `deleteAccount` (`DELETE /user`): frontend calls it correctly but backend only exposes `DELETE /admin/user/:id` — self-delete endpoint (B-1) still needs to be added to backend
 - `PATCH /merchant/shop` does not exist in backend — shop profile editor uses `PATCH /shops/:id` (accepts MERCHANT role with ownership enforcement)
+- **Jest mocking:** `@reduxjs/toolkit` and `react-redux` ship ESM-only builds that Jest cannot parse. `jest-setup.ts` globally mocks `@/store` (minimal dispatch/getState/persistor/useAppDispatch/useAppSelector), `@/store/slices/preferencesSlice`, and `react-native-restart` to prevent the ESM chain from ever loading. `jest.config.js` `transformIgnorePatterns` also includes `immer|@reduxjs/toolkit|redux-persist`. Do NOT remove these mocks.
 
 ## Maintenance Pass — What Was Fixed (April 2026)
 

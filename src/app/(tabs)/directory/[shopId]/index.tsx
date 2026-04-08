@@ -17,7 +17,7 @@ import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
 import { shopsApi } from '@/services/api/shops';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { addItem } from '@/store/slices/cartSlice';
-import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 function useStyles() {
   const colors = useAppColors();
@@ -38,7 +38,7 @@ function useStyles() {
       width: 40,
       height: 40,
       borderRadius: 20,
-      backgroundColor: 'rgba(13,12,11,0.6)',
+      backgroundColor: `${DARK.bg}99`,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
     },
@@ -134,7 +134,7 @@ function useStyles() {
       width: 28,
       height: 28,
       borderRadius: 14,
-      backgroundColor: 'rgba(0,0,0,0.2)',
+      backgroundColor: `${DARK.bg}33`,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
     },
