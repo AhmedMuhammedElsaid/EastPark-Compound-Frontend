@@ -215,8 +215,8 @@ requireAuth(() => { /* action that needs auth */ });
 useInfiniteQuery({
   initialPageParam: undefined,
   queryFn: ({ pageParam }) => api.getItems({ cursor: pageParam, limit: 20 }),
-  getNextPageParam: (last) => last.data.data.nextCursor ?? undefined,
-})
+  getNextPageParam: last => last.data.data.nextCursor ?? undefined,
+});
 // FlashList onEndReached → fetchNextPage()
 // Flatten: data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? []
 ```
@@ -257,7 +257,7 @@ router.replace('/(auth)/login');
 
 ### Design tokens (never raw colors)
 ```typescript
-import { BRAND, DARK, SEMANTIC, FONT, SPACING, RADIUS } from '@/theme/tokens';
+import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 // Transparent overlays: `${BRAND.gold}22` (13% opacity) — NEVER rgba()
 ```
 
@@ -268,6 +268,7 @@ All screens use `useStyles()` + `useAppColors()` — never static `StyleSheet.cr
 // src/lib/hooks/use-app-colors.ts
 import { useUniwind } from 'uniwind';
 import { DARK, LIGHT } from '@/theme/tokens';
+
 export function useAppColors() {
   const { theme } = useUniwind();
   return theme === 'dark' ? DARK : LIGHT;
@@ -295,12 +296,16 @@ Zero static `DARK.*` references remain in screen/component files. The `preferenc
 
 ## Environment Variables
 
+All env vars are defined in `.env.example` (committed template). Developers copy to `.env.local` (git-ignored) and fill in real values. Never commit secrets to tracked files.
+
 | Variable | Dev | Prod |
 |---|---|---|
 | `EXPO_PUBLIC_APP_ENV` | `development` | `production` |
 | `EXPO_PUBLIC_API_URL` | `http://localhost:3000` | `https://eastpark-backend.fly.dev` |
 | `EXPO_PUBLIC_SOCKET_URL` | `http://localhost:3000` | `https://eastpark-backend.fly.dev` |
 | `EXPO_PUBLIC_POSTHOG_KEY` | (blank) | your PostHog key |
+| `SECRET_KEY` | local value in `.env.local` | CI/CD secret |
+| `APP_BUILD_ONLY_VAR` | local value in `.env.local` | CI/CD secret |
 
 > Android emulator: use `10.0.2.2` instead of `localhost`.
 > Physical device: use LAN IP (e.g. `192.168.1.x`).

@@ -1,10 +1,10 @@
+import type { Control, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
 import { Eye, EyeSlash } from 'phosphor-react-native';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import type { Control, FieldErrors } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';

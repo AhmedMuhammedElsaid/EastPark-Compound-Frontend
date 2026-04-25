@@ -2,7 +2,7 @@ import { client } from './client';
 
 export type ShopCategory = 'CAFE_AND_FOOD' | 'GROCERY' | 'BUTCHER' | 'SERVICES' | 'OTHER';
 
-export interface Shop {
+export type Shop = {
   id: string;
   name: string;
   nameAr: string;
@@ -16,9 +16,9 @@ export interface Shop {
   reviewCount: number;
   photos: Array<{ id: string; url: string; order: number; isPrimary: boolean }>;
   workingHours: Record<string, { open: string; close: string; closed: boolean }> | null;
-}
+};
 
-export interface Product {
+export type Product = {
   id: string;
   name: string;
   nameAr: string;
@@ -27,20 +27,20 @@ export interface Product {
   price: number;
   imageUrl: string | null;
   isAvailable: boolean;
-}
+};
 
-export interface Review {
+export type Review = {
   id: string;
   rating: number;
   comment: string | null;
   user: { name: string; avatarUrl: string | null };
   createdAt: string;
-}
+};
 
-export interface CursorPage<T> {
+export type CursorPage<T> = {
   items: T[];
   nextCursor: string | null;
-}
+};
 
 export const shopsApi = {
   getShops: (params: {

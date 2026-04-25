@@ -9,9 +9,9 @@
 import { useAppSelector } from '@/store';
 
 export function useIsAuthenticated() {
-  return useAppSelector((state) => state.auth.isAuthenticated);
+  return useAppSelector(state => state.auth.isAuthenticated);
 }
 
 export function useAuthUser() {
-  return useAppSelector((state) => state.auth.user);
+  return useAppSelector(state => state.auth.user);
 }

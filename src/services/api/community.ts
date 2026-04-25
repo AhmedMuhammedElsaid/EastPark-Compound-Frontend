@@ -4,7 +4,7 @@ export type AnnouncementCategory = 'GENERAL' | 'PROMOTION' | 'EVENT' | 'MAINTENA
 export type FeedbackCategory = 'MAINTENANCE' | 'SECURITY' | 'CLEANLINESS' | 'NOISE' | 'SUGGESTION' | 'OTHER';
 export type FeedbackStatus = 'SUBMITTED' | 'ACKNOWLEDGED' | 'IN_PROGRESS' | 'RESOLVED';
 
-export interface Announcement {
+export type Announcement = {
   id: string;
   title: string;
   titleAr: string;
@@ -14,25 +14,25 @@ export interface Announcement {
   pdfUrl: string | null;
   isPinned: boolean;
   createdAt: string;
-}
+};
 
-export interface Report {
+export type Report = {
   id: string;
   title: string;
   titleAr: string;
   description: string | null;
   pdfUrl: string;
   publishedAt: string;
-}
+};
 
-export interface Comment {
+export type Comment = {
   id: string;
   body: string;
   user: { id: string; name: string; avatarUrl: string | null };
   createdAt: string;
-}
+};
 
-export interface Feedback {
+export type Feedback = {
   id: string;
   category: FeedbackCategory;
   title: string;
@@ -47,7 +47,7 @@ export interface Feedback {
     createdAt: string;
   }>;
   createdAt: string;
-}
+};
 
 export const communityApi = {
   // Announcements

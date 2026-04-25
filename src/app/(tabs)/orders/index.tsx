@@ -3,17 +3,17 @@ import type { Order, OrderStatus } from '@/services/api/orders';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { Package } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Package } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ErrorState } from '@/components/ui/error-state';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ordersApi } from '@/services/api/orders';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { ordersApi } from '@/services/api/orders';
 import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 function useStyles() {
@@ -87,41 +87,41 @@ export default function OrdersScreen() {
       {isError
         ? <ErrorState onRetry={refetch} />
         : isLoading
-        ? (
-            <View style={styles.loadingPad}>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={`order-sk-${i}`} width="100%" height={96} borderRadius={RADIUS.md} style={{ marginBottom: 12 }} />
-              ))}
-            </View>
-          )
-        : (
-            <FlashList
-              data={orders}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => <OrderCard order={item} isAr={isAr} colors={colors} styles={styles} />}
-              onEndReached={() => {
-                if (hasNextPage && !isFetchingNextPage)
-                  fetchNextPage();
-              }}
-              onEndReachedThreshold={0.5}
-              contentContainerStyle={styles.listContent}
-              onRefresh={refetch}
-              refreshing={isRefetching}
-              ListEmptyComponent={<EmptyOrders styles={styles} />}
-              ListFooterComponent={
-                isFetchingNextPage
-                  ? <Skeleton width="100%" height={96} borderRadius={RADIUS.md} />
-                  : null
-              }
-            />
-          )}
+          ? (
+              <View style={styles.loadingPad}>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={`order-sk-${i}`} width="100%" height={96} borderRadius={RADIUS.md} style={{ marginBottom: 12 }} />
+                ))}
+              </View>
+            )
+          : (
+              <FlashList
+                data={orders}
+                keyExtractor={item => item.id}
+                renderItem={({ item }) => <OrderCard order={item} isAr={isAr} colors={colors} styles={styles} />}
+                onEndReached={() => {
+                  if (hasNextPage && !isFetchingNextPage)
+                    fetchNextPage();
+                }}
+                onEndReachedThreshold={0.5}
+                contentContainerStyle={styles.listContent}
+                onRefresh={refetch}
+                refreshing={isRefetching}
+                ListEmptyComponent={<EmptyOrders styles={styles} />}
+                ListFooterComponent={
+                  isFetchingNextPage
+                    ? <Skeleton width="100%" height={96} borderRadius={RADIUS.md} />
+                    : null
+                }
+              />
+            )}
     </View>
   );
 }
 
 function OrderCard({ order, isAr, colors, styles }: { order: Order; isAr: boolean; colors: any; styles: any }) {
   const { t } = useTranslation();
-  const shopName = isAr ? order.shop.nameAr : order.shop.name;
+  const shopName = isAr ? order?.shop?.nameAr : order?.shop?.name;
   const statusColor = order.status === 'CANCELLED' ? colors.elevated : (STATUS_COLOR[order.status] ?? colors.elevated);
   const date = new Date(order.createdAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-GB', {
     month: 'short',
@@ -136,13 +136,13 @@ function OrderCard({ order, isAr, colors, styles }: { order: Order; isAr: boolea
       onPress={() => router.push(`/(tabs)/orders/${order.id}` as any)}
     >
       <View style={styles.cardTop}>
-        <Text style={styles.shopName} numberOfLines={1}>{shopName}</Text>
+        <Text style={styles.shopName} numberOfLines={1}>{shopName ?? t('orders.unknown_shop')}</Text>
         <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
           <Text style={styles.statusText}>{t(`orders.${order.status}`)}</Text>
         </View>
       </View>
       <Text style={styles.items} numberOfLines={1}>
-        {order.items.map(item => (isAr ? item.productNameArSnapshot : item.productNameSnapshot)).join(', ')}
+        {(order.items ?? []).map(item => (isAr ? item.productNameArSnapshot : item.productNameSnapshot)).join(', ')}
       </Text>
       <View style={styles.cardBottom}>
         <Text style={styles.total}>

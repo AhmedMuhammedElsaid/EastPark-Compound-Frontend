@@ -1,6 +1,6 @@
 import { client } from './client';
 
-export interface AppNotification {
+export type AppNotification = {
   id: string;
   type: string;
   title: string;
@@ -8,12 +8,12 @@ export interface AppNotification {
   data: Record<string, unknown>;
   isRead: boolean;
   createdAt: string;
-}
+};
 
-export interface NotificationPreference {
+export type NotificationPreference = {
   type: string;
   enabled: boolean;
-}
+};
 
 export const notificationsApi = {
   getNotifications: (params?: { cursor?: string; limit?: number }) =>

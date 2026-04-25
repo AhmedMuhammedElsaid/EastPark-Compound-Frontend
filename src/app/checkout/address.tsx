@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { ArrowLeft } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -11,9 +12,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ArrowLeft } from 'phosphor-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAppSelector } from '@/store';

@@ -1,17 +1,17 @@
 import { client } from './client';
 
-export type OrderStatus =
-  | 'PLACED'
-  | 'CONFIRMED'
-  | 'PREPARING'
-  | 'READY'
-  | 'ON_THE_WAY'
-  | 'DELIVERED'
-  | 'CANCELLED';
+export type OrderStatus
+  = | 'PLACED'
+    | 'CONFIRMED'
+    | 'PREPARING'
+    | 'READY'
+    | 'ON_THE_WAY'
+    | 'DELIVERED'
+    | 'CANCELLED';
 
 export type PaymentMethod = 'CASH' | 'PAYMOB';
 
-export interface OrderItem {
+export type OrderItem = {
   id: string;
   productId: string;
   productNameSnapshot: string;
@@ -19,9 +19,9 @@ export interface OrderItem {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
-}
+};
 
-export interface Order {
+export type Order = {
   id: string;
   status: OrderStatus;
   paymentMethod: PaymentMethod;
@@ -32,14 +32,14 @@ export interface Order {
   createdAt: string;
   shop: { id: string; name: string; nameAr: string };
   items: OrderItem[];
-}
+};
 
-export interface PlaceOrderPayload {
+export type PlaceOrderPayload = {
   shopId: string;
   items: Array<{ productId: string; quantity: number }>;
   paymentMethod: PaymentMethod;
   notes?: string;
-}
+};
 
 export const ordersApi = {
   placeOrder: (payload: PlaceOrderPayload) =>

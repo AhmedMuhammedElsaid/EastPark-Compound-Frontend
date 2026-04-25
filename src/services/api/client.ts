@@ -21,8 +21,10 @@ export function injectStore(store: typeof import('@/store').store) {
   storeRef = store;
 }
 
-export const SECURE_KEY_ACCESS  = 'eastpark_access_token';
+export const SECURE_KEY_ACCESS = 'eastpark_access_token';
 export const SECURE_KEY_REFRESH = 'eastpark_refresh_token';
+export const SECURE_KEY_BIOMETRIC_ENABLED = 'eastpark_biometric_enabled';
+export const SECURE_KEY_BIOMETRIC_EMAIL = 'eastpark_biometric_email';
 
 export const client = axios.create({
   baseURL: `${Env.EXPO_PUBLIC_API_URL}/v1`,
@@ -59,7 +61,7 @@ function processQueue(error: unknown, token: string | null) {
 }
 
 client.interceptors.response.use(
-  (response) => response,
+  response => response,
   async (error) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
@@ -84,11 +86,12 @@ client.interceptors.response.use(
 
     try {
       const refreshToken = await getSecureItem(SECURE_KEY_REFRESH);
-      if (!refreshToken) throw new Error('No refresh token');
+      if (!refreshToken)
+        throw new Error('No refresh token');
 
       const { data } = await axios.post(
         `${Env.EXPO_PUBLIC_API_URL}/v1/auth/refresh`,
-        { refreshToken }
+        { refreshToken },
       );
 
       const { accessToken, refreshToken: newRefresh } = data.data;
@@ -120,5 +123,5 @@ client.interceptors.response.use(
     finally {
       isRefreshing = false;
     }
-  }
+  },
 );

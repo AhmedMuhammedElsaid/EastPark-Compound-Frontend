@@ -18,12 +18,13 @@ export async function registerPushToken() {
     if (status === 'granted') {
       const projectId = Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
       const token = await Notifications.getExpoPushTokenAsync(
-        projectId ? { projectId } : undefined
+        projectId ? { projectId } : undefined,
       );
       await authApi.updatePushToken(token.data);
     }
   }
   catch (err) {
-    if (__DEV__) console.warn('[push] token registration failed', err);
+    if (__DEV__)
+      console.warn('[push] token registration failed', err);
   }
 }

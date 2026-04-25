@@ -2,17 +2,17 @@ import type { AxiosResponse } from 'axios';
 import type { Invitation, InvitationRole } from '@/services/api/admin';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { ArrowLeft, Plus, X } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Plus, X } from 'phosphor-react-native';
 
-import { adminApi } from '@/services/api/admin';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { adminApi } from '@/services/api/admin';
 import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 function useStyles() {
@@ -149,7 +149,8 @@ export default function InvitationsScreen() {
   });
 
   function handleSend() {
-    if (!email.trim()) return;
+    if (!email.trim())
+      return;
     Alert.alert(
       t('admin.send_invite'),
       `${email.trim()} · ${t(`auth.role_${role.toLowerCase() as 'merchant' | 'admin'}`)}`,
@@ -228,7 +229,10 @@ export default function InvitationsScreen() {
         {hasNextPage && (
           <Pressable
             style={styles.loadMoreBtn}
-            onPress={() => { if (!isFetchingNextPage) fetchNextPage(); }}
+            onPress={() => {
+              if (!isFetchingNextPage)
+                fetchNextPage();
+            }}
             disabled={isFetchingNextPage}
           >
             <Text style={styles.loadMoreText}>{t('common.load_more')}</Text>

@@ -3,8 +3,7 @@
 
 // Mock AsyncStorage (required by redux-persist and TanStack Query persister)
 jest.mock('@react-native-async-storage/async-storage', () =>
-  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
-);
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 
 // Mock the Redux store — UI component tests transitively import @/store via i18n/utils.tsx.
 // @reduxjs/toolkit and react-redux ship ESM-only builds that Jest (CJS) cannot parse,

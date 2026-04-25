@@ -2,7 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { createSlice } from '@reduxjs/toolkit';
 
-export interface AuthUser {
+export type AuthUser = {
   id: string;
   name: string;
   email: string;
@@ -11,14 +11,14 @@ export interface AuthUser {
   avatarUrl: string | null;
   unitNumber?: string;
   phone?: string;
-}
+};
 
-interface AuthWallConfig {
+type AuthWallConfig = {
   redirectAction?: string;
   message?: string;
-}
+};
 
-interface AuthState {
+type AuthState = {
   user: AuthUser | null;
   accessToken: string | null;
   refreshToken: string | null;
@@ -26,7 +26,7 @@ interface AuthState {
   // Auth-wall bottom sheet
   showAuthWall: boolean;
   authWallConfig: AuthWallConfig | null;
-}
+};
 
 const initialState: AuthState = {
   user: null,
@@ -47,7 +47,7 @@ export const authSlice = createSlice({
         user: AuthUser;
         accessToken: string;
         refreshToken: string;
-      }>
+      }>,
     ) {
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
@@ -66,7 +66,7 @@ export const authSlice = createSlice({
     },
     updateTokens(
       state,
-      action: PayloadAction<{ accessToken: string; refreshToken: string }>
+      action: PayloadAction<{ accessToken: string; refreshToken: string }>,
     ) {
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;

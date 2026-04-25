@@ -1,6 +1,6 @@
 import { client } from './client';
 
-export interface MerchantShop {
+export type MerchantShop = {
   id: string;
   name: string;
   nameAr: string;
@@ -10,15 +10,15 @@ export interface MerchantShop {
   phone: string | null;
   whatsapp?: string | null;
   workingHours?: Record<string, WorkingHoursDay> | null;
-}
+};
 
-export interface WorkingHoursDay {
-  open: string;   // HH:MM format e.g. "09:00"
-  close: string;  // HH:MM format e.g. "22:00"
+export type WorkingHoursDay = {
+  open: string; // HH:MM format e.g. "09:00"
+  close: string; // HH:MM format e.g. "22:00"
   closed: boolean;
-}
+};
 
-export interface Product {
+export type Product = {
   id: string;
   name: string;
   nameAr: string;
@@ -27,9 +27,9 @@ export interface Product {
   price: number;
   imageUrl: string | null;
   isAvailable: boolean;
-}
+};
 
-export interface MerchantOrder {
+export type MerchantOrder = {
   id: string;
   status: string;
   totalAmount: number;
@@ -44,9 +44,9 @@ export interface MerchantOrder {
     totalPrice: number;
   }>;
   user: { name: string; unitNumber: string };
-}
+};
 
-export interface ShopUpdatePayload {
+export type ShopUpdatePayload = {
   name?: string;
   nameAr?: string;
   description?: string;
@@ -54,7 +54,7 @@ export interface ShopUpdatePayload {
   phone?: string;
   whatsapp?: string;
   workingHours?: Record<string, WorkingHoursDay>;
-}
+};
 
 export const merchantApi = {
   // Shop

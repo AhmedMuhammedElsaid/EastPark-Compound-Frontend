@@ -1,16 +1,16 @@
-import * as React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
 import { WarningCircle } from 'phosphor-react-native';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 import { Text } from './text';
-import { SEMANTIC, SPACING, RADIUS, FONT } from '@/theme/tokens';
 
-interface ErrorStateProps {
+type ErrorStateProps = {
   onRetry?: () => void;
   message?: string;
-}
+};
 
 export function ErrorState({ onRetry, message }: ErrorStateProps) {
   const { t } = useTranslation();

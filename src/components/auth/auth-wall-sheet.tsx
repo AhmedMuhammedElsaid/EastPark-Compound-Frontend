@@ -70,9 +70,11 @@ export function AuthWallSheet() {
           <BrandMark size="sm" />
         </View>
 
-        {authWallConfig?.message ? (
-          <Text style={styles.message}>{authWallConfig.message}</Text>
-        ) : null}
+        {authWallConfig?.message
+          ? (
+              <Text style={styles.message}>{authWallConfig.message}</Text>
+            )
+          : null}
 
         <GoldButton
           label={t('auth.login')}

@@ -15,11 +15,12 @@ import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
 export function CartConflictSheet() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { showConflictSheet, pendingShopName, shopName } = useAppSelector((s) => s.cart);
+  const { showConflictSheet, pendingShopName, shopName } = useAppSelector(s => s.cart);
   const colors = useAppColors();
   const styles = useStyles(colors);
 
-  if (!showConflictSheet) return null;
+  if (!showConflictSheet)
+    return null;
 
   const conflictingShop = shopName ?? pendingShopName ?? '';
 

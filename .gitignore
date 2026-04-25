@@ -22,6 +22,7 @@ yarn-error.log
 expo-env.d.ts
 # @end expo-cli
 # Environment files — never commit secrets
+.env
 .env.local
 .env.production
 .env*.local

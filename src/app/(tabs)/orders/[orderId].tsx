@@ -1,17 +1,17 @@
-import type { Order, OrderStatus } from '@/services/api/orders';
 import type { Socket } from 'socket.io-client';
+import type { Order, OrderStatus } from '@/services/api/orders';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
+import { ArrowLeft } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { ArrowLeft } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ordersApi } from '@/services/api/orders';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { ordersApi } from '@/services/api/orders';
 import { getOrdersSocket, joinOrderRoom, leaveOrderRoom } from '@/services/socket/client';
 import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -132,7 +132,8 @@ export default function OrderDetailScreen() {
     let socketRef: Socket | null = null;
 
     const handler = (update: { orderId: string; status: OrderStatus }) => {
-      if (!mounted) return;
+      if (!mounted)
+        return;
       if (update.orderId === orderId) {
         queryClient.invalidateQueries({ queryKey: ['order', orderId] });
         queryClient.invalidateQueries({ queryKey: ['orders'] });
@@ -208,7 +209,7 @@ export default function OrderDetailScreen() {
 
 function OrderNav({ order, isAr, colors, styles }: { order: Order; isAr: boolean; colors: any; styles: any }) {
   const { t } = useTranslation();
-  const shopName = isAr ? order.shop.nameAr : order.shop.name;
+  const shopName = isAr ? order.shop?.nameAr : order.shop?.name;
   const statusColor = order.status === 'CANCELLED' ? colors.elevated : (STATUS_COLOR[order.status] ?? colors.elevated);
 
   return (
@@ -217,7 +218,7 @@ function OrderNav({ order, isAr, colors, styles }: { order: Order; isAr: boolean
         <ArrowLeft size={18} color={colors.text} />
       </Pressable>
       <View style={styles.navInfo}>
-        <Text style={styles.navShop} numberOfLines={1}>{shopName}</Text>
+        <Text style={styles.navShop} numberOfLines={1}>{shopName ?? t('orders.unknown_shop')}</Text>
         <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
           <Text style={styles.statusText}>{t(`orders.${order.status}`)}</Text>
         </View>
@@ -254,7 +255,7 @@ function StatusTimeline({ currentStatus, styles }: { currentStatus: OrderStatus;
 function OrderItems({ order, isAr, styles }: { order: Order; isAr: boolean; styles: any }) {
   return (
     <View style={styles.section}>
-      {order.items.map(item => (
+      {(order.items ?? []).map(item => (
         <View key={item.id} style={styles.itemRow}>
           <Text style={styles.itemQty}>
             {item.quantity}

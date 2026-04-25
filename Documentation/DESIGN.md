@@ -205,27 +205,27 @@ Store in `src/theme/tokens.ts`:
 ```typescript
 // ─── Brand Identity — Extracted from EastPark Logo ───────────────────────────
 export const BRAND = {
-  gold: '#b8966a',        // warm muted gold — primary brand color
-  goldDark: '#9e7d52',    // pressed / focus ring
-  goldLight: '#c9ab84',   // dark mode highlight / hover
-  goldTint: '#f2e8d8',    // selected chip bg, pill highlights (light mode)
-  goldText: '#7a5e38',    // gold-700 — use for gold text on light backgrounds (WCAG AA)
-  ink: '#0d0c0b',         // logo near-black — dark mode base
-  white: '#ffffff',       // logo wordmark text
+  gold: '#b8966a', // warm muted gold — primary brand color
+  goldDark: '#9e7d52', // pressed / focus ring
+  goldLight: '#c9ab84', // dark mode highlight / hover
+  goldTint: '#f2e8d8', // selected chip bg, pill highlights (light mode)
+  goldText: '#7a5e38', // gold-700 — use for gold text on light backgrounds (WCAG AA)
+  ink: '#0d0c0b', // logo near-black — dark mode base
+  white: '#ffffff', // logo wordmark text
 } as const;
 
 // ─── Light Mode ──────────────────────────────────────────────────────────────
 export const LIGHT = {
-  bg: '#faf8f5',          // warm off-white surface (NOT cold zinc)
-  card: '#ffffff',        // elevated white card on warm surface
-  surface: '#faf8f5',     // page background (warm off-white — NOT gold-100)
-  primary: '#b8966a',     // gold-500
+  bg: '#faf8f5', // warm off-white surface (NOT cold zinc)
+  card: '#ffffff', // elevated white card on warm surface
+  surface: '#faf8f5', // page background (warm off-white — NOT gold-100)
+  primary: '#b8966a', // gold-500
   primaryDark: '#9e7d52', // gold-600 — pressed
   primaryText: '#7a5e38', // gold-700 — gold text on light bg (WCAG AA compliant)
-  inputBg: '#f2e8d8',     // gold-100 — input backgrounds, secondary card tints, chip highlights
-  text: '#1a1714',        // warm near-black
-  textMuted: '#7a6e62',   // warm gray
-  border: '#e4ceae',      // gold-200
+  inputBg: '#f2e8d8', // gold-100 — input backgrounds, secondary card tints, chip highlights
+  text: '#1a1714', // warm near-black
+  textMuted: '#7a6e62', // warm gray
+  border: '#e4ceae', // gold-200
   disabled: '#c4b49e',
   divider: '#e4ceae',
   shadow: 'rgba(184, 150, 106, 0.10)',
@@ -233,15 +233,15 @@ export const LIGHT = {
 
 // ─── Dark Mode ───────────────────────────────────────────────────────────────
 export const DARK = {
-  bg: '#0d0c0b',          // logo near-black (warm, NOT cold #000 or #0d0d0d)
-  surface: '#171614',     // slightly lifted
-  card: '#221f1c',        // warm dark card
-  elevated: '#2e2a26',    // modals, bottom sheets
-  border: '#3d3830',      // subtle warm divider
-  primary: '#b8966a',     // gold stays constant in both modes
-  primaryLight: '#c9ab84',// hover/highlight in dark mode
-  text: '#faf8f5',        // warm white
-  textMuted: '#a89880',   // warm muted gold-gray
+  bg: '#0d0c0b', // logo near-black (warm, NOT cold #000 or #0d0d0d)
+  surface: '#171614', // slightly lifted
+  card: '#221f1c', // warm dark card
+  elevated: '#2e2a26', // modals, bottom sheets
+  border: '#3d3830', // subtle warm divider
+  primary: '#b8966a', // gold stays constant in both modes
+  primaryLight: '#c9ab84', // hover/highlight in dark mode
+  text: '#faf8f5', // warm white
+  textMuted: '#a89880', // warm muted gold-gray
   disabled: '#4a4642',
   divider: '#3d3830',
   shadow: 'rgba(0, 0, 0, 0.40)',
@@ -249,13 +249,13 @@ export const DARK = {
 
 // ─── Semantic (Luxury-Toned — Never Neon) ────────────────────────────────────
 export const SEMANTIC = {
-  success: '#5a7a52',     // muted olive green
-  successBg: '#eef3ec',   // light mode tint
-  warning: '#c48b2f',     // deep amber (harmonizes with gold)
+  success: '#5a7a52', // muted olive green
+  successBg: '#eef3ec', // light mode tint
+  warning: '#c48b2f', // deep amber (harmonizes with gold)
   warningBg: '#fdf3e0',
-  error: '#b03a2e',       // deep muted red
+  error: '#b03a2e', // deep muted red
   errorBg: '#faecea',
-  info: '#4a6b8a',        // slate blue
+  info: '#4a6b8a', // slate blue
   infoBg: '#eaf0f6',
 } as const;
 
@@ -263,7 +263,7 @@ export const SEMANTIC = {
 export const RADIUS = {
   xs: 4,
   sm: 8,
-  md: 12,   // standard card radius
+  md: 12, // standard card radius
   lg: 16,
   xl: 24,
   full: 9999,
@@ -271,11 +271,11 @@ export const RADIUS = {
 
 // ─── Spacing Scale ───────────────────────────────────────────────────────────
 export const SPACING = {
-  xs:  4,
-  sm:  8,
-  md:  12,
-  lg:  16,
-  xl:  24,
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
   xxl: 32,
   xxxl: 48,
 } as const;
@@ -285,14 +285,14 @@ export const SPACING = {
 // Cormorant Garamond for EN display/hero moments only
 export const TYPOGRAPHY = {
   display: { size: 36, weight: '900', lineHeight: 1.15, fontEN: 'CormorantGaramond-Black', fontAR: 'Cairo-ExtraBold' },
-  h1:      { size: 28, weight: '700', lineHeight: 1.2,  fontEN: 'CormorantGaramond-Bold',  fontAR: 'Cairo-Bold' },
-  h2:      { size: 20, weight: '600', lineHeight: 1.3,  fontEN: 'Cairo-SemiBold',           fontAR: 'Cairo-SemiBold' },
-  bodyLg:  { size: 16, weight: '500', lineHeight: 1.5,  fontEN: 'Cairo-Medium',             fontAR: 'Cairo-Medium' },
-  body:    { size: 14, weight: '400', lineHeight: 1.5,  fontEN: 'Cairo-Regular',            fontAR: 'Cairo-Regular' },
-  label:   { size: 13, weight: '500', lineHeight: 1.4,  fontEN: 'Cairo-Medium',             fontAR: 'Cairo-Medium' },
-  caption: { size: 12, weight: '400', lineHeight: 1.4,  fontEN: 'Cairo-Regular',            fontAR: 'Cairo-Regular' },
-  button:  { size: 14, weight: '600', lineHeight: 1.4,  fontEN: 'Cairo-SemiBold',           fontAR: 'Cairo-SemiBold' },
-  overline:{ size: 11, weight: '500', lineHeight: 1.4,  fontEN: 'Cairo-Medium',             fontAR: 'Cairo-Medium' },
+  h1: { size: 28, weight: '700', lineHeight: 1.2, fontEN: 'CormorantGaramond-Bold', fontAR: 'Cairo-Bold' },
+  h2: { size: 20, weight: '600', lineHeight: 1.3, fontEN: 'Cairo-SemiBold', fontAR: 'Cairo-SemiBold' },
+  bodyLg: { size: 16, weight: '500', lineHeight: 1.5, fontEN: 'Cairo-Medium', fontAR: 'Cairo-Medium' },
+  body: { size: 14, weight: '400', lineHeight: 1.5, fontEN: 'Cairo-Regular', fontAR: 'Cairo-Regular' },
+  label: { size: 13, weight: '500', lineHeight: 1.4, fontEN: 'Cairo-Medium', fontAR: 'Cairo-Medium' },
+  caption: { size: 12, weight: '400', lineHeight: 1.4, fontEN: 'Cairo-Regular', fontAR: 'Cairo-Regular' },
+  button: { size: 14, weight: '600', lineHeight: 1.4, fontEN: 'Cairo-SemiBold', fontAR: 'Cairo-SemiBold' },
+  overline: { size: 11, weight: '500', lineHeight: 1.4, fontEN: 'Cairo-Medium', fontAR: 'Cairo-Medium' },
 } as const;
 
 // ─── Shadows ─────────────────────────────────────────────────────────────────
@@ -304,14 +304,14 @@ export const SHADOWS = {
 
 // ─── Gold Scale (for NativeWind tailwind.config) ──────────────────────────────
 export const GOLD_SCALE = {
-  50:  '#faf6f0',
+  50: '#faf6f0',
   100: '#f2e8d8',
   200: '#e4ceae',
   300: '#d4b286',
   400: '#c4a07a',
-  500: '#b8966a',  // PRIMARY
-  600: '#9e7d52',  // pressed
-  700: '#7a5e38',  // text on light bg
+  500: '#b8966a', // PRIMARY
+  600: '#9e7d52', // pressed
+  700: '#7a5e38', // text on light bg
   800: '#584224',
   900: '#382a14',
 } as const;
@@ -991,7 +991,8 @@ Linked from Profile tab → "Manage My Shop" (visible only when `user.role === '
 #### Role Guard
 ```tsx
 // /(merchant)/_layout.tsx
-if (user.role !== 'MERCHANT') return <Redirect href="/(tabs)" />;
+if (user.role !== 'MERCHANT')
+  return <Redirect href="/(tabs)" />;
 ```
 
 #### Design Rules
@@ -1243,7 +1244,7 @@ Respect `prefers-reduced-motion` / `AccessibilityInfo.isReduceMotionEnabled()`:
 
 ```typescript
 // Language switch handler
-const switchLanguage = async (lang: 'ar' | 'en') => {
+async function switchLanguage(lang: 'ar' | 'en') {
   const isRTL = lang === 'ar';
   I18nManager.forceRTL(isRTL);
   await dispatch(setLanguage(lang));
@@ -1252,7 +1253,7 @@ const switchLanguage = async (lang: 'ar' | 'en') => {
     i18n.t('restartRequiredMessage'),
     [{ text: i18n.t('restart'), onPress: () => Updates.reloadAsync() }]
   );
-};
+}
 ```
 
 ### String Rules
@@ -1400,41 +1401,41 @@ module.exports = {
     extend: {
       colors: {
         // ─── Brand Gold Scale ───────────────────────────────────
-        'gold-50':  '#faf6f0',
+        'gold-50': '#faf6f0',
         'gold-100': '#f2e8d8',
         'gold-200': '#e4ceae',
         'gold-300': '#d4b286',
         'gold-400': '#c4a07a',
-        'gold-500': '#b8966a',   // PRIMARY
-        'gold-600': '#9e7d52',   // pressed
-        'gold-700': '#7a5e38',   // text on light bg (WCAG AA)
+        'gold-500': '#b8966a', // PRIMARY
+        'gold-600': '#9e7d52', // pressed
+        'gold-700': '#7a5e38', // text on light bg (WCAG AA)
         'gold-800': '#584224',
         'gold-900': '#382a14',
 
         // ─── Dark Mode Surfaces ──────────────────────────────────
-        'ink':          '#0d0c0b',   // dark-bg
+        'ink': '#0d0c0b', // dark-bg
         'dark-surface': '#171614',
-        'dark-card':    '#221f1c',
-        'dark-elevated':'#2e2a26',
-        'dark-border':  '#3d3830',
-        'dark-muted':   '#a89880',
+        'dark-card': '#221f1c',
+        'dark-elevated': '#2e2a26',
+        'dark-border': '#3d3830',
+        'dark-muted': '#a89880',
 
         // ─── Light Mode Surfaces ─────────────────────────────────
-        'surface':      '#faf8f5',   // light-bg (warm off-white)
-        'light-card':   '#ffffff',
+        'surface': '#faf8f5', // light-bg (warm off-white)
+        'light-card': '#ffffff',
         'light-border': '#e4ceae',
-        'light-muted':  '#7a6e62',
-        'light-text':   '#1a1714',
+        'light-muted': '#7a6e62',
+        'light-text': '#1a1714',
 
         // ─── Semantic ────────────────────────────────────────────
-        'success':      '#5a7a52',
-        'success-bg':   '#eef3ec',
-        'warning':      '#c48b2f',
-        'warning-bg':   '#fdf3e0',
-        'error':        '#b03a2e',
-        'error-bg':     '#faecea',
-        'info':         '#4a6b8a',
-        'info-bg':      '#eaf0f6',
+        'success': '#5a7a52',
+        'success-bg': '#eef3ec',
+        'warning': '#c48b2f',
+        'warning-bg': '#fdf3e0',
+        'error': '#b03a2e',
+        'error-bg': '#faecea',
+        'info': '#4a6b8a',
+        'info-bg': '#eaf0f6',
       },
       borderWidth: {
         hairline: hairlineWidth(),
@@ -1512,7 +1513,7 @@ NativeWind v4 dark utilities (`dark:bg-ink`, `dark:text-gold-200`) activate auto
 ### Pattern 2: Smooth Card Interactions
 
 ```typescript
-const useCardPress = () => {
+function useCardPress() {
   const scale = useSharedValue(1);
 
   const onPressIn = () => {
@@ -1528,7 +1529,7 @@ const useCardPress = () => {
   }));
 
   return { onPressIn, onPressOut, animatedStyle };
-};
+}
 
 // All cards:
 // - 12dp border radius
@@ -1651,7 +1652,7 @@ const FilterSheet = () => {
 ### Pattern 6: Like Animation
 
 ```typescript
-const useLikeAnimation = () => {
+function useLikeAnimation() {
   const scale = useSharedValue(0.2);
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -1673,13 +1674,13 @@ const useLikeAnimation = () => {
   };
 
   return { scale, opacity, translateY, triggerLike };
-};
+}
 ```
 
 ### Pattern 7: Success State Animation
 
 ```typescript
-const SuccessAnimation = ({ onComplete }: { onComplete: () => void }) => {
+function SuccessAnimation({ onComplete }: { onComplete: () => void }) {
   const containerScale = useSharedValue(1);
   const checkmarkRotate = useSharedValue(0);
   const messageTranslateX = useSharedValue(50);
@@ -1700,7 +1701,7 @@ const SuccessAnimation = ({ onComplete }: { onComplete: () => void }) => {
   }, []);
 
   // ... animated JSX
-};
+}
 ```
 
 ### Pattern 8: Cursor Pagination with FlashList

@@ -3,12 +3,12 @@ import type { Report } from '@/services/api/community';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { ArrowLeft, ClipboardText, FilePdf } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, ClipboardText, FilePdf } from 'phosphor-react-native';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { communityApi } from '@/services/api/community';

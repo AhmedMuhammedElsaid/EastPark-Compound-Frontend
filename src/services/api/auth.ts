@@ -1,30 +1,33 @@
 import type { AuthUser } from '@/store/slices/authSlice';
 
+import axios from 'axios';
+import Env from 'env';
+
 import { client } from './client';
 
-export interface RegisterPayload {
+export type RegisterPayload = {
   name: string;
   email: string;
   phone: string;
   unitNumber: string;
   password: string;
-}
+};
 
-export interface LoginPayload {
+export type LoginPayload = {
   email: string;
   password: string;
-}
+};
 
-export interface AuthTokens {
+export type AuthTokens = {
   accessToken: string;
   refreshToken: string;
-}
+};
 
-export interface AuthResponse {
+export type AuthResponse = {
   user: AuthUser;
   accessToken: string;
   refreshToken: string;
-}
+};
 
 export const authApi = {
   register: (payload: RegisterPayload) =>
@@ -53,4 +56,11 @@ export const authApi = {
 
   updatePushToken: (pushToken: string) =>
     client.patch<{ data: { success: boolean } }>('/auth/push-token', { pushToken }),
+
+  // Raw axios refresh — bypasses the 401 interceptor (used by biometric login flow).
+  refresh: (refreshToken: string) =>
+    axios.post<{ data: AuthTokens }>(
+      `${Env.EXPO_PUBLIC_API_URL}/v1/auth/refresh`,
+      { refreshToken },
+    ),
 };

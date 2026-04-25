@@ -1,8 +1,8 @@
 import { router } from 'expo-router';
+import { CaretRight, ChartBar, EnvelopeSimple, Megaphone, Trophy } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { CaretRight, EnvelopeSimple, Megaphone, ChartBar, Trophy } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppColors } from '@/lib/hooks/use-app-colors';

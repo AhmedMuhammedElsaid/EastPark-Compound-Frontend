@@ -46,12 +46,19 @@ pnpm install
 
 ## Step 2 — Configure environment
 
-The repo ships with two env files:
+The repo ships with an example env template:
 
-- **`.env`** — committed base config with placeholder values. Do not store real secrets here.
-- **`.env.local`** — your local developer override. Not committed. Takes precedence over `.env`.
+- **`.env.example`** — committed template showing all required keys with safe placeholder values. **Never contains real secrets.**
+- **`.env.local`** — your local developer override. **Not committed.** Takes precedence and is where your real values live.
 
-Create or update `.env.local`:
+Copy the template and fill in your values:
+
+```bash
+cp .env.example .env.local
+# Then edit .env.local with your machine-specific values
+```
+
+Example `.env.local`:
 
 ```bash
 # .env.local
@@ -59,7 +66,11 @@ EXPO_PUBLIC_APP_ENV=development
 EXPO_PUBLIC_API_URL=http://localhost:3000    # do NOT add /v1 — the Axios client appends it automatically
 EXPO_PUBLIC_SOCKET_URL=http://localhost:3000
 EXPO_PUBLIC_POSTHOG_KEY=                    # optional — leave blank for dev
+SECRET_KEY=my-secret-key                    # build-time only — not accessible in client code
+APP_BUILD_ONLY_VAR=build-only-value         # build-time only
 ```
+
+> **Security:** `.env.local` is git-ignored. Never commit real secrets to any tracked file.
 
 > All bundle IDs, URL schemes, and package names are derived automatically from `EXPO_PUBLIC_APP_ENV`. You do not set them manually.
 
@@ -212,7 +223,7 @@ eas init
 After `eas init`, open `app.config.ts` line 10 and paste the generated project ID:
 
 ```ts
-const EAS_PROJECT_ID = 'paste-your-project-id-here';   // was: ''
+const EAS_PROJECT_ID = 'paste-your-project-id-here'; // was: ''
 ```
 
 Without this, push notifications silently fail in all non-Expo-Go builds.

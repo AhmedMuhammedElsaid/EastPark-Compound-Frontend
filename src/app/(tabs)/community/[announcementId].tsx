@@ -2,12 +2,12 @@ import type { AxiosResponse } from 'axios';
 import type { Comment } from '@/services/api/community';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
+import { ArrowLeft, FilePdf, PaperPlaneTilt } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, FilePdf, PaperPlaneTilt } from 'phosphor-react-native';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { useAuthGuard } from '@/lib/hooks/use-auth-guard';

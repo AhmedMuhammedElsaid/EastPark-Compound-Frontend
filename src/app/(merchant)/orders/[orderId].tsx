@@ -1,17 +1,17 @@
 import type { MerchantOrder } from '@/services/api/merchant';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
+import { ArrowLeft } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { ArrowLeft } from 'phosphor-react-native';
-import i18n from '@/lib/i18n';
 import { showMessage } from 'react-native-flash-message';
-
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
+import i18n from '@/lib/i18n';
 import { merchantApi } from '@/services/api/merchant';
 import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -216,7 +216,7 @@ function OrderItemsList({ order, styles }: { order: MerchantOrder; styles: any }
   const { t } = useTranslation();
   return (
     <View style={styles.itemsCard}>
-      {order.items.map(item => (
+      {(order.items ?? []).map(item => (
         <View key={item.id} style={styles.itemRow}>
           <Text style={styles.itemQty}>
             {item.quantity}

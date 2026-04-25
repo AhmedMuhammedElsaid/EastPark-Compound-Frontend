@@ -7,16 +7,17 @@
 
 import type { Socket } from 'socket.io-client';
 
-import { getSecureItem } from '@/lib/secure-storage';
-import { io } from 'socket.io-client';
 import Env from 'env';
+import { io } from 'socket.io-client';
+import { getSecureItem } from '@/lib/secure-storage';
 
 import { SECURE_KEY_ACCESS } from '@/services/api/client';
 
 let socket: Socket | null = null;
 
 export async function getOrdersSocket(): Promise<Socket> {
-  if (socket?.connected) return socket;
+  if (socket?.connected)
+    return socket;
 
   const token = await getSecureItem(SECURE_KEY_ACCESS);
 

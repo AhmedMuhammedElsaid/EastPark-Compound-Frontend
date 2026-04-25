@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { Bell, CaretRight, ForkKnife, Package, Storefront } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bell, CaretRight, ForkKnife, Package, Storefront } from 'phosphor-react-native';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppColors } from '@/lib/hooks/use-app-colors';

@@ -1,11 +1,11 @@
 import type { CartItem } from '@/store/slices/cartSlice';
-import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
+import { ArrowLeft, Minus, Plus, ShoppingCart, Trash } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
-import { ArrowLeft, Minus, Plus, ShoppingCart, Trash } from 'phosphor-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatCurrency } from '@/lib/formatCurrency';
@@ -159,7 +159,8 @@ export default function CartScreen() {
             onDecrease={() => {
               if (item.quantity === 1) {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              } else {
+              }
+              else {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }
               dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity - 1 }));

@@ -2,6 +2,7 @@ import type { ShopUpdatePayload, WorkingHoursDay } from '@/services/api/merchant
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { ArrowLeft, Check } from 'phosphor-react-native';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -15,9 +16,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, Check } from 'phosphor-react-native';
 import { showMessage } from 'react-native-flash-message';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -206,7 +206,8 @@ export default function MerchantShopProfileScreen() {
 
   const { mutate: saveProfile, isPending } = useMutation({
     mutationFn: (payload: ShopUpdatePayload) => {
-      if (!shop?.id) throw new Error('no shop id');
+      if (!shop?.id)
+        throw new Error('no shop id');
       // Backend endpoint: PATCH /shops/:id — available to MERCHANT role for their own shop
       return merchantApi.updateShop(shop.id, payload);
     },

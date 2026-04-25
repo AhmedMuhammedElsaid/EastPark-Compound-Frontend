@@ -1,14 +1,14 @@
 import type { PaymentMethod } from '@/services/api/orders';
 import type { CartItem } from '@/store/slices/cartSlice';
 import { useMutation } from '@tanstack/react-query';
-import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import { router, useLocalSearchParams } from 'expo-router';
+import { ArrowLeft, CreditCard, Money } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, CreditCard, Money } from 'phosphor-react-native';
-import { showMessage } from 'react-native-flash-message';
-
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { showMessage } from 'react-native-flash-message';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
@@ -117,7 +117,8 @@ export default function PaymentScreen() {
         try {
           const payRes = await ordersApi.initiatePaymobPayment(orderId);
           await Linking.openURL(payRes.data.data.iframeUrl);
-        } catch {
+        }
+        catch {
           showMessage({ message: t('common.error'), type: 'danger' });
           return; // stop here — don't clear cart or navigate on Paymob failure
         }

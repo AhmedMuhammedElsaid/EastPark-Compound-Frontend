@@ -142,19 +142,24 @@ export default function NotificationsScreen() {
     const d = notification.data as Record<string, string>;
     switch (notification.type) {
       case 'ORDER_UPDATE':
-        if (d.orderId) router.push(`/(tabs)/orders/${d.orderId}` as any);
+        if (d.orderId)
+          router.push(`/(tabs)/orders/${d.orderId}` as any);
         break;
       case 'ANNOUNCEMENT':
-        if (d.announcementId) router.push(`/(tabs)/community/${d.announcementId}` as any);
+        if (d.announcementId)
+          router.push(`/(tabs)/community/${d.announcementId}` as any);
         break;
       case 'POLL':
-        if (d.pollId) router.push(`/(tabs)/community/governance/polls/${d.pollId}` as any);
+        if (d.pollId)
+          router.push(`/(tabs)/community/governance/polls/${d.pollId}` as any);
         break;
       case 'ELECTION':
-        if (d.electionId) router.push(`/(tabs)/community/governance/elections/${d.electionId}` as any);
+        if (d.electionId)
+          router.push(`/(tabs)/community/governance/elections/${d.electionId}` as any);
         break;
       case 'FEEDBACK_REPLY':
-        if (d.feedbackId) router.push(`/(tabs)/community/feedback/${d.feedbackId}` as any);
+        if (d.feedbackId)
+          router.push(`/(tabs)/community/feedback/${d.feedbackId}` as any);
         break;
       default:
         break;
@@ -283,10 +288,13 @@ function NotificationsSkeleton({ styles }: { styles: any }) {
 function formatRelativeTime(iso: string, t: (key: string, opts?: object) => string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return t('notifications.time_now');
-  if (mins < 60) return t('notifications.time_minutes', { count: mins });
+  if (mins < 1)
+    return t('notifications.time_now');
+  if (mins < 60)
+    return t('notifications.time_minutes', { count: mins });
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return t('notifications.time_hours', { count: hrs });
+  if (hrs < 24)
+    return t('notifications.time_hours', { count: hrs });
   const days = Math.floor(hrs / 24);
   return t('notifications.time_days', { count: days });
 }

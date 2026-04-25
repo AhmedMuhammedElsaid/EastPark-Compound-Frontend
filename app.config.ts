@@ -153,6 +153,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-localization',
     'expo-router',
     'expo-notifications',
+    [
+      'expo-local-authentication',
+      {
+        faceIDPermission: 'Allow EastPark to use Face ID to sign you in faster.',
+      },
+    ],
     ['app-icon-badge', appIconBadgeConfig],
     ['react-native-edge-to-edge'],
   ],

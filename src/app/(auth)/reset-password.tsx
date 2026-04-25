@@ -155,11 +155,11 @@ export default function ResetPasswordScreen() {
               secureTextEntry={!showPwd}
               autoComplete="new-password"
               returnKeyType="next"
-              rightSlot={
+              rightSlot={(
                 <Pressable onPress={() => setShowPwd(v => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={showPwd ? 'Hide password' : 'Show password'}>
                   {showPwd ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
                 </Pressable>
-              }
+              )}
             />
           )}
         />
@@ -176,11 +176,11 @@ export default function ResetPasswordScreen() {
               secureTextEntry={!showConfirm}
               returnKeyType="done"
               onSubmitEditing={handleSubmit(onSubmit)}
-              rightSlot={
+              rightSlot={(
                 <Pressable onPress={() => setShowConfirm(v => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={showConfirm ? 'Hide password' : 'Show password'}>
                   {showConfirm ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
                 </Pressable>
-              }
+              )}
             />
           )}
         />

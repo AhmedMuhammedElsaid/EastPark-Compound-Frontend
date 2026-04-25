@@ -1,11 +1,11 @@
+import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { ChatCircle, CheckSquare, FileText, Megaphone, Package, Storefront } from 'phosphor-react-native';
 import * as React from 'react';
-import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChatCircle, CheckSquare, FileText, Megaphone, Package, Storefront } from 'phosphor-react-native';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
@@ -103,9 +103,11 @@ export default function HomeScreen() {
             {t(greetKey)}
             {user ? `, ${user.name.split(' ')[0]}` : ''}
           </Text>
-          {user?.unitNumber ? (
-            <Text style={styles.unitText}>{t('checkout.unit', { number: user.unitNumber })}</Text>
-          ) : null}
+          {user?.unitNumber
+            ? (
+                <Text style={styles.unitText}>{t('checkout.unit', { number: user.unitNumber })}</Text>
+              )
+            : null}
         </View>
 
         {/* Quick actions */}
@@ -156,12 +158,12 @@ const QUICK_ACTIONS: Array<{
   route: string;
   authRequired?: boolean;
 }> = [
-  { renderIcon: (color) => <Storefront size={28} color={color} />, labelKey: 'home.shops', route: '/(tabs)/directory' },
-  { renderIcon: (color) => <Megaphone size={28} color={color} />, labelKey: 'home.community', route: '/(tabs)/community' },
-  { renderIcon: (color) => <CheckSquare size={28} color={color} />, labelKey: 'governance.title', route: '/(tabs)/community/governance', authRequired: false },
-  { renderIcon: (color) => <Package size={28} color={color} />, labelKey: 'home.my_orders', route: '/(tabs)/orders', authRequired: true },
-  { renderIcon: (color) => <ChatCircle size={28} color={color} />, labelKey: 'home.feedback', route: '/(tabs)/community/feedback', authRequired: true },
-  { renderIcon: (color) => <FileText size={28} color={color} />, labelKey: 'community.reports', route: '/(tabs)/community/reports' },
+  { renderIcon: color => <Storefront size={28} color={color} />, labelKey: 'home.shops', route: '/(tabs)/directory' },
+  { renderIcon: color => <Megaphone size={28} color={color} />, labelKey: 'home.community', route: '/(tabs)/community' },
+  { renderIcon: color => <CheckSquare size={28} color={color} />, labelKey: 'governance.title', route: '/(tabs)/community/governance', authRequired: false },
+  { renderIcon: color => <Package size={28} color={color} />, labelKey: 'home.my_orders', route: '/(tabs)/orders', authRequired: true },
+  { renderIcon: color => <ChatCircle size={28} color={color} />, labelKey: 'home.feedback', route: '/(tabs)/community/feedback', authRequired: true },
+  { renderIcon: color => <FileText size={28} color={color} />, labelKey: 'community.reports', route: '/(tabs)/community/reports' },
 ];
 
 function QuickActionsGrid({ requireAuthNavigation, colors }: { requireAuthNavigation: (href: string) => void; colors: any }) {

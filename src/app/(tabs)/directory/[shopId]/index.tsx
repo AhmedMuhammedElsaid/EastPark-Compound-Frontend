@@ -4,9 +4,9 @@ import type { CartItem } from '@/store/slices/cartSlice';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
+import { ArrowLeft, ChatCircle, Heart, HeartStraight, Phone, Plus, Star } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ChatCircle, Heart, HeartStraight, Phone, Plus, Star } from 'phosphor-react-native';
 
 import { Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -300,7 +300,15 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
       <View style={styles.ctaRow}>
         {shop.phone
           ? (
-              <Pressable style={styles.ctaBtn} onPress={() => { if (shop?.phone) Linking.openURL(`tel:${shop.phone}`); }} accessibilityRole="button" accessibilityLabel={t('directory.call')}>
+              <Pressable
+                style={styles.ctaBtn}
+                onPress={() => {
+                  if (shop?.phone)
+                    Linking.openURL(`tel:${shop.phone}`);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={t('directory.call')}
+              >
                 <Phone size={16} color={colors.text} />
                 <Text style={styles.ctaBtnText}>
                   {t('directory.call')}
@@ -365,13 +373,16 @@ function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string
       renderItem={({ item }: { item: any }) => (
         <ProductRow product={item} isAr={isAr} shopId={shopId} shopName={shopName} />
       )}
-      onEndReached={() => { if (hasNextPage && !isFetchingNextPage) fetchNextPage(); }}
+      onEndReached={() => {
+        if (hasNextPage && !isFetchingNextPage)
+          fetchNextPage();
+      }}
       onEndReachedThreshold={0.5}
-      ListEmptyComponent={
+      ListEmptyComponent={(
         <View style={styles.emptyTab}>
           <Text style={styles.emptyText}>{t('common.no_results')}</Text>
         </View>
-      }
+      )}
       ListFooterComponent={
         isFetchingNextPage
           ? <Skeleton width="100%" height={48} borderRadius={8} style={{ marginTop: SPACING.sm }} />
@@ -477,13 +488,16 @@ function ReviewsTabContent({ shopId }: { shopId: string }) {
           {r.comment ? <Text style={styles.reviewComment}>{r.comment}</Text> : null}
         </View>
       )}
-      onEndReached={() => { if (hasNextPage && !isFetchingNextPage) fetchNextPage(); }}
+      onEndReached={() => {
+        if (hasNextPage && !isFetchingNextPage)
+          fetchNextPage();
+      }}
       onEndReachedThreshold={0.5}
-      ListEmptyComponent={
+      ListEmptyComponent={(
         <View style={styles.emptyTab}>
           <Text style={styles.emptyText}>{t('common.no_results')}</Text>
         </View>
-      }
+      )}
       ListFooterComponent={
         isFetchingNextPage
           ? <Skeleton width="100%" height={48} borderRadius={8} style={{ marginTop: SPACING.sm }} />

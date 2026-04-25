@@ -9,7 +9,8 @@ export function useIsFirstTime() {
 
   useEffect(() => {
     AsyncStorage.getItem(IS_FIRST_TIME).then((val) => {
-      if (val !== null) setIsFirstTimeState(JSON.parse(val) as boolean);
+      if (val !== null)
+        setIsFirstTimeState(JSON.parse(val) as boolean);
       setLoaded(true);
     });
   }, []);
@@ -19,6 +20,7 @@ export function useIsFirstTime() {
     AsyncStorage.setItem(IS_FIRST_TIME, JSON.stringify(val));
   };
 
-  if (!loaded) return [true, setIsFirstTime] as const;
+  if (!loaded)
+    return [true, setIsFirstTime] as const;
   return [isFirstTime, setIsFirstTime] as const;
 }

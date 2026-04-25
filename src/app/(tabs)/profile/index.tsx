@@ -1,25 +1,27 @@
 import type { ColorSchemeType } from '@/lib/hooks/use-selected-theme';
+import type { DARK, LIGHT } from '@/theme/tokens';
 import { useMutation } from '@tanstack/react-query';
+import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import { deleteSecureItem, getSecureItem } from '@/lib/secure-storage';
-import { showMessage } from 'react-native-flash-message';
-import { BookmarkSimple, CaretRight, ChatCircle, Package, SignOut, Storefront, User, WarningOctagon } from 'phosphor-react-native';
+import { BookmarkSimple, CaretRight, ChatCircle, FaceMask, Fingerprint, LockKey, Package, SignOut, Storefront, User, WarningOctagon } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { useBiometric } from '@/lib/hooks/use-biometric';
 import { useSelectedTheme } from '@/lib/hooks/use-selected-theme';
 import { useSelectedLanguage } from '@/lib/i18n';
+import { deleteSecureItem, getSecureItem } from '@/lib/secure-storage';
 import { authApi } from '@/services/api/auth';
 import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
 import { usersApi } from '@/services/api/users';
 import { queryClient } from '@/services/query/client';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { logout } from '@/store/slices/authSlice';
-import { BRAND, DARK, FONT, LIGHT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -107,6 +109,17 @@ function buildStyles(colors: AppColors) {
     segmentActive: { backgroundColor: colors.card },
     segmentText: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, fontWeight: '500' },
     segmentTextActive: { color: colors.text, fontWeight: '600' },
+    securityRow: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingVertical: SPACING.sm,
+      gap: SPACING.md,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    securityCol: { flex: 1 },
+    securityLabel: { fontFamily: FONT.sans, fontSize: 15, color: colors.text, fontWeight: '500' },
+    securitySubtitle: { fontFamily: FONT.sans, fontSize: 12, color: colors.textMuted, marginTop: 2 },
   });
 }
 
@@ -174,11 +187,13 @@ function GuestProfile({ styles, colors }: { styles: AppStyles; colors: AppColors
 function AuthenticatedProfile({ user, styles, colors }: { user: any; styles: AppStyles; colors: AppColors }) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const biometric = useBiometric();
   const { mutate: deleteAccount } = useMutation({
     mutationFn: () => usersApi.deleteAccount(),
     onSuccess: async () => {
       await deleteSecureItem(SECURE_KEY_ACCESS);
       await deleteSecureItem(SECURE_KEY_REFRESH);
+      await biometric.disable();
       dispatch(logout());
       queryClient.clear();
       router.replace('/(auth)/login' as any);
@@ -194,9 +209,19 @@ function AuthenticatedProfile({ user, styles, colors }: { user: any; styles: App
       {
         text: t('auth.logout'),
         onPress: async () => {
+          // Biometric-aware logout: keep refresh token + skip server-side revoke
+          // so user can sign back in via Face ID/Fingerprint instantly.
+          if (biometric.enabled) {
+            await deleteSecureItem(SECURE_KEY_ACCESS);
+            dispatch(logout());
+            queryClient.clear();
+            router.replace('/(auth)/login' as any);
+            return;
+          }
           const refreshToken = await getSecureItem(SECURE_KEY_REFRESH);
           if (refreshToken) {
-            try { await authApi.logout(refreshToken); } catch {}
+            try { await authApi.logout(refreshToken); }
+            catch {}
           }
           await deleteSecureItem(SECURE_KEY_ACCESS);
           await deleteSecureItem(SECURE_KEY_REFRESH);
@@ -219,6 +244,14 @@ function AuthenticatedProfile({ user, styles, colors }: { user: any; styles: App
     <>
       <UserAvatar name={user.name} unitNumber={user.unitNumber} email={user.email} styles={styles} />
       <AccountSection role={user.role} styles={styles} colors={colors} />
+      {biometric.ready && biometric.isAvailable && (
+        <SecuritySection
+          biometric={biometric}
+          userEmail={user.email}
+          styles={styles}
+          colors={colors}
+        />
+      )}
       <PreferencesSection styles={styles} />
       <DangerSection onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} styles={styles} />
     </>
@@ -364,5 +397,71 @@ function ProfileRow({ icon, label, onPress, styles, colors }: { icon: React.Reac
       <Text style={styles.rowLabel}>{label}</Text>
       <CaretRight size={16} color={colors.textMuted} />
     </Pressable>
+  );
+}
+
+function SecuritySection({
+  biometric,
+  userEmail,
+  styles,
+  colors,
+}: {
+  biometric: ReturnType<typeof useBiometric>;
+  userEmail: string;
+  styles: AppStyles;
+  colors: AppColors;
+}) {
+  const { t } = useTranslation();
+  const Icon
+    = biometric.kind === 'face'
+      ? FaceMask
+      : biometric.kind === 'fingerprint'
+        ? Fingerprint
+        : LockKey;
+  const labelKey = `auth.biometric.kind.${biometric.kind}`;
+
+  async function handleToggle(next: boolean) {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (next) {
+      const ok = await biometric.enable(userEmail);
+      if (!ok) {
+        showMessage({
+          message: t('profile.biometric_setup_failed'),
+          type: 'warning',
+          backgroundColor: SEMANTIC.warning,
+        });
+      }
+    }
+    else {
+      await biometric.disable();
+    }
+  }
+
+  return (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>{t('profile.security')}</Text>
+      <View style={styles.securityRow}>
+        <View style={styles.rowIconWrap}>
+          <Icon size={20} color={colors.text} weight="duotone" />
+        </View>
+        <View style={styles.securityCol}>
+          <Text style={styles.securityLabel}>
+            {t('profile.biometric_login', { kind: t(labelKey) })}
+          </Text>
+          <Text style={styles.securitySubtitle}>
+            {biometric.enabled
+              ? t('profile.biometric_login_subtitle_on')
+              : t('profile.biometric_login_subtitle_off')}
+          </Text>
+        </View>
+        <Switch
+          value={biometric.enabled}
+          onValueChange={handleToggle}
+          trackColor={{ false: colors.border, true: BRAND.gold }}
+          thumbColor={colors.bg}
+          accessibilityLabel={t('profile.biometric_login', { kind: t(labelKey) })}
+        />
+      </View>
+    </View>
   );
 }

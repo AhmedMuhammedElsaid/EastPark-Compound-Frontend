@@ -2,8 +2,8 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 import { ThemeProvider } from '@react-navigation/native';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
-import { Stack, useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
+import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { I18nManager, StyleSheet } from 'react-native';
@@ -84,12 +84,13 @@ function Providers({ children }: { children: React.ReactNode }) {
 
   // Navigate to the relevant screen when user taps a push notification.
   React.useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
       const data = response.notification.request.content.data as {
         type?: string;
         referenceId?: string;
       };
-      if (!data?.type || !data?.referenceId) return;
+      if (!data?.type || !data?.referenceId)
+        return;
 
       switch (data.type) {
         case 'ORDER_UPDATE':

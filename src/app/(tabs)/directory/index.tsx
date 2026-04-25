@@ -128,30 +128,30 @@ export default function DirectoryScreen() {
       {isError
         ? <ErrorState onRetry={refetch} />
         : isLoading
-        ? (
-            <View style={styles.listPad}>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <ShopCardSkeleton key={`card-skeleton-${i}`} />
-              ))}
-            </View>
-          )
-        : (
-            <FlashList
-              data={shops}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => <ShopCard shop={item} />}
-              onEndReached={() => {
-                if (hasNextPage && !isFetchingNextPage)
-                  fetchNextPage();
-              }}
-              onEndReachedThreshold={0.5}
-              contentContainerStyle={styles.listContent}
-              onRefresh={refetch}
-              refreshing={isRefetching}
-              ListEmptyComponent={<EmptyState search={debouncedSearch} />}
-              ListFooterComponent={isFetchingNextPage ? <ShopCardSkeleton /> : null}
-            />
-          )}
+          ? (
+              <View style={styles.listPad}>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <ShopCardSkeleton key={`card-skeleton-${i}`} />
+                ))}
+              </View>
+            )
+          : (
+              <FlashList
+                data={shops}
+                keyExtractor={item => item.id}
+                renderItem={({ item }) => <ShopCard shop={item} />}
+                onEndReached={() => {
+                  if (hasNextPage && !isFetchingNextPage)
+                    fetchNextPage();
+                }}
+                onEndReachedThreshold={0.5}
+                contentContainerStyle={styles.listContent}
+                onRefresh={refetch}
+                refreshing={isRefetching}
+                ListEmptyComponent={<EmptyState search={debouncedSearch} />}
+                ListFooterComponent={isFetchingNextPage ? <ShopCardSkeleton /> : null}
+              />
+            )}
     </View>
   );
 }

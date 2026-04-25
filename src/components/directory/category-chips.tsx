@@ -1,9 +1,9 @@
+import type { ShopCategory } from '@/services/api/shops';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
-import type { ShopCategory } from '@/services/api/shops';
 import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
 
 type Category = ShopCategory | 'ALL';

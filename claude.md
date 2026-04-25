@@ -100,8 +100,8 @@ assets/animations/               # success.json (Lottie — used in checkout/con
 useInfiniteQuery({
   initialPageParam: undefined,
   queryFn: ({ pageParam }) => api.getItems({ cursor: pageParam, limit: 20 }),
-  getNextPageParam: (last) => last.data.data.nextCursor ?? undefined,
-})
+  getNextPageParam: last => last.data.data.nextCursor ?? undefined,
+});
 // FlashList onEndReached → fetchNextPage()
 // Flatten: data?.pages.flatMap(p => p.data.data.items).filter(Boolean) ?? []
 ```
@@ -209,6 +209,9 @@ Format: `[AhmedMuhammedElsaid][feat|fix|chore|docs]: description`
 Always `--no-verify` (WSL cannot run node/pnpm hooks). Branch: main.
 
 ## Env Vars
+
+Env template: `.env.example` (committed). Local overrides: `.env.local` (git-ignored).
+Never commit real secrets to tracked files — use `.env.local` or CI/CD secrets.
 
 ```
 EXPO_PUBLIC_API_URL=http://localhost:3000        # dev — NO /v1, Axios client appends it

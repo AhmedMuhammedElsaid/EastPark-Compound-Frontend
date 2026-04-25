@@ -1,21 +1,21 @@
+import type { Control, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { setSecureItem } from '@/lib/secure-storage';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Eye, EyeSlash } from 'phosphor-react-native';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import type { Control, FieldErrors } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { z } from 'zod';
-
 import { AuthInput } from '@/components/auth/auth-input';
+
 import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { setSecureItem } from '@/lib/secure-storage';
 import { authApi } from '@/services/api/auth';
 import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
 import { registerPushToken } from '@/services/push';
@@ -75,7 +75,7 @@ export default function AcceptInvitationScreen() {
           ? '/(merchant)/dashboard'
           : user.role === 'ADMIN'
             ? '/(admin)'
-            : '/(tabs)'
+            : '/(tabs)',
       );
     }
     catch {
@@ -142,11 +142,11 @@ function InvitationForm({ control, errors, onSubmitEditing }: { control: Control
             error={errors.password ? t(errors.password.message as string) : undefined}
             secureTextEntry={!showPwd}
             returnKeyType="next"
-            rightSlot={
+            rightSlot={(
               <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowPwd(v => !v); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={showPwd ? 'Hide password' : 'Show password'}>
                 {showPwd ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
               </Pressable>
-            }
+            )}
           />
         )}
       />
@@ -163,11 +163,11 @@ function InvitationForm({ control, errors, onSubmitEditing }: { control: Control
             secureTextEntry={!showConfirm}
             returnKeyType="done"
             onSubmitEditing={onSubmitEditing}
-            rightSlot={
+            rightSlot={(
               <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowConfirm(v => !v); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={showConfirm ? 'Hide password' : 'Show password'}>
                 {showConfirm ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
               </Pressable>
-            }
+            )}
           />
         )}
       />

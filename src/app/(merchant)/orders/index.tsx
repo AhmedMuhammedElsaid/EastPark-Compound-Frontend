@@ -3,16 +3,16 @@ import type { MerchantOrder } from '@/services/api/merchant';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { ArrowLeft, Tray } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { ArrowLeft, Tray } from 'phosphor-react-native';
-import i18n from '@/lib/i18n';
-
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
+import i18n from '@/lib/i18n';
 import { merchantApi } from '@/services/api/merchant';
 import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
@@ -227,7 +227,7 @@ function MerchantOrderCard({ order, styles, colors }: { order: MerchantOrder; st
         </View>
       </View>
       <Text style={styles.items} numberOfLines={1}>
-        {order.items.map(item => `${item.quantity}× ${item.productNameSnapshot}`).join(', ')}
+        {(order.items ?? []).map(item => `${item.quantity}× ${item.productNameSnapshot}`).join(', ')}
       </Text>
       <Text style={styles.total}>{formatCurrency(order.totalAmount)}</Text>
     </Pressable>

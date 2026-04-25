@@ -5,14 +5,14 @@ import { createSlice } from '@reduxjs/toolkit';
 type Language = 'ar' | 'en';
 type Theme = 'dark' | 'light' | 'system';
 
-interface PreferencesState {
+type PreferencesState = {
   language: Language;
   theme: Theme;
-}
+};
 
 const initialState: PreferencesState = {
   language: 'ar', // Arabic RTL is primary
-  theme: 'dark',  // Dark mode is flagship default
+  theme: 'dark', // Dark mode is flagship default
 };
 
 export const preferencesSlice = createSlice({

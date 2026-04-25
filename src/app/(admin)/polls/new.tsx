@@ -1,15 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { ArrowLeft } from 'phosphor-react-native';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { z } from 'zod';
 
-import { ArrowLeft } from 'phosphor-react-native';
+import { z } from 'zod';
 
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { governanceApi } from '@/services/api/governance';
@@ -85,34 +85,57 @@ export default function NewPollScreen() {
       </View>
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + SPACING.xl }]}>
         <Text style={styles.label}>{t('admin.question_en')}</Text>
-        <Controller control={control} name="question" render={({ field }) => (
-          <TextInput style={[styles.input, errors.question && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.question_en')} />
-        )} />
+        <Controller
+          control={control}
+          name="question"
+          render={({ field }) => (
+            <TextInput style={[styles.input, errors.question && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.question_en')} />
+          )}
+        />
 
         <Text style={styles.label}>{t('admin.question_ar')}</Text>
-        <Controller control={control} name="questionAr" render={({ field }) => (
-          <TextInput style={[styles.input, errors.questionAr && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.question_ar')} textAlign="right" />
-        )} />
+        <Controller
+          control={control}
+          name="questionAr"
+          render={({ field }) => (
+            <TextInput style={[styles.input, errors.questionAr && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.question_ar')} textAlign="right" />
+          )}
+        />
 
         <Text style={styles.label}>{t('admin.expires_at')}</Text>
-        <Controller control={control} name="expiresAt" render={({ field }) => (
-          <TextInput style={[styles.input, errors.expiresAt && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder="YYYY-MM-DD" />
-        )} />
+        <Controller
+          control={control}
+          name="expiresAt"
+          render={({ field }) => (
+            <TextInput style={[styles.input, errors.expiresAt && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder="YYYY-MM-DD" />
+          )}
+        />
 
         <Text style={styles.label}>{t('admin.options')}</Text>
         {Array.from({ length: optionCount }).map((_, i) => (
           <View key={i} style={styles.optionRow}>
-            <Controller control={control} name={`options.${i}.text`} render={({ field }) => (
-              <TextInput style={[styles.input, styles.optionInput]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={`${t('admin.option')} ${i + 1} (EN)`} />
-            )} />
-            <Controller control={control} name={`options.${i}.textAr`} render={({ field }) => (
-              <TextInput style={[styles.input, styles.optionInput]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={`${t('admin.option')} ${i + 1} (AR)`} textAlign="right" />
-            )} />
+            <Controller
+              control={control}
+              name={`options.${i}.text`}
+              render={({ field }) => (
+                <TextInput style={[styles.input, styles.optionInput]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={`${t('admin.option')} ${i + 1} (EN)`} />
+              )}
+            />
+            <Controller
+              control={control}
+              name={`options.${i}.textAr`}
+              render={({ field }) => (
+                <TextInput style={[styles.input, styles.optionInput]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={`${t('admin.option')} ${i + 1} (AR)`} textAlign="right" />
+              )}
+            />
           </View>
         ))}
         {optionCount < 6 && (
           <Pressable style={styles.addOptionBtn} onPress={() => setOptionCount(c => c + 1)}>
-            <Text style={styles.addOptionText}>+ {t('admin.add_option')}</Text>
+            <Text style={styles.addOptionText}>
+              +
+              {t('admin.add_option')}
+            </Text>
           </Pressable>
         )}
 

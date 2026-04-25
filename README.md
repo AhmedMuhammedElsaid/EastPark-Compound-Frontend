@@ -88,9 +88,9 @@ ReduxProvider
 ```ts
 useInfiniteQuery({
   queryFn: ({ pageParam }) => api.getShops({ cursor: pageParam, limit: 20 }),
-  getNextPageParam: (last) => last.nextCursor ?? undefined,
+  getNextPageParam: last => last.nextCursor ?? undefined,
   initialPageParam: undefined,
-})
+});
 // FlashList onEndReached → fetchNextPage()
 ```
 
@@ -176,20 +176,20 @@ Color palette derived from the EastPark brand logo (`eastpark.jpg`). Full specif
 ### Color Tokens (`src/theme/tokens.ts`)
 
 ```ts
-BRAND.gold       = '#b8966a'  // Primary accent — use sparingly
-BRAND.goldDark   = '#7a5e38'  // Gold on light backgrounds (WCAG AA)
+BRAND.gold = '#b8966a'; // Primary accent — use sparingly
+BRAND.goldDark = '#7a5e38'; // Gold on light backgrounds (WCAG AA)
 
-DARK.bg          = '#0d0c0b'  // Warm near-black — flagship surface
-DARK.card        = '#221f1c'  // Card surface
-DARK.elevated    = '#2e2a26'  // Modals, sheets
-DARK.border      = '#3d3830'  // Dividers
-DARK.text        = '#f5f0e8'  // Primary text
-DARK.textMuted   = '#9e9488'  // Secondary / placeholder text
+DARK.bg = '#0d0c0b'; // Warm near-black — flagship surface
+DARK.card = '#221f1c'; // Card surface
+DARK.elevated = '#2e2a26'; // Modals, sheets
+DARK.border = '#3d3830'; // Dividers
+DARK.text = '#f5f0e8'; // Primary text
+DARK.textMuted = '#9e9488'; // Secondary / placeholder text
 
-SEMANTIC.success = '#5A7A52'  // Muted olive
-SEMANTIC.warning = '#C48B2F'  // Deep amber
-SEMANTIC.error   = '#B03A2E'  // Deep muted red
-SEMANTIC.info    = '#4A6B8A'  // Slate blue
+SEMANTIC.success = '#5A7A52'; // Muted olive
+SEMANTIC.warning = '#C48B2F'; // Deep amber
+SEMANTIC.error = '#B03A2E'; // Deep muted red
+SEMANTIC.info = '#4A6B8A'; // Slate blue
 ```
 
 ### Typography
@@ -204,8 +204,8 @@ Both fonts are embedded via the `expo-font` plugin at build time — no runtime 
 ### Spacing & Radius
 
 ```ts
-SPACING = { xs: 4, sm: 8, md: 12, base: 16, lg: 20, xl: 24, '2xl': 32, '3xl': 48 }
-RADIUS  = { sm: 8, md: 12, lg: 16, xl: 24, full: 9999 }
+SPACING = { 'xs': 4, 'sm': 8, 'md': 12, 'base': 16, 'lg': 20, 'xl': 24, '2xl': 32, '3xl': 48 };
+RADIUS = { sm: 8, md: 12, lg: 16, xl: 24, full: 9999 };
 ```
 
 ### Motion Rules
@@ -423,26 +423,26 @@ pnpm install
 
 ### Environment Variables
 
-Create `.env` (local dev). Copy `.env.example` as a starting point.
+Copy `.env.example` to `.env.local` and fill in your values:
+
+```bash
+cp .env.example .env.local
+```
+
+`.env.local` is git-ignored — never commit real secrets to tracked files.
+
+Example `.env.local`:
 
 ```env
-# App identity
-EXPO_PUBLIC_NAME=EastPark
-EXPO_PUBLIC_SCHEME=eastpark
-EXPO_PUBLIC_VERSION=1.0.0
 EXPO_PUBLIC_APP_ENV=development        # development | preview | production
-
-# iOS / Android identifiers
-EXPO_PUBLIC_BUNDLE_ID=com.eastpark.app.development
-EXPO_PUBLIC_PACKAGE=com.eastpark.app.development
-
-# Backend
-EXPO_PUBLIC_API_URL=http://localhost:3000
-EXPO_PUBLIC_SOCKET_URL=ws://localhost:3000
-
-# Analytics / monitoring
-EXPO_PUBLIC_POSTHOG_KEY=phc_xxxxx
+EXPO_PUBLIC_API_URL=http://localhost:3000   # do NOT add /v1 — the Axios client appends it
+EXPO_PUBLIC_SOCKET_URL=http://localhost:3000
+EXPO_PUBLIC_POSTHOG_KEY=               # optional — leave blank for dev
+SECRET_KEY=                            # build-time only — not accessible in client code
+APP_BUILD_ONLY_VAR=                    # build-time only
 ```
+
+> Most identity vars (`NAME`, `SCHEME`, `BUNDLE_ID`, `PACKAGE`, `VERSION`) are derived automatically from `EXPO_PUBLIC_APP_ENV` in `env.ts` — you do not set them manually.
 
 All variables are validated at build time by `env.ts` using Zod — the build fails immediately if a required variable is missing or malformed.
 

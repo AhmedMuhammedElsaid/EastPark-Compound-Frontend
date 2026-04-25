@@ -2,7 +2,27 @@
 
 > Recorded after a comprehensive two-pass audit + maintenance pass (April 2026).
 > All bugs were fixed in commits on branch `main`.
-> Last commits: `0c74e20` through `a498a15` (review pass + TS fixes + static analysis + Jest fix pass).
+> Last commits: `0c74e20` through `41cc16e` + F-1 biometric login (this commit).
+
+---
+
+## April 2026 — F-1 Biometric Login (Post-Launch Roadmap → shipped)
+
+**Files added:**
+- `src/lib/hooks/use-biometric.ts` — wraps `expo-local-authentication`. Exposes `ready`, `isAvailable`, `kind` (face/fingerprint/iris/generic), `enabled`, `email`, plus `authenticate()`, `enable(email)`, `disable()`, `refresh()`.
+
+**Files changed:**
+- `package.json` — added `expo-local-authentication: ~17.0.7`.
+- `app.config.ts` — registered `expo-local-authentication` plugin with iOS `faceIDPermission` (NSFaceIDUsageDescription).
+- `src/services/api/client.ts` — new SecureStore keys `SECURE_KEY_BIOMETRIC_ENABLED`, `SECURE_KEY_BIOMETRIC_EMAIL`.
+- `src/services/api/auth.ts` — added raw-axios `authApi.refresh(refreshToken)` that bypasses the 401 interceptor (used by biometric flow to swap stored refresh token for fresh access token).
+- `src/app/(auth)/login.tsx` — when `biometric.enabled && isAvailable`, shows a "Sign in with Face ID/Fingerprint" Pressable above the email/password form. On success: `LocalAuthentication.authenticateAsync` → `authApi.refresh()` → `usersApi.getProfile()` → `dispatch(login(...))` → navigate. On failure (refresh expired/revoked): `biometric.disable()` + warning toast prompting password entry. After a successful **password** login, prompts the user once via `Alert.alert` to enable biometric for next time.
+- `src/app/(tabs)/profile/index.tsx` — added `SecuritySection` with a `Switch` toggle (only rendered when hardware available + enrolled). `handleLogout` now branches: when `biometric.enabled`, skips server-side `/auth/logout` and keeps the refresh token in SecureStore so the user can re-auth via biometric. Delete-account flow calls `biometric.disable()` to nuke all biometric state.
+- `src/translations/en.json` + `ar.json` — added `auth.biometric.*` (kind labels, prompts, sign-in-with copy, errors), `profile.security`, `profile.biometric_login*`, `profile.biometric_setup_failed`, `common.or`.
+
+**Trade-off documented:** When biometric is on, logout does not call the backend `/auth/logout` (which would revoke the refresh token server-side). The refresh token remains valid until natural expiry. This is an opt-in convenience trade-off — users who don't enable biometric still get full server-side revocation on logout. Disabling biometric or deleting the account fully clears the stored refresh token.
+
+**Why F-10 was deferred:** F-10 (merchant menu categories) was originally chosen but requires backend changes — `Product` entity has no `category` field and there's no category CRUD endpoint. Logged in `FRONTENDENHANCEMENTPLAN.md` Section 4 (B-6) instead.
 
 ---
 

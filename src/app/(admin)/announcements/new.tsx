@@ -1,15 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { ArrowLeft } from 'phosphor-react-native';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { z } from 'zod';
 
-import { ArrowLeft } from 'phosphor-react-native';
+import { z } from 'zod';
 
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { communityApi } from '@/services/api/community';
@@ -83,35 +83,55 @@ export default function NewAnnouncementScreen() {
       </View>
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + SPACING.xl }]}>
         <Text style={styles.label}>{t('admin.title_en')}</Text>
-        <Controller control={control} name="title" render={({ field }) => (
-          <TextInput style={[styles.input, errors.title && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.title_en')} />
-        )} />
+        <Controller
+          control={control}
+          name="title"
+          render={({ field }) => (
+            <TextInput style={[styles.input, errors.title && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.title_en')} />
+          )}
+        />
 
         <Text style={styles.label}>{t('admin.title_ar')}</Text>
-        <Controller control={control} name="titleAr" render={({ field }) => (
-          <TextInput style={[styles.input, errors.titleAr && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.title_ar')} textAlign="right" />
-        )} />
+        <Controller
+          control={control}
+          name="titleAr"
+          render={({ field }) => (
+            <TextInput style={[styles.input, errors.titleAr && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.title_ar')} textAlign="right" />
+          )}
+        />
 
         <Text style={styles.label}>{t('admin.body_en')}</Text>
-        <Controller control={control} name="body" render={({ field }) => (
-          <TextInput style={[styles.input, styles.textarea, errors.body && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.body_en')} multiline />
-        )} />
+        <Controller
+          control={control}
+          name="body"
+          render={({ field }) => (
+            <TextInput style={[styles.input, styles.textarea, errors.body && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.body_en')} multiline />
+          )}
+        />
 
         <Text style={styles.label}>{t('admin.body_ar')}</Text>
-        <Controller control={control} name="bodyAr" render={({ field }) => (
-          <TextInput style={[styles.input, styles.textarea, errors.bodyAr && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.body_ar')} multiline textAlign="right" />
-        )} />
+        <Controller
+          control={control}
+          name="bodyAr"
+          render={({ field }) => (
+            <TextInput style={[styles.input, styles.textarea, errors.bodyAr && styles.inputError]} value={field.value} onChangeText={field.onChange} placeholderTextColor={colors.textMuted} placeholder={t('admin.body_ar')} multiline textAlign="right" />
+          )}
+        />
 
         <Text style={styles.label}>{t('admin.category')}</Text>
-        <Controller control={control} name="category" render={({ field }) => (
-          <View style={styles.chips}>
-            {CATEGORIES.map(cat => (
-              <Pressable key={cat} style={[styles.chip, field.value === cat && styles.chipActive]} onPress={() => field.onChange(cat)}>
-                <Text style={[styles.chipText, field.value === cat && styles.chipTextActive]}>{t(`community.${cat}`)}</Text>
-              </Pressable>
-            ))}
-          </View>
-        )} />
+        <Controller
+          control={control}
+          name="category"
+          render={({ field }) => (
+            <View style={styles.chips}>
+              {CATEGORIES.map(cat => (
+                <Pressable key={cat} style={[styles.chip, field.value === cat && styles.chipActive]} onPress={() => field.onChange(cat)}>
+                  <Text style={[styles.chipText, field.value === cat && styles.chipTextActive]}>{t(`community.${cat}`)}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
+        />
 
         <Pressable style={[styles.submitBtn, isPending && styles.submitBtnDisabled]} onPress={handleSubmit(d => mutate(d))} disabled={isPending}>
           <Text style={styles.submitBtnText}>{isPending ? t('common.loading') : t('common.submit')}</Text>

@@ -1,5 +1,5 @@
-import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import { router, useLocalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';

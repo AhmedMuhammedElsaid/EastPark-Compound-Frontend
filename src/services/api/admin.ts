@@ -3,14 +3,14 @@ import { client } from './client';
 export type InvitationRole = 'MERCHANT' | 'ADMIN';
 export type InvitationStatus = 'PENDING' | 'USED' | 'EXPIRED';
 
-export interface Invitation {
+export type Invitation = {
   id: string;
   email: string;
   role: InvitationRole;
   expiresAt: string;
   usedAt: string | null;
   createdAt: string;
-}
+};
 
 export const adminApi = {
   sendInvitation: (email: string, role: InvitationRole) =>

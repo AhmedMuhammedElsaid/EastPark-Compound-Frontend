@@ -1,10 +1,10 @@
 import type { Product } from '@/services/api/merchant';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { ArrowLeft, ForkKnife, Pencil, Plus, Trash } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
-import { ArrowLeft, ForkKnife, Pencil, Plus, Trash } from 'phosphor-react-native';
 import { showMessage } from 'react-native-flash-message';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

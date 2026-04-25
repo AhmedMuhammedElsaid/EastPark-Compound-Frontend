@@ -2,6 +2,7 @@ import type { FeedbackCategory } from '@/services/api/community';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { ArrowLeft } from 'phosphor-react-native';
 import * as React from 'react';
 import { useController, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -16,10 +17,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { z } from 'zod';
-import { ArrowLeft } from 'phosphor-react-native';
 
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { communityApi } from '@/services/api/community';

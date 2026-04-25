@@ -2,16 +2,16 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { createSlice } from '@reduxjs/toolkit';
 
-export interface CartItem {
+export type CartItem = {
   productId: string;
   name: string;
   nameAr: string;
   price: number;
   quantity: number;
   imageUrl: string | null;
-}
+};
 
-interface CartState {
+type CartState = {
   items: CartItem[];
   shopId: string | null;
   shopName: string | null;
@@ -20,7 +20,7 @@ interface CartState {
   pendingShopId: string | null;
   pendingShopName: string | null;
   showConflictSheet: boolean;
-}
+};
 
 const initialState: CartState = {
   items: [],
@@ -46,7 +46,7 @@ export const cartSlice = createSlice({
         item: CartItem;
         shopId: string;
         shopName: string;
-      }>
+      }>,
     ) {
       const { item, shopId, shopName } = action.payload;
 
@@ -72,7 +72,8 @@ export const cartSlice = createSlice({
     },
     /** User chose "Clear & Add" in conflict sheet */
     clearAndAdd(state) {
-      if (!state.pendingItem || !state.pendingShopId) return;
+      if (!state.pendingItem || !state.pendingShopId)
+        return;
       state.items = [state.pendingItem];
       state.shopId = state.pendingShopId;
       state.shopName = state.pendingShopName;
@@ -97,15 +98,15 @@ export const cartSlice = createSlice({
     },
     updateQuantity(
       state,
-      action: PayloadAction<{ productId: string; quantity: number }>
+      action: PayloadAction<{ productId: string; quantity: number }>,
     ) {
       const item = state.items.find(
-        i => i.productId === action.payload.productId
+        i => i.productId === action.payload.productId,
       );
       if (item) {
         if (action.payload.quantity <= 0) {
           state.items = state.items.filter(
-            i => i.productId !== action.payload.productId
+            i => i.productId !== action.payload.productId,
           );
           if (state.items.length === 0) {
             state.shopId = null;

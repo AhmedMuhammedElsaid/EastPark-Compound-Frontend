@@ -1,20 +1,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
+import { ArrowLeft, EnvelopeSimple } from 'phosphor-react-native';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
-import { z } from 'zod';
 
+import { z } from 'zod';
 import { AuthInput } from '@/components/auth/auth-input';
 import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
 import { authApi } from '@/services/api/auth';
-import { ArrowLeft, EnvelopeSimple } from 'phosphor-react-native';
 
 import { BRAND, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
 

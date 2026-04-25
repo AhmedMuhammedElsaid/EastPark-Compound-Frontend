@@ -1,16 +1,16 @@
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
-import { setSecureItem } from '@/lib/secure-storage';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import OTPTextInput from 'react-native-otp-textinput';
-
 import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
+
 import { BrandMark } from '@/components/auth/brand-mark';
 import { GoldButton } from '@/components/auth/gold-button';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { setSecureItem } from '@/lib/secure-storage';
 import { authApi } from '@/services/api/auth';
 import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
 import { registerPushToken } from '@/services/push';
@@ -117,7 +117,8 @@ export default function VerifyOtpScreen() {
           inputCount={6}
           handleTextChange={(code) => {
             setOtp(code);
-            if (code.length === 6) handleVerify(code);
+            if (code.length === 6)
+              handleVerify(code);
           }}
           tintColor={BRAND.gold}
           offTintColor={colors.border}

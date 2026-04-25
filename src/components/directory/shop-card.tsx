@@ -1,11 +1,11 @@
+import type { Shop } from '@/services/api/shops';
 import { router } from 'expo-router';
 import { Star } from 'phosphor-react-native';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAppColors } from '@/lib/hooks/use-app-colors';
-import type { Shop } from '@/services/api/shops';
 import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
 
 type Props = { shop: Shop };
@@ -21,7 +21,7 @@ export function ShopCard({ shop }: Props) {
   const styles = useStyles(colors);
   const isAr = i18n.language === 'ar';
 
-  const coverPhoto = shop.photos.find((p) => p.isPrimary) ?? shop.photos[0];
+  const coverPhoto = shop.photos.find(p => p.isPrimary) ?? shop.photos[0];
   const displayName = isAr ? shop.nameAr : shop.name;
   const categoryLabel = t(`directory.${shop.category.toLowerCase().replace('_and_', '_')}`);
 
@@ -63,7 +63,12 @@ export function ShopCard({ shop }: Props) {
                 <Star size={12} weight="fill" color={BRAND.gold} />
                 <Text style={styles.ratingText}>{shop.averageRating.toFixed(1)}</Text>
               </View>
-              <Text style={styles.reviewCount}> ({shop.reviewCount})</Text>
+              <Text style={styles.reviewCount}>
+                {' '}
+                (
+                {shop.reviewCount}
+                )
+              </Text>
             </>
           )}
         </View>

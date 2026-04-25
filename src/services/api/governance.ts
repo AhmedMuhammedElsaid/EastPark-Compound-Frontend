@@ -2,7 +2,7 @@ import { client } from './client';
 
 export type ElectionVisibilityMode = 'SEALED_UNTIL_DEADLINE' | 'LIVE_COUNT' | 'ADMIN_CONTROLLED';
 
-export interface Poll {
+export type Poll = {
   id: string;
   question: string;
   questionAr: string;
@@ -11,9 +11,9 @@ export interface Poll {
   expiresAt: string;
   myVote: string | null;
   resultsOpen: boolean;
-}
+};
 
-export interface Candidate {
+export type Candidate = {
   id: string;
   name: string;
   nameAr: string;
@@ -21,9 +21,9 @@ export interface Candidate {
   statementAr: string | null;
   photoUrl: string | null;
   votes?: number;
-}
+};
 
-export interface Election {
+export type Election = {
   id: string;
   title: string;
   titleAr: string;
@@ -35,7 +35,7 @@ export interface Election {
   resultsOpen: boolean;
   visibilityMode: ElectionVisibilityMode;
   myVote: string | null;
-}
+};
 
 export const governanceApi = {
   // Polls
