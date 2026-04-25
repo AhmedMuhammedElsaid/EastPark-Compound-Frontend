@@ -214,30 +214,32 @@ function AnnouncementList({ announcements, isLoading, isFetchingNextPage, isRefe
     );
   }
   return (
-    <FlashList
-      data={announcements}
-      keyExtractor={item => item.id}
-      renderItem={({ item }) => <AnnouncementCard announcement={item} styles={styles} colors={colors} />}
-      onEndReached={() => {
-        if (hasNextPage && !isFetchingNextPage)
-          fetchNextPage();
-      }}
-      onEndReachedThreshold={0.5}
-      contentContainerStyle={styles.listContent}
-      onRefresh={refetch}
-      refreshing={isRefetching}
-      ListEmptyComponent={(
-        <View style={styles.empty}>
-          <MegaphoneSimple size={48} color={colors.textMuted} />
-          <Text style={styles.emptyTitle}>{t('community.no_announcements')}</Text>
-        </View>
-      )}
-      ListFooterComponent={
-        isFetchingNextPage
-          ? <Skeleton width="100%" height={120} borderRadius={RADIUS.md} />
-          : null
-      }
-    />
+    <View style={{ flex: 1 }}>
+      <FlashList
+        data={announcements}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => <AnnouncementCard announcement={item} styles={styles} colors={colors} />}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage)
+            fetchNextPage();
+        }}
+        onEndReachedThreshold={0.5}
+        contentContainerStyle={styles.listContent}
+        onRefresh={refetch}
+        refreshing={isRefetching}
+        ListEmptyComponent={(
+          <View style={styles.empty}>
+            <MegaphoneSimple size={48} color={colors.textMuted} />
+            <Text style={styles.emptyTitle}>{t('community.no_announcements')}</Text>
+          </View>
+        )}
+        ListFooterComponent={
+          isFetchingNextPage
+            ? <Skeleton width="100%" height={120} borderRadius={RADIUS.md} />
+            : null
+        }
+      />
+    </View>
   );
 }
 

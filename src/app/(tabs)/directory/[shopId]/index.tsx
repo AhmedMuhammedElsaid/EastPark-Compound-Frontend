@@ -218,7 +218,7 @@ function ShopHero({ shop, saved, onBack, onSave, topInset }: ShopHeroProps) {
   const { t } = useTranslation();
   const colors = useAppColors();
   const styles = useStyles();
-  const coverPhoto = shop.photos[0];
+  const coverPhoto = shop.photos?.[0];
   return (
     <View style={styles.hero}>
       {coverPhoto

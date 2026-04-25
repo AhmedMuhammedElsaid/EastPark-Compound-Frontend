@@ -226,7 +226,7 @@ function ShopsGrid({ shops, isAr }: { shops: any[]; isAr: boolean }) {
     <View style={styles.shopsGrid}>
       {shops.map((shop) => {
         const name = isAr ? shop.nameAr : shop.name;
-        const cover = shop.photos.find((p: any) => p.isPrimary) ?? shop.photos[0];
+        const cover = shop.photos?.find((p: any) => p.isPrimary) ?? shop.photos?.[0];
         return (
           <Pressable
             key={shop.id}

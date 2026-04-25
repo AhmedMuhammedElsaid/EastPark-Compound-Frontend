@@ -286,7 +286,7 @@ function ElectionCard({ election, styles }: { election: Election; styles: any })
       <Text style={styles.cardQuestion} numberOfLines={2}>{title}</Text>
       <View style={styles.cardMeta}>
         <Text style={styles.metaText}>
-          {election.candidates.length}
+          {election.candidates?.length ?? 0}
           {' '}
           {t('governance.candidates').toLowerCase()}
         </Text>

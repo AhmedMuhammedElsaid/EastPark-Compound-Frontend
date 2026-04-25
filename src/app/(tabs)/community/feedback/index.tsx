@@ -171,10 +171,10 @@ function FeedbackRow({ feedback, styles, colors }: { feedback: Feedback; styles:
       <Text style={styles.rowTitle} numberOfLines={1}>{feedback.title}</Text>
       <View style={styles.rowMeta}>
         <Text style={styles.rowDate}>{date}</Text>
-        {feedback.replies.length > 0 && (
+        {(feedback.replies?.length ?? 0) > 0 && (
           <View style={styles.replyBadge}>
             <ChatCircle size={14} color={colors.textMuted} />
-            <Text style={styles.replyBadgeText}>{feedback.replies.length}</Text>
+            <Text style={styles.replyBadgeText}>{feedback.replies?.length ?? 0}</Text>
           </View>
         )}
       </View>

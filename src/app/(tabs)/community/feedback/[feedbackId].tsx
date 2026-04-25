@@ -122,10 +122,10 @@ export default function FeedbackDetailScreen() {
         <FeedbackMeta feedback={fb} date={date} styles={styles} colors={colors} />
         <View style={styles.divider} />
 
-        {fb.replies.length > 0 && (
+        {(fb.replies?.length ?? 0) > 0 && (
           <>
             <Text style={styles.sectionTitle}>{t('feedback.reply')}</Text>
-            {fb.replies.map(reply => (
+            {fb.replies?.map(reply => (
               <ReplyCard key={reply.id} reply={reply} styles={styles} />
             ))}
           </>

@@ -202,7 +202,7 @@ function OptionsList({
 }) {
   return (
     <View style={styles.options}>
-      {poll.options.map((option: any) => {
+      {poll.options?.map((option: any) => {
         const text = isAr ? option.textAr : option.text;
         const isSelected = poll.myVote === option.id;
         const pct = showResults && option.votes !== undefined && totalVotes > 0
