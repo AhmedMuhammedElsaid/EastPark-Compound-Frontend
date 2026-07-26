@@ -5,12 +5,22 @@
 
 ## Status
 
+✅ **Functionally complete. 2026-07-19 audit gaps addressed 2026-07-26: FE-1 merchant blocker fixed backend-side, FE-3 real auth tests added (verified 5/5), FE-6 dead routes removed. FE-2 (analytics) descoped. See `frontend_review.md`.**
+
 ✅ All 7 phases + all 38 AppGaps + deep-audit passes + FE-BE wiring + maintenance pass resolved.
 Last commits: `3ea3f75` → `a498a15` (maintenance pass + review pass + TS fixes + Jest fix pass). Branch: main.
 - Maintenance pass (April 2026): all 9 TD items + 7/9 UX items fixed — commits `0c74e20`–`43025a1`
 - Review pass + static analysis + TS fixes — commits `2ab46a8`–`1e8a72a`
 - Jest fix pass — commits `23a39fe`, `a498a15` (RTK/react-redux ESM fixed via global store mock)
 - `EAS_PROJECT_ID` already populated (`062399ed-48df-4d4f-ba1a-a0801a86b1bc`) — `eas init` is done
+
+### Audit 2026-07-19 → status 2026-07-26 (full detail in `frontend_review.md`)
+- **FE-1 ✅ FIXED backend-side:** the backend now exposes a `/merchant/*` controller (`eastpark-backend/src/modules/merchant/`) that resolves the merchant's shop from the JWT. `src/services/api/merchant.ts` and all `(merchant)` screens work UNCHANGED — do NOT rewrite them to `/shops/:id`. Also solved B-7 (no way to discover own shopId).
+- **FE-2 DESCOPED:** Posthog + Sentry/GlitchTip not wired — deferred pending product decision.
+- **FE-3 ✅ FIXED:** real login-form tests added (`login-form.test.tsx`, 5 tests) — verified 5/5 passing on Node v24.
+- **FE-4 tooling:** WSL default node is v12, but modern Node IS available via nvm (`. ~/.nvm/nvm.sh; nvm use 24`) — use it to run `pnpm test`/`type-check` (slow on the mounted drive, ~15min for a test file).
+- **FE-6 ✅ FIXED:** removed dead obytes stubs (`app/login.tsx`, `app/onboarding.tsx`, `app/[...messing].tsx`); added `app/+not-found.tsx` (token/i18n-compliant).
+- **FE-5:** whitespace-only working-tree drift (`.env.example`, `eslint.config.mjs`, `use-biometric.ts`) still uncommitted — harmless CRLF churn.
 
 ## User Roles
 
