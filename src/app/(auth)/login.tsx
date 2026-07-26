@@ -260,7 +260,7 @@ function LoginForm({ control, errors, showPassword, onTogglePassword, onSubmitEd
         control={control}
         name="email"
         render={({ field: { onChange, onBlur, value } }) => (
-          <AuthInput label={t('auth.email')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.email ? t(errors.email.message as string) : undefined} keyboardType="email-address" autoComplete="email" returnKeyType="next" />
+          <AuthInput label={t('auth.email')} accessibilityLabel={t('auth.email')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.email ? t(errors.email.message as string) : undefined} keyboardType="email-address" autoComplete="email" returnKeyType="next" />
         )}
       />
       <Controller
@@ -269,6 +269,7 @@ function LoginForm({ control, errors, showPassword, onTogglePassword, onSubmitEd
         render={({ field: { onChange, onBlur, value } }) => (
           <AuthInput
             label={t('auth.password')}
+            accessibilityLabel={t('auth.password')}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
