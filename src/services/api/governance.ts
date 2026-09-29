@@ -1,6 +1,6 @@
-import { client } from './client';
+import { client } from "./client";
 
-export type ElectionVisibilityMode = 'SEALED_UNTIL_DEADLINE' | 'LIVE_COUNT' | 'ADMIN_CONTROLLED';
+export type ElectionVisibilityMode = "SEALED_UNTIL_DEADLINE" | "LIVE_COUNT" | "ADMIN_CONTROLLED";
 
 export type Poll = {
   id: string;
@@ -40,7 +40,7 @@ export type Election = {
 export const governanceApi = {
   // Polls
   getPolls: (params?: { cursor?: string; limit?: number }) =>
-    client.get<{ data: { items: Poll[]; nextCursor: string | null } }>('/polls', { params }),
+    client.get<{ data: { items: Poll[]; nextCursor: string | null } }>("/polls", { params }),
 
   getPoll: (pollId: string) =>
     client.get<{ data: Poll }>(`/polls/${pollId}`),
@@ -50,7 +50,7 @@ export const governanceApi = {
 
   // Elections
   getElections: (params?: { cursor?: string; limit?: number }) =>
-    client.get<{ data: { items: Election[]; nextCursor: string | null } }>('/elections', { params }),
+    client.get<{ data: { items: Election[]; nextCursor: string | null } }>("/elections", { params }),
 
   getElection: (electionId: string) =>
     client.get<{ data: Election }>(`/elections/${electionId}`),
@@ -64,7 +64,7 @@ export const governanceApi = {
     questionAr: string;
     options: Array<{ text: string; textAr: string }>;
     expiresAt: string;
-  }) => client.post<{ data: Poll }>('/polls', data),
+  }) => client.post<{ data: Poll }>("/polls", data),
 
   createElection: (data: {
     title: string;
@@ -73,5 +73,5 @@ export const governanceApi = {
     descriptionAr?: string;
     expiresAt: string;
     visibilityMode: ElectionVisibilityMode;
-  }) => client.post<{ data: Election }>('/elections', data),
+  }) => client.post<{ data: Election }>("/elections", data),
 };

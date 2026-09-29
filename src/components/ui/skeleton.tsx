@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import * as React from "react";
+import { Animated, StyleSheet, View } from "react-native";
 
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { RADIUS } from '@/theme/tokens';
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { RADIUS } from "@/theme/tokens";
 
 type Props = {
   width?: number | string;
@@ -16,7 +16,7 @@ type Props = {
  * Uses React Native's built-in Animated API (no reanimated) for Expo Go compatibility.
  * Colors: dark-card (#221f1c) → dark-elevated (#2e2a26) — warm, never grey.
  */
-export function Skeleton({ width = '100%', height = 16, borderRadius = RADIUS.sm, style }: Props) {
+export function Skeleton({ width = "100%", height = 16, borderRadius = RADIUS.sm, style }: Props) {
   const colors = useAppColors();
   const opacity = React.useRef(new Animated.Value(0.5)).current;
 
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   cardSkeleton: {
     marginBottom: 16,
     borderRadius: RADIUS.md,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   cardBody: {
     padding: 12,

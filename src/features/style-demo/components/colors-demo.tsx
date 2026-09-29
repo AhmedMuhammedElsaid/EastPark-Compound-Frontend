@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { Text, View } from '@/components/ui';
-import colors from '@/components/ui/colors';
+import * as React from "react";
+import { Text, View } from "@/components/ui";
+import colors from "@/components/ui/colors";
 
-import { Title } from './title';
+import { Title } from "./title";
 
 type ColorName = keyof typeof colors;
 
@@ -18,7 +18,7 @@ export function Colors() {
 }
 
 function Color({ name }: { name: ColorName }) {
-  if (typeof colors[name] === 'string')
+  if (typeof colors[name] === "string")
     return null;
   return (
     <View className="pt-2">

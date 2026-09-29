@@ -13,7 +13,7 @@ name: New GitHub Release
 on:
   push:
     tags:
-      - '*'
+      - "*"
 
 jobs:
   release:

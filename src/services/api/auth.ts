@@ -1,9 +1,9 @@
-import type { AuthUser } from '@/store/slices/authSlice';
+import type { AuthUser } from "@/store/slices/auth-slice";
 
-import axios from 'axios';
-import Env from 'env';
+import axios from "axios";
+import Env from "env";
 
-import { client } from './client';
+import { client } from "./client";
 
 export type RegisterPayload = {
   name: string;
@@ -31,31 +31,31 @@ export type AuthResponse = {
 
 export const authApi = {
   register: (payload: RegisterPayload) =>
-    client.post<{ data: { message: string } }>('/auth/register', payload),
+    client.post<{ data: { message: string } }>("/auth/register", payload),
 
   verifyOtp: (email: string, otp: string) =>
-    client.post<{ data: AuthResponse }>('/auth/verify-otp', { email, otp }),
+    client.post<{ data: AuthResponse }>("/auth/verify-otp", { email, otp }),
 
   resendOtp: (email: string) =>
-    client.post<{ data: { message: string } }>('/auth/resend-otp', { email }),
+    client.post<{ data: { message: string } }>("/auth/resend-otp", { email }),
 
   login: (payload: LoginPayload) =>
-    client.post<{ data: AuthResponse }>('/auth/login', payload),
+    client.post<{ data: AuthResponse }>("/auth/login", payload),
 
   logout: (refreshToken: string) =>
-    client.post<{ data: { success: boolean } }>('/auth/logout', { refreshToken }),
+    client.post<{ data: { success: boolean } }>("/auth/logout", { refreshToken }),
 
   forgotPassword: (email: string) =>
-    client.post<{ data: { message: string } }>('/auth/forgot-password', { email }),
+    client.post<{ data: { message: string } }>("/auth/forgot-password", { email }),
 
   resetPassword: (token: string, password: string) =>
-    client.post<{ data: { message: string } }>('/auth/reset-password', { token, password }),
+    client.post<{ data: { message: string } }>("/auth/reset-password", { token, password }),
 
   acceptInvitation: (token: string, name: string, password: string) =>
-    client.post<{ data: AuthResponse }>('/auth/accept-invitation', { token, name, password }),
+    client.post<{ data: AuthResponse }>("/auth/accept-invitation", { token, name, password }),
 
   updatePushToken: (pushToken: string) =>
-    client.patch<{ data: { success: boolean } }>('/auth/push-token', { pushToken }),
+    client.patch<{ data: { success: boolean } }>("/auth/push-token", { pushToken }),
 
   // Raw axios refresh — bypasses the 401 interceptor (used by biometric login flow).
   refresh: (refreshToken: string) =>

@@ -5,13 +5,13 @@
  * - Call disconnectSocket() on logout and when order detail unmounts
  */
 
-import type { Socket } from 'socket.io-client';
+import type { Socket } from "socket.io-client";
 
-import Env from 'env';
-import { io } from 'socket.io-client';
-import { getSecureItem } from '@/lib/secure-storage';
+import Env from "env";
+import { io } from "socket.io-client";
+import { getSecureItem } from "@/lib/secure-storage";
 
-import { SECURE_KEY_ACCESS } from '@/services/api/client';
+import { SECURE_KEY_ACCESS } from "@/services/api/client";
 
 let socket: Socket | null = null;
 
@@ -23,7 +23,7 @@ export async function getOrdersSocket(): Promise<Socket> {
 
   socket = io(`${Env.EXPO_PUBLIC_SOCKET_URL}/orders`, {
     auth: { token },
-    transports: ['websocket'],
+    transports: ["websocket"],
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 2000,
@@ -33,11 +33,11 @@ export async function getOrdersSocket(): Promise<Socket> {
 }
 
 export function joinOrderRoom(orderId: string) {
-  socket?.emit('join_order', { orderId });
+  socket?.emit("join_order", { orderId });
 }
 
 export function leaveOrderRoom(orderId: string) {
-  socket?.emit('leave_order', { orderId });
+  socket?.emit("leave_order", { orderId });
 }
 
 export function disconnectSocket() {

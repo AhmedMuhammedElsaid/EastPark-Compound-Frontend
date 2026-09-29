@@ -1,13 +1,13 @@
-import * as Haptics from 'expo-haptics';
-import { router, useLocalSearchParams } from 'expo-router';
-import LottieView from 'lottie-react-native';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Haptics from "expo-haptics";
+import { router, useLocalSearchParams } from "expo-router";
+import LottieView from "lottie-react-native";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { BRAND, FONT, RADIUS, SPACING } from "@/theme/tokens";
 
 function useStyles() {
   const colors = useAppColors();
@@ -15,40 +15,40 @@ function useStyles() {
     container: {
       flex: 1,
       backgroundColor: colors.bg,
-      justifyContent: 'space-between' as const,
+      justifyContent: "space-between" as const,
       paddingHorizontal: SPACING.xl,
     },
     body: {
       flex: 1,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
       gap: SPACING.xl,
     },
     iconWrap: {
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    textWrap: { alignItems: 'center' as const, gap: SPACING.sm },
-    title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 26, color: colors.text, textAlign: 'center' as const },
-    subtitle: { fontFamily: FONT.sans, fontSize: 15, color: colors.textMuted, textAlign: 'center' as const, lineHeight: 24 },
+    textWrap: { alignItems: "center" as const, gap: SPACING.sm },
+    title: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 26, color: colors.text, textAlign: "center" as const },
+    subtitle: { fontFamily: FONT.sans, fontSize: 15, color: colors.textMuted, textAlign: "center" as const, lineHeight: 24 },
     actions: { gap: SPACING.md },
     viewOrderBtn: {
       height: 52,
       borderRadius: RADIUS.md,
       backgroundColor: BRAND.gold,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    viewOrderBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.bg },
+    viewOrderBtnText: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 16, color: colors.bg },
     continueBtn: {
       height: 48,
       borderRadius: RADIUS.md,
       borderWidth: 1,
       borderColor: colors.border,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    continueBtnText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: colors.textMuted },
+    continueBtnText: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 15, color: colors.textMuted },
   }), [colors]);
 }
 
@@ -79,7 +79,7 @@ export default function ConfirmationScreen() {
       <View style={styles.body}>
         <Animated.View style={[styles.iconWrap, iconStyle]}>
           <LottieView
-            source={require('../../../assets/animations/success.json')}
+            source={require("../../../assets/animations/success.json")}
             autoPlay
             loop={false}
             style={{ width: 200, height: 200 }}
@@ -87,8 +87,8 @@ export default function ConfirmationScreen() {
         </Animated.View>
 
         <Animated.View style={[styles.textWrap, contentStyle]}>
-          <Text style={styles.title}>{t('checkout.order_placed')}</Text>
-          <Text style={styles.subtitle}>{t('checkout.order_placed_subtitle')}</Text>
+          <Text style={styles.title}>{t("checkout.order_placed")}</Text>
+          <Text style={styles.subtitle}>{t("checkout.order_placed_subtitle")}</Text>
         </Animated.View>
       </View>
 
@@ -100,18 +100,18 @@ export default function ConfirmationScreen() {
               router.replace(`/(tabs)/orders/${orderId}` as any);
           }}
           accessibilityRole="button"
-          accessibilityLabel={t('home.my_orders')}
+          accessibilityLabel={t("home.my_orders")}
         >
-          <Text style={styles.viewOrderBtnText}>{t('home.my_orders')}</Text>
+          <Text style={styles.viewOrderBtnText}>{t("home.my_orders")}</Text>
         </Pressable>
 
         <Pressable
           style={styles.continueBtn}
-          onPress={() => router.replace('/(tabs)/directory' as any)}
+          onPress={() => router.replace("/(tabs)/directory" as any)}
           accessibilityRole="button"
-          accessibilityLabel={t('directory.title')}
+          accessibilityLabel={t("directory.title")}
         >
-          <Text style={styles.continueBtnText}>{t('directory.title')}</Text>
+          <Text style={styles.continueBtnText}>{t("directory.title")}</Text>
         </Pressable>
       </Animated.View>
     </View>

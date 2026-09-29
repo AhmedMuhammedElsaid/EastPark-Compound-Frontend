@@ -1,7 +1,7 @@
 import type {
   GetNextPageParamFunction,
   GetPreviousPageParamFunction,
-} from '@tanstack/react-query';
+} from "@tanstack/react-query";
 
 export type PaginateQuery<T> = {
   results: T[];

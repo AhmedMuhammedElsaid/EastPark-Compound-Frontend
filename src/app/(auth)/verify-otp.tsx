@@ -1,38 +1,38 @@
-import * as Haptics from 'expo-haptics';
-import { router, useLocalSearchParams } from 'expo-router';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
-import { showMessage } from 'react-native-flash-message';
-import OTPTextInput from 'react-native-otp-textinput';
-import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
+import * as Haptics from "expo-haptics";
+import { router, useLocalSearchParams } from "expo-router";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
+import OTPTextInput from "react-native-otp-textinput";
+import { AuthScreenWrapper } from "@/components/auth/auth-screen-wrapper";
 
-import { BrandMark } from '@/components/auth/brand-mark';
-import { GoldButton } from '@/components/auth/gold-button';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { setSecureItem } from '@/lib/secure-storage';
-import { authApi } from '@/services/api/auth';
-import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
-import { registerPushToken } from '@/services/push';
-import { queryClient } from '@/services/query/client';
-import { useAppDispatch } from '@/store';
-import { login } from '@/store/slices/authSlice';
-import { BRAND, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BrandMark } from "@/components/auth/brand-mark";
+import { GoldButton } from "@/components/auth/gold-button";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { setSecureItem } from "@/lib/secure-storage";
+import { authApi } from "@/services/api/auth";
+import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from "@/services/api/client";
+import { registerPushToken } from "@/services/push";
+import { queryClient } from "@/services/query/client";
+import { useAppDispatch } from "@/store";
+import { login } from "@/store/slices/auth-slice";
+import { BRAND, FONT, SEMANTIC, SPACING } from "@/theme/tokens";
 
 const RESEND_COOLDOWN = 60;
 
 function useStyles() {
   const colors = useAppColors();
   return React.useMemo(() => StyleSheet.create({
-    header: { alignItems: 'center' as const, marginTop: SPACING.xl, marginBottom: SPACING['2xl'] },
-    title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 24, color: colors.text, textAlign: 'center' as const, marginBottom: SPACING.sm },
-    subtitle: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, textAlign: 'center' as const },
-    emailHint: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: BRAND.gold, textAlign: 'center' as const, marginTop: SPACING.xs, marginBottom: SPACING['2xl'] },
-    otpContainer: { alignItems: 'center' as const, marginBottom: SPACING.xl },
-    otpRow: { justifyContent: 'center' as const, gap: SPACING.sm },
-    otpBox: { width: 48, height: 56, backgroundColor: colors.card, borderRadius: 8, borderWidth: 1.5, borderColor: colors.border, color: colors.text, fontFamily: FONT.sans, fontSize: 22, fontWeight: '700' },
-    resendRow: { alignItems: 'center' as const, marginTop: SPACING.lg },
-    resendLink: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: '600' },
+    header: { alignItems: "center" as const, marginTop: SPACING.xl, marginBottom: SPACING["2xl"] },
+    title: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 24, color: colors.text, textAlign: "center" as const, marginBottom: SPACING.sm },
+    subtitle: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, textAlign: "center" as const },
+    emailHint: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 14, color: BRAND.gold, textAlign: "center" as const, marginTop: SPACING.xs, marginBottom: SPACING["2xl"] },
+    otpContainer: { alignItems: "center" as const, marginBottom: SPACING.xl },
+    otpRow: { justifyContent: "center" as const, gap: SPACING.sm },
+    otpBox: { width: 48, height: 56, backgroundColor: colors.card, borderRadius: 8, borderWidth: 1.5, borderColor: colors.border, color: colors.text, fontFamily: FONT.sans, fontSize: 22, fontWeight: "700" },
+    resendRow: { alignItems: "center" as const, marginTop: SPACING.lg },
+    resendLink: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: "600" },
     resendTimer: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted },
     resendDisabled: { opacity: 0.5 },
   }), [colors]);
@@ -44,14 +44,14 @@ export default function VerifyOtpScreen() {
   const dispatch = useAppDispatch();
   const colors = useAppColors();
   const styles = useStyles();
-  const [otp, setOtp] = React.useState('');
+  const [otp, setOtp] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [resending, setResending] = React.useState(false);
   const [cooldown, setCooldown] = React.useState(0);
 
   React.useEffect(() => {
     if (!email) {
-      router.replace('/(auth)/register');
+      router.replace("/(auth)/register");
     }
   }, [email]);
 
@@ -76,10 +76,10 @@ export default function VerifyOtpScreen() {
       queryClient.clear();
       dispatch(login({ user, accessToken, refreshToken }));
       await registerPushToken();
-      router.replace('/(tabs)');
+      router.replace("/(tabs)");
     }
     catch {
-      showMessage({ message: t('auth.errors.invalid_otp'), type: 'danger', backgroundColor: SEMANTIC.error });
+      showMessage({ message: t("auth.errors.invalid_otp"), type: "danger", backgroundColor: SEMANTIC.error });
     }
     finally {
       setLoading(false);
@@ -93,10 +93,10 @@ export default function VerifyOtpScreen() {
     try {
       await authApi.resendOtp(email);
       setCooldown(RESEND_COOLDOWN);
-      showMessage({ message: t('auth.otp_resent'), type: 'success', backgroundColor: SEMANTIC.success });
+      showMessage({ message: t("auth.otp_resent"), type: "success", backgroundColor: SEMANTIC.success });
     }
     catch {
-      showMessage({ message: t('common.error'), type: 'danger', backgroundColor: SEMANTIC.error });
+      showMessage({ message: t("common.error"), type: "danger", backgroundColor: SEMANTIC.error });
     }
     finally {
       setResending(false);
@@ -109,8 +109,8 @@ export default function VerifyOtpScreen() {
   return (
     <AuthScreenWrapper>
       <View style={styles.header}><BrandMark size="sm" /></View>
-      <Text style={styles.title}>{t('auth.verify_otp')}</Text>
-      <Text style={styles.subtitle}>{t('auth.otp_sent')}</Text>
+      <Text style={styles.title}>{t("auth.verify_otp")}</Text>
+      <Text style={styles.subtitle}>{t("auth.otp_sent")}</Text>
       <Text style={styles.emailHint}>{email}</Text>
       <View style={styles.otpContainer}>
         <OTPTextInput
@@ -127,11 +127,11 @@ export default function VerifyOtpScreen() {
           keyboardType="numeric"
         />
       </View>
-      <GoldButton label={t('common.confirm')} onPress={() => handleVerify()} loading={loading} disabled={otp.length < 6} />
+      <GoldButton label={t("common.confirm")} onPress={() => handleVerify()} loading={loading} disabled={otp.length < 6} />
       <View style={styles.resendRow}>
         {cooldown > 0
-          ? <Text style={styles.resendTimer}>{t('auth.resend_in', { seconds: cooldown })}</Text>
-          : <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); handleResend(); }} disabled={resending} hitSlop={8}><Text style={[styles.resendLink, resending && styles.resendDisabled]}>{t('auth.resend_otp')}</Text></Pressable>}
+          ? <Text style={styles.resendTimer}>{t("auth.resend_in", { seconds: cooldown })}</Text>
+          : <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); handleResend(); }} disabled={resending} hitSlop={8}><Text style={[styles.resendLink, resending && styles.resendDisabled]}>{t("auth.resend_otp")}</Text></Pressable>}
       </View>
     </AuthScreenWrapper>
   );

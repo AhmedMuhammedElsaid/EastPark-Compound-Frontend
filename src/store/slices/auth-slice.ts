@@ -1,12 +1,12 @@
-import type { PayloadAction } from '@reduxjs/toolkit';
+import type { PayloadAction } from "@reduxjs/toolkit";
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export type AuthUser = {
   id: string;
   name: string;
   email: string;
-  role: 'RESIDENT' | 'MERCHANT' | 'ADMIN';
+  role: "RESIDENT" | "MERCHANT" | "ADMIN";
   isVerified: boolean;
   avatarUrl: string | null;
   unitNumber?: string;
@@ -38,7 +38,7 @@ const initialState: AuthState = {
 };
 
 export const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     login(

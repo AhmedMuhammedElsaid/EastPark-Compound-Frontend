@@ -1,6 +1,6 @@
-import { useUniwind } from 'uniwind';
+import { useUniwind } from "uniwind";
 
-import { DARK, LIGHT } from '@/theme/tokens';
+import { DARK, LIGHT } from "@/theme/tokens";
 
 /**
  * Returns the correct color token set for the current theme.
@@ -12,5 +12,5 @@ import { DARK, LIGHT } from '@/theme/tokens';
  */
 export function useAppColors(): typeof DARK | typeof LIGHT {
   const { theme } = useUniwind();
-  return theme === 'dark' ? DARK : LIGHT;
+  return theme === "dark" ? DARK : LIGHT;
 }

@@ -1,8 +1,8 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { Button, View } from '@/components/ui';
+import { Button, View } from "@/components/ui";
 
-import { Title } from './title';
+import { Title } from "./title";
 
 export function Buttons() {
   return (

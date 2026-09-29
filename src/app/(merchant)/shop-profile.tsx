@@ -1,11 +1,11 @@
-import type { ShopUpdatePayload, WorkingHoursDay } from '@/services/api/merchant';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { router } from 'expo-router';
-import { ArrowLeft, Check } from 'phosphor-react-native';
-import * as React from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import type { ShopUpdatePayload, WorkingHoursDay } from "@/services/api/merchant";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { router } from "expo-router";
+import { ArrowLeft, Check } from "phosphor-react-native";
+import * as React from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Pressable,
@@ -15,19 +15,19 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import { showMessage } from 'react-native-flash-message';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { z } from 'zod';
+} from "react-native";
+import { showMessage } from "react-native-flash-message";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { z } from "zod";
 
-import { Skeleton } from '@/components/ui/skeleton';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { merchantApi } from '@/services/api/merchant';
-import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { merchantApi } from "@/services/api/merchant";
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from "@/theme/tokens";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
+const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 type DayKey = typeof DAYS[number];
 
 // ─── Zod Schema ───────────────────────────────────────────────────────────────
@@ -36,13 +36,13 @@ const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 const workingHoursDaySchema = z.object({
   closed: z.boolean(),
-  open: z.string().regex(timeRegex, { message: 'HH:MM' }).optional().or(z.literal('')),
-  close: z.string().regex(timeRegex, { message: 'HH:MM' }).optional().or(z.literal('')),
+  open: z.string().regex(timeRegex, { message: "HH:MM" }).optional().or(z.literal("")),
+  close: z.string().regex(timeRegex, { message: "HH:MM" }).optional().or(z.literal("")),
 });
 
 const shopProfileSchema = z.object({
-  name: z.string().min(2, { message: 'min_2' }),
-  nameAr: z.string().min(2, { message: 'min_2' }),
+  name: z.string().min(2, { message: "min_2" }),
+  nameAr: z.string().min(2, { message: "min_2" }),
   description: z.string().optional(),
   descriptionAr: z.string().optional(),
   phone: z.string().optional(),
@@ -59,8 +59,8 @@ function useStyles() {
   return React.useMemo(() => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
     nav: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       paddingHorizontal: SPACING.base,
       paddingVertical: SPACING.md,
       backgroundColor: colors.card,
@@ -73,17 +73,17 @@ function useStyles() {
       height: 36,
       borderRadius: 18,
       backgroundColor: colors.elevated,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    navTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    navTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: "700", fontSize: 18, color: colors.text },
     saveBtn: {
       width: 36,
       height: 36,
       borderRadius: 18,
       backgroundColor: BRAND.gold,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
     saveBtnDisabled: { opacity: 0.5 },
     scroll: { padding: SPACING.base, gap: SPACING.md },
@@ -95,7 +95,7 @@ function useStyles() {
     },
     sectionTitle: {
       fontFamily: FONT.sans,
-      fontWeight: '700',
+      fontWeight: "700",
       fontSize: 14,
       color: BRAND.gold,
       marginBottom: SPACING.xs,
@@ -115,19 +115,19 @@ function useStyles() {
     inputError: { borderColor: SEMANTIC.error },
     inputMulti: {
       height: 80,
-      textAlignVertical: 'top' as const,
+      textAlignVertical: "top" as const,
       paddingTop: SPACING.sm,
     },
     errorText: { fontFamily: FONT.sans, fontSize: 12, color: SEMANTIC.error, marginTop: 2 },
     dayRow: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       gap: SPACING.sm,
       paddingVertical: SPACING.xs,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
-    dayLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 13, color: colors.text, width: 36 },
+    dayLabel: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 13, color: colors.text, width: 36 },
     timeInput: {
       flex: 1,
       height: 36,
@@ -139,7 +139,7 @@ function useStyles() {
       color: colors.text,
       borderWidth: 1,
       borderColor: colors.border,
-      textAlign: 'center' as const,
+      textAlign: "center" as const,
     },
     timeSeparator: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
     closedLabel: { fontFamily: FONT.sans, fontSize: 12, color: colors.textMuted, flex: 1 },
@@ -156,7 +156,7 @@ export default function MerchantShopProfileScreen() {
   const colors = useAppColors();
 
   const { data: shopData, isLoading } = useQuery({
-    queryKey: ['merchant-shop'],
+    queryKey: ["merchant-shop"],
     queryFn: () => merchantApi.getMyShop(),
   });
 
@@ -166,7 +166,7 @@ export default function MerchantShopProfileScreen() {
     const base = shop?.workingHours as Record<string, WorkingHoursDay> | null | undefined;
     const result = {} as Record<DayKey, WorkingHoursDay>;
     for (const day of DAYS) {
-      result[day] = base?.[day] ?? { closed: false, open: '09:00', close: '22:00' };
+      result[day] = base?.[day] ?? { closed: false, open: "09:00", close: "22:00" };
     }
     return result;
   }, [shop?.workingHours]);
@@ -179,12 +179,12 @@ export default function MerchantShopProfileScreen() {
   } = useForm<ShopProfileForm>({
     resolver: zodResolver(shopProfileSchema),
     defaultValues: {
-      name: '',
-      nameAr: '',
-      description: '',
-      descriptionAr: '',
-      phone: '',
-      whatsapp: '',
+      name: "",
+      nameAr: "",
+      description: "",
+      descriptionAr: "",
+      phone: "",
+      whatsapp: "",
       workingHours: defaultWorkingHours,
     },
   });
@@ -193,12 +193,12 @@ export default function MerchantShopProfileScreen() {
   React.useEffect(() => {
     if (shop) {
       reset({
-        name: shop.name ?? '',
-        nameAr: shop.nameAr ?? '',
-        description: shop.description ?? '',
-        descriptionAr: shop.descriptionAr ?? '',
-        phone: shop.phone ?? '',
-        whatsapp: shop.whatsapp ?? '',
+        name: shop.name ?? "",
+        nameAr: shop.nameAr ?? "",
+        description: shop.description ?? "",
+        descriptionAr: shop.descriptionAr ?? "",
+        phone: shop.phone ?? "",
+        whatsapp: shop.whatsapp ?? "",
         workingHours: defaultWorkingHours,
       });
     }
@@ -207,17 +207,17 @@ export default function MerchantShopProfileScreen() {
   const { mutate: saveProfile, isPending } = useMutation({
     mutationFn: (payload: ShopUpdatePayload) => {
       if (!shop?.id)
-        throw new Error('no shop id');
+        throw new Error("no shop id");
       // Backend endpoint: PATCH /shops/:id — available to MERCHANT role for their own shop
       return merchantApi.updateShop(shop.id, payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['merchant-shop'] });
-      showMessage({ message: t('merchant.shop_saved'), type: 'success', backgroundColor: SEMANTIC.success });
+      queryClient.invalidateQueries({ queryKey: ["merchant-shop"] });
+      showMessage({ message: t("merchant.shop_saved"), type: "success", backgroundColor: SEMANTIC.success });
       router.back();
     },
     onError: () => {
-      showMessage({ message: t('common.error'), type: 'danger', backgroundColor: SEMANTIC.error });
+      showMessage({ message: t("common.error"), type: "danger", backgroundColor: SEMANTIC.error });
     },
   });
 
@@ -245,7 +245,7 @@ export default function MerchantShopProfileScreen() {
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
           <ArrowLeft size={18} color={colors.text} />
         </Pressable>
-        <Text style={styles.navTitle}>{t('merchant.shop_profile')}</Text>
+        <Text style={styles.navTitle}>{t("merchant.shop_profile")}</Text>
         <Pressable
           style={[styles.saveBtn, (!isDirty || isPending) && styles.saveBtnDisabled]}
           onPress={handleSubmit(onSubmit)}
@@ -265,10 +265,10 @@ export default function MerchantShopProfileScreen() {
       >
         {/* Basic Info */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('merchant.section_basic_info')}</Text>
+          <Text style={styles.sectionTitle}>{t("merchant.section_basic_info")}</Text>
 
           <FormField
-            label={t('merchant.field_name_en')}
+            label={t("merchant.field_name_en")}
             control={control}
             name="name"
             error={errors.name?.message}
@@ -276,7 +276,7 @@ export default function MerchantShopProfileScreen() {
             colors={colors}
           />
           <FormField
-            label={t('merchant.field_name_ar')}
+            label={t("merchant.field_name_ar")}
             control={control}
             name="nameAr"
             error={errors.nameAr?.message}
@@ -285,7 +285,7 @@ export default function MerchantShopProfileScreen() {
             rtl
           />
           <FormField
-            label={t('merchant.field_description_en')}
+            label={t("merchant.field_description_en")}
             control={control}
             name="description"
             error={errors.description?.message}
@@ -294,7 +294,7 @@ export default function MerchantShopProfileScreen() {
             multiline
           />
           <FormField
-            label={t('merchant.field_description_ar')}
+            label={t("merchant.field_description_ar")}
             control={control}
             name="descriptionAr"
             error={errors.descriptionAr?.message}
@@ -307,10 +307,10 @@ export default function MerchantShopProfileScreen() {
 
         {/* Contact */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('merchant.section_contact')}</Text>
+          <Text style={styles.sectionTitle}>{t("merchant.section_contact")}</Text>
 
           <FormField
-            label={t('merchant.field_phone')}
+            label={t("merchant.field_phone")}
             control={control}
             name="phone"
             error={errors.phone?.message}
@@ -319,7 +319,7 @@ export default function MerchantShopProfileScreen() {
             keyboardType="phone-pad"
           />
           <FormField
-            label={t('merchant.field_whatsapp')}
+            label={t("merchant.field_whatsapp")}
             control={control}
             name="whatsapp"
             error={errors.whatsapp?.message}
@@ -331,7 +331,7 @@ export default function MerchantShopProfileScreen() {
 
         {/* Working Hours */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('merchant.section_working_hours')}</Text>
+          <Text style={styles.sectionTitle}>{t("merchant.section_working_hours")}</Text>
           {DAYS.map(day => (
             <WorkingHoursRow
               key={day}
@@ -358,7 +358,7 @@ function FormField({
   colors,
   multiline = false,
   rtl = false,
-  keyboardType = 'default',
+  keyboardType = "default",
 }: {
   label: string;
   control: any;
@@ -368,7 +368,7 @@ function FormField({
   colors: any;
   multiline?: boolean;
   rtl?: boolean;
-  keyboardType?: 'default' | 'phone-pad';
+  keyboardType?: "default" | "phone-pad";
 }) {
   return (
     <View>
@@ -382,9 +382,9 @@ function FormField({
               styles.input,
               multiline && styles.inputMulti,
               error && styles.inputError,
-              rtl && { textAlign: 'right' as const },
+              rtl && { textAlign: "right" as const },
             ]}
-            value={value ?? ''}
+            value={value ?? ""}
             onChangeText={onChange}
             onBlur={onBlur}
             multiline={multiline}
@@ -434,7 +434,7 @@ function WorkingHoursRow({
                       render={({ field: f }) => (
                         <TextInput
                           style={styles.timeInput}
-                          value={f.value ?? ''}
+                          value={f.value ?? ""}
                           onChangeText={f.onChange}
                           placeholder="09:00"
                           placeholderTextColor={colors.textMuted}
@@ -450,7 +450,7 @@ function WorkingHoursRow({
                       render={({ field: f }) => (
                         <TextInput
                           style={styles.timeInput}
-                          value={f.value ?? ''}
+                          value={f.value ?? ""}
                           onChangeText={f.onChange}
                           placeholder="22:00"
                           placeholderTextColor={colors.textMuted}

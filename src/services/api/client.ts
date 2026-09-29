@@ -5,31 +5,31 @@
  * - On refresh failure: dispatches logout() and navigates to /login
  */
 
-import type { InternalAxiosRequestConfig } from 'axios';
+import type { InternalAxiosRequestConfig } from "axios";
 
-import axios from 'axios';
-import Env from 'env';
-import { router } from 'expo-router';
-import { deleteSecureItem, getSecureItem, setSecureItem } from '@/lib/secure-storage';
-import { queryClient } from '@/services/query/client';
+import axios from "axios";
+import Env from "env";
+import { router } from "expo-router";
+import { deleteSecureItem, getSecureItem, setSecureItem } from "@/lib/secure-storage";
+import { queryClient } from "@/services/query/client";
 
-import { logout, updateTokens } from '@/store/slices/authSlice';
+import { logout, updateTokens } from "@/store/slices/auth-slice";
 
 // Lazy import to avoid circular deps at module init time
-let storeRef: typeof import('@/store').store | null = null;
-export function injectStore(store: typeof import('@/store').store) {
+let storeRef: typeof import("@/store").store | null = null;
+export function injectStore(store: typeof import("@/store").store) {
   storeRef = store;
 }
 
-export const SECURE_KEY_ACCESS = 'eastpark_access_token';
-export const SECURE_KEY_REFRESH = 'eastpark_refresh_token';
-export const SECURE_KEY_BIOMETRIC_ENABLED = 'eastpark_biometric_enabled';
-export const SECURE_KEY_BIOMETRIC_EMAIL = 'eastpark_biometric_email';
+export const SECURE_KEY_ACCESS = "eastpark_access_token";
+export const SECURE_KEY_REFRESH = "eastpark_refresh_token";
+export const SECURE_KEY_BIOMETRIC_ENABLED = "eastpark_biometric_enabled";
+export const SECURE_KEY_BIOMETRIC_EMAIL = "eastpark_biometric_email";
 
 export const client = axios.create({
   baseURL: `${Env.EXPO_PUBLIC_API_URL}/v1`,
   timeout: 15_000,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { "Content-Type": "application/json" },
 });
 
 // ─── Request interceptor — attach Bearer token ────────────────────────────────
@@ -87,7 +87,7 @@ client.interceptors.response.use(
     try {
       const refreshToken = await getSecureItem(SECURE_KEY_REFRESH);
       if (!refreshToken)
-        throw new Error('No refresh token');
+        throw new Error("No refresh token");
 
       const { data } = await axios.post(
         `${Env.EXPO_PUBLIC_API_URL}/v1/auth/refresh`,
@@ -116,7 +116,7 @@ client.interceptors.response.use(
       await deleteSecureItem(SECURE_KEY_REFRESH);
       storeRef?.dispatch(logout());
       queryClient.clear();
-      router.replace('/(auth)/login');
+      router.replace("/(auth)/login");
 
       return Promise.reject(refreshError);
     }

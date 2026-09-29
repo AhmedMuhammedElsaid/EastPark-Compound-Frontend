@@ -1,26 +1,26 @@
-import type { CartItem } from '@/store/slices/cartSlice';
-import * as Haptics from 'expo-haptics';
-import { router } from 'expo-router';
-import { ArrowLeft, Minus, Plus, ShoppingCart, Trash } from 'phosphor-react-native';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Swipeable } from 'react-native-gesture-handler';
+import type { CartItem } from "@/store/slices/cart-slice";
+import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
+import { ArrowLeft, Minus, Plus, ShoppingCart, Trash } from "phosphor-react-native";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { formatCurrency } from '@/lib/formatCurrency';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { useAppDispatch, useAppSelector } from '@/store';
-import { clearCart, removeItem, updateQuantity } from '@/store/slices/cartSlice';
-import { BRAND, FONT, LIGHT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { formatCurrency } from "@/lib/format-currency";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { clearCart, removeItem, updateQuantity } from "@/store/slices/cart-slice";
+import { BRAND, FONT, LIGHT, RADIUS, SEMANTIC, SPACING } from "@/theme/tokens";
 
 function useStyles() {
   const colors = useAppColors();
   return React.useMemo(() => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
     nav: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       paddingHorizontal: SPACING.base,
       paddingVertical: SPACING.md,
       backgroundColor: colors.card,
@@ -33,61 +33,61 @@ function useStyles() {
       height: 36,
       borderRadius: 18,
       backgroundColor: colors.elevated,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    navTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
-    clearText: { fontFamily: FONT.sans, fontSize: 13, color: SEMANTIC.error, fontWeight: '600' },
-    empty: { flex: 1, alignItems: 'center' as const, justifyContent: 'center' as const, gap: SPACING.md, paddingHorizontal: SPACING.xl },
-    emptyTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text, textAlign: 'center' as const },
-    emptyBody: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, textAlign: 'center' as const, lineHeight: 22 },
+    navTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: "700", fontSize: 18, color: colors.text },
+    clearText: { fontFamily: FONT.sans, fontSize: 13, color: SEMANTIC.error, fontWeight: "600" },
+    empty: { flex: 1, alignItems: "center" as const, justifyContent: "center" as const, gap: SPACING.md, paddingHorizontal: SPACING.xl },
+    emptyTitle: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 18, color: colors.text, textAlign: "center" as const },
+    emptyBody: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, textAlign: "center" as const, lineHeight: 22 },
     browseBtn: {
       height: 48,
       paddingHorizontal: SPACING.xl,
       borderRadius: RADIUS.md,
       backgroundColor: BRAND.gold,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
       marginTop: SPACING.sm,
     },
-    browseBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: colors.bg },
+    browseBtnText: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 15, color: colors.bg },
     scroll: { padding: SPACING.base },
     itemRow: {
-      flexDirection: 'row' as const,
+      flexDirection: "row" as const,
       backgroundColor: colors.card,
       borderRadius: RADIUS.md,
       padding: SPACING.md,
       marginBottom: SPACING.md,
       gap: SPACING.md,
-      alignItems: 'center' as const,
+      alignItems: "center" as const,
     },
     itemImg: { width: 64, height: 64, borderRadius: RADIUS.sm },
     itemImgPlaceholder: { width: 64, height: 64, borderRadius: RADIUS.sm, backgroundColor: colors.elevated },
     itemInfo: { flex: 1, gap: 4 },
-    itemName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text, lineHeight: 20 },
+    itemName: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 14, color: colors.text, lineHeight: 20 },
     itemPrice: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
-    qtyControls: { alignItems: 'center' as const, gap: SPACING.xs },
+    qtyControls: { alignItems: "center" as const, gap: SPACING.xs },
     qtyBtn: {
       width: 32,
       height: 32,
       borderRadius: 16,
       backgroundColor: colors.elevated,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
     qtyBtnText: { fontSize: 16, color: colors.text },
-    qtyValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text },
-    itemSubtotal: { fontFamily: FONT.sans, fontSize: 12, color: BRAND.gold, fontWeight: '600' },
+    qtyValue: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 16, color: colors.text },
+    itemSubtotal: { fontFamily: FONT.sans, fontSize: 12, color: BRAND.gold, fontWeight: "600" },
     deleteAction: {
       width: 80,
       backgroundColor: SEMANTIC.error,
       borderRadius: RADIUS.md,
       marginBottom: SPACING.md,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
     footer: {
-      position: 'absolute' as const,
+      position: "absolute" as const,
       bottom: 0,
       left: 0,
       right: 0,
@@ -98,17 +98,17 @@ function useStyles() {
       paddingTop: SPACING.md,
       gap: SPACING.md,
     },
-    totalRow: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const },
-    totalLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: colors.text },
-    totalValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: BRAND.gold },
+    totalRow: { flexDirection: "row" as const, justifyContent: "space-between" as const, alignItems: "center" as const },
+    totalLabel: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 15, color: colors.text },
+    totalValue: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 18, color: BRAND.gold },
     checkoutBtn: {
       height: 52,
       borderRadius: RADIUS.md,
       backgroundColor: BRAND.gold,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    checkoutBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.bg },
+    checkoutBtnText: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 16, color: colors.bg },
   }), [colors]);
 }
 
@@ -117,7 +117,7 @@ export default function CartScreen() {
   const insets = useSafeAreaInsets();
   const dispatch = useAppDispatch();
   const { items, shopName } = useAppSelector(s => s.cart);
-  const isAr = i18n.language === 'ar';
+  const isAr = i18n.language === "ar";
   const styles = useStyles();
   const colors = useAppColors();
 
@@ -129,10 +129,10 @@ export default function CartScreen() {
         <CartNav styles={styles} colors={colors} />
         <View style={styles.empty}>
           <ShoppingCart size={64} color={colors.textMuted} />
-          <Text style={styles.emptyTitle}>{t('cart.empty')}</Text>
-          <Text style={styles.emptyBody}>{t('cart.empty_subtitle')}</Text>
-          <Pressable style={styles.browseBtn} onPress={() => router.replace('/(tabs)/directory' as any)} accessibilityRole="button" accessibilityLabel={t('directory.title')}>
-            <Text style={styles.browseBtnText}>{t('directory.title')}</Text>
+          <Text style={styles.emptyTitle}>{t("cart.empty")}</Text>
+          <Text style={styles.emptyBody}>{t("cart.empty_subtitle")}</Text>
+          <Pressable style={styles.browseBtn} onPress={() => router.replace("/(tabs)/directory" as any)} accessibilityRole="button" accessibilityLabel={t("directory.title")}>
+            <Text style={styles.browseBtnText}>{t("directory.title")}</Text>
           </Pressable>
         </View>
       </View>
@@ -176,19 +176,19 @@ export default function CartScreen() {
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + SPACING.md }]}>
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>{t('cart.total')}</Text>
+          <Text style={styles.totalLabel}>{t("cart.total")}</Text>
           <Text style={styles.totalValue}>{formatCurrency(total)}</Text>
         </View>
         <Pressable
           style={styles.checkoutBtn}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            router.push('/checkout/address' as any);
+            router.push("/checkout/address" as any);
           }}
           accessibilityRole="button"
-          accessibilityLabel={t('cart.checkout')}
+          accessibilityLabel={t("cart.checkout")}
         >
-          <Text style={styles.checkoutBtnText}>{t('cart.checkout')}</Text>
+          <Text style={styles.checkoutBtnText}>{t("cart.checkout")}</Text>
         </Pressable>
       </View>
     </View>
@@ -201,13 +201,13 @@ function CartNav({ shopName, onClear, styles, colors }: { shopName?: string; onC
   const { t } = useTranslation();
   return (
     <View style={styles.nav}>
-      <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
+      <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t("common.back")}>
         <ArrowLeft size={18} color={colors.text} />
       </Pressable>
-      <Text style={styles.navTitle}>{shopName || t('cart.title')}</Text>
+      <Text style={styles.navTitle}>{shopName || t("cart.title")}</Text>
       {onClear && (
-        <Pressable onPress={onClear} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.clear')}>
-          <Text style={styles.clearText}>{t('common.clear')}</Text>
+        <Pressable onPress={onClear} hitSlop={8} accessibilityRole="button" accessibilityLabel={t("common.clear")}>
+          <Text style={styles.clearText}>{t("common.clear")}</Text>
         </Pressable>
       )}
     </View>

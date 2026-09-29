@@ -1,15 +1,15 @@
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import { router } from 'expo-router';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import { router } from "expo-router";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { StyleSheet, Text, View } from "react-native";
 
-import { BrandMark } from '@/components/auth/brand-mark';
-import { GoldButton } from '@/components/auth/gold-button';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { useAppDispatch, useAppSelector } from '@/store';
-import { hideAuthWall } from '@/store/slices/authSlice';
-import { FONT, SPACING } from '@/theme/tokens';
+import { BrandMark } from "@/components/auth/brand-mark";
+import { GoldButton } from "@/components/auth/gold-button";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { hideAuthWall } from "@/store/slices/auth-slice";
+import { FONT, SPACING } from "@/theme/tokens";
 
 /**
  * Global auth-wall bottom sheet.
@@ -40,18 +40,18 @@ export function AuthWallSheet() {
 
   function handleLogin() {
     handleDismiss();
-    router.push('/(auth)/login');
+    router.push("/(auth)/login");
   }
 
   function handleRegister() {
     handleDismiss();
-    router.push('/(auth)/register');
+    router.push("/(auth)/register");
   }
 
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={['42%']}
+      snapPoints={["42%"]}
       enablePanDownToClose
       onDismiss={handleDismiss}
       backgroundStyle={styles.sheetBg}
@@ -77,19 +77,19 @@ export function AuthWallSheet() {
           : null}
 
         <GoldButton
-          label={t('auth.login')}
+          label={t("auth.login")}
           onPress={handleLogin}
           variant="filled"
         />
 
         <GoldButton
-          label={t('auth.register')}
+          label={t("auth.register")}
           onPress={handleRegister}
           variant="outline"
         />
 
         <GoldButton
-          label={t('auth.continue_as_guest')}
+          label={t("auth.continue_as_guest")}
           onPress={handleDismiss}
           variant="ghost"
         />
@@ -111,14 +111,14 @@ function useStyles(colors: ReturnType<typeof useAppColors>) {
           gap: SPACING.sm,
         },
         logoRow: {
-          alignItems: 'center',
+          alignItems: "center",
           paddingVertical: SPACING.lg,
         },
         message: {
           fontFamily: FONT.sans,
           fontSize: 14,
           color: colors.textMuted,
-          textAlign: 'center',
+          textAlign: "center",
           marginBottom: SPACING.xs,
         },
       }),

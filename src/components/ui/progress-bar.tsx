@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { useImperativeHandle } from 'react';
-import { Animated, Easing, View } from 'react-native';
-import { twMerge } from 'tailwind-merge';
+import * as React from "react";
+import { useImperativeHandle } from "react";
+import { Animated, Easing, View } from "react-native";
+import { twMerge } from "tailwind-merge";
 
 type Props = {
   initialProgress?: number;
@@ -12,12 +12,12 @@ export type ProgressBarRef = {
   setProgress: (value: number) => void;
 };
 
-export function ProgressBar({ ref, initialProgress = 0, className = '' }: Props & { ref?: React.RefObject<ProgressBarRef | null> }) {
+export function ProgressBar({ ref, initialProgress = 0, className = "" }: Props & { ref?: React.RefObject<ProgressBarRef | null> }) {
   const progress = React.useRef(new Animated.Value(initialProgress ?? 0)).current;
 
   const widthPercent = progress.interpolate({
     inputRange: [0, 100],
-    outputRange: ['0%', '100%'],
+    outputRange: ["0%", "100%"],
   });
 
   useImperativeHandle(ref, () => {
@@ -35,7 +35,7 @@ export function ProgressBar({ ref, initialProgress = 0, className = '' }: Props 
 
   return (
     <View className={twMerge(`bg-[#EAEAEA]`, className)}>
-      <Animated.View style={{ width: widthPercent, backgroundColor: '#000', height: 2 }} />
+      <Animated.View style={{ width: widthPercent, backgroundColor: "#000", height: 2 }} />
     </View>
   );
 }

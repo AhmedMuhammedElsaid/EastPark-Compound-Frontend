@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as React from "react";
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { SPACING } from '@/theme/tokens';
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { SPACING } from "@/theme/tokens";
 
 type Props = {
   children: React.ReactNode;
@@ -22,7 +22,7 @@ export function AuthScreenWrapper({ children, scrollable = true }: Props) {
   return (
     <KeyboardAvoidingView
       style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View style={[styles.bg, { paddingBottom: insets.bottom }]}>
         {scrollable

@@ -1,6 +1,6 @@
-import { client } from './client';
+import { client } from "./client";
 
-export type ShopCategory = 'CAFE_AND_FOOD' | 'GROCERY' | 'BUTCHER' | 'SERVICES' | 'OTHER';
+export type ShopCategory = "CAFE_AND_FOOD" | "GROCERY" | "BUTCHER" | "SERVICES" | "OTHER";
 
 export type Shop = {
   id: string;
@@ -49,7 +49,7 @@ export const shopsApi = {
     category?: ShopCategory;
     search?: string;
   }) =>
-    client.get<{ data: CursorPage<Shop> }>('/shops', { params }),
+    client.get<{ data: CursorPage<Shop> }>("/shops", { params }),
 
   getShop: (shopId: string) =>
     client.get<{ data: Shop }>(`/shops/${shopId}`),
@@ -70,5 +70,5 @@ export const shopsApi = {
     client.delete<{ data: { success: boolean } }>(`/shops/${shopId}/save`),
 
   getSavedShops: (params?: { cursor?: string; limit?: number }) =>
-    client.get<{ data: CursorPage<Shop> }>('/users/me/saved-shops', { params }),
+    client.get<{ data: CursorPage<Shop> }>("/users/me/saved-shops", { params }),
 };

@@ -1,11 +1,11 @@
-import * as Haptics from 'expo-haptics';
-import * as React from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import * as Haptics from "expo-haptics";
+import * as React from "react";
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { BRAND, FONT, RADIUS, SPACING } from "@/theme/tokens";
 
-type Variant = 'filled' | 'outline' | 'ghost';
+type Variant = "filled" | "outline" | "ghost";
 
 type Props = {
   label: string;
@@ -25,7 +25,7 @@ type Props = {
 export function GoldButton({
   label,
   onPress,
-  variant = 'filled',
+  variant = "filled",
   loading = false,
   disabled = false,
   fullWidth = true,
@@ -37,17 +37,17 @@ export function GoldButton({
   const containerStyle = [
     styles.base,
     fullWidth && styles.fullWidth,
-    variant === 'filled' && (pressed ? styles.filledPressed : styles.filled),
-    variant === 'outline' && styles.outline,
-    variant === 'ghost' && styles.ghost,
+    variant === "filled" && (pressed ? styles.filledPressed : styles.filled),
+    variant === "outline" && styles.outline,
+    variant === "ghost" && styles.ghost,
     disabled && styles.disabled,
   ];
 
   const textStyle = [
     styles.label,
-    variant === 'filled' && styles.filledText,
-    variant === 'outline' && styles.outlineText,
-    variant === 'ghost' && styles.ghostText,
+    variant === "filled" && styles.filledText,
+    variant === "outline" && styles.outlineText,
+    variant === "ghost" && styles.ghostText,
     disabled && styles.disabledText,
   ];
 
@@ -68,7 +68,7 @@ export function GoldButton({
         {loading
           ? (
               <ActivityIndicator
-                color={variant === 'filled' ? colors.bg : BRAND.gold}
+                color={variant === "filled" ? colors.bg : BRAND.gold}
                 size="small"
               />
             )
@@ -87,12 +87,12 @@ function useStyles(colors: ReturnType<typeof useAppColors>) {
         base: {
           height: 52,
           borderRadius: RADIUS.md,
-          justifyContent: 'center',
-          alignItems: 'center',
+          justifyContent: "center",
+          alignItems: "center",
           marginVertical: SPACING.xs,
         },
-        fullWidth: { alignSelf: 'stretch' },
-        inner: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
+        fullWidth: { alignSelf: "stretch" },
+        inner: { flexDirection: "row", alignItems: "center", gap: SPACING.sm },
 
         // filled
         filled: { backgroundColor: BRAND.gold },
@@ -103,12 +103,12 @@ function useStyles(colors: ReturnType<typeof useAppColors>) {
         outline: {
           borderWidth: 1.5,
           borderColor: BRAND.gold,
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
         },
         outlineText: { color: BRAND.gold },
 
         // ghost
-        ghost: { backgroundColor: 'transparent' },
+        ghost: { backgroundColor: "transparent" },
         ghostText: { color: colors.textMuted },
 
         // disabled
@@ -117,7 +117,7 @@ function useStyles(colors: ReturnType<typeof useAppColors>) {
 
         label: {
           fontFamily: FONT.sans,
-          fontWeight: '600',
+          fontWeight: "600",
           fontSize: 16,
           letterSpacing: 0.2,
         },

@@ -1,12 +1,12 @@
-import type { ShopCategory } from '@/services/api/shops';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import type { ShopCategory } from "@/services/api/shops";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
 
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { BRAND, FONT, RADIUS, SPACING } from "@/theme/tokens";
 
-type Category = ShopCategory | 'ALL';
+type Category = ShopCategory | "ALL";
 
 type Props = {
   selected: Category;
@@ -14,12 +14,12 @@ type Props = {
 };
 
 const CATEGORIES: { key: Category; labelKey: string }[] = [
-  { key: 'ALL', labelKey: 'directory.all_categories' },
-  { key: 'CAFE_AND_FOOD', labelKey: 'directory.cafe_food' },
-  { key: 'GROCERY', labelKey: 'directory.grocery' },
-  { key: 'BUTCHER', labelKey: 'directory.butcher' },
-  { key: 'SERVICES', labelKey: 'directory.services' },
-  { key: 'OTHER', labelKey: 'directory.other' },
+  { key: "ALL", labelKey: "directory.all_categories" },
+  { key: "CAFE_AND_FOOD", labelKey: "directory.cafe_food" },
+  { key: "GROCERY", labelKey: "directory.grocery" },
+  { key: "BUTCHER", labelKey: "directory.butcher" },
+  { key: "SERVICES", labelKey: "directory.services" },
+  { key: "OTHER", labelKey: "directory.other" },
 ];
 
 /**
@@ -71,15 +71,15 @@ function useStyles(colors: ReturnType<typeof useAppColors>) {
         scroll: {
           paddingHorizontal: SPACING.base,
           gap: SPACING.sm,
-          flexDirection: 'row',
-          alignItems: 'center',
+          flexDirection: "row",
+          alignItems: "center",
         },
         chip: {
           height: 36,
           paddingHorizontal: SPACING.md,
           borderRadius: RADIUS.full,
-          justifyContent: 'center',
-          alignItems: 'center',
+          justifyContent: "center",
+          alignItems: "center",
         },
         chipActive: {
           backgroundColor: BRAND.gold,
@@ -87,11 +87,11 @@ function useStyles(colors: ReturnType<typeof useAppColors>) {
         chipInactive: {
           borderWidth: 1,
           borderColor: colors.border,
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
         },
         label: {
           fontFamily: FONT.sans,
-          fontWeight: '500',
+          fontWeight: "500",
           fontSize: 13,
         },
         labelActive: { color: colors.bg },

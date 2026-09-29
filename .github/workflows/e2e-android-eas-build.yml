@@ -19,7 +19,7 @@ on:
         type: string
         description: EAS APK URL
         required: true
-        default: ''
+        default: ""
 
 jobs:
   download-eas-apk:

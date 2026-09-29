@@ -1,9 +1,9 @@
-import type { TextInputProps } from 'react-native';
-import * as React from 'react';
-import { I18nManager, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { TextInputProps } from "react-native";
+import * as React from "react";
+import { I18nManager, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from "@/theme/tokens";
 
 type Props = TextInputProps & {
   label?: string;
@@ -27,8 +27,8 @@ export function AuthInput({ ref, label, error, rightSlot, ...props }: Props & { 
     error ? styles.inputError : null,
     props.editable === false && styles.inputDisabled,
     {
-      writingDirection: I18nManager.isRTL ? ('rtl' as const) : ('ltr' as const),
-      textAlign: I18nManager.isRTL ? ('right' as const) : ('left' as const),
+      writingDirection: I18nManager.isRTL ? ("rtl" as const) : ("ltr" as const),
+      textAlign: I18nManager.isRTL ? ("right" as const) : ("left" as const),
     },
   ];
 
@@ -59,12 +59,12 @@ function useStyles(colors: ReturnType<typeof useAppColors>, hasRightSlot: boolea
         wrapper: { marginBottom: SPACING.md },
         label: {
           fontFamily: FONT.sans,
-          fontWeight: '500',
+          fontWeight: "500",
           fontSize: 14,
           color: colors.textMuted,
           marginBottom: SPACING.xs,
         },
-        inputRow: { position: 'relative' },
+        inputRow: { position: "relative" },
         input: {
           height: 52,
           backgroundColor: colors.card,
@@ -72,7 +72,7 @@ function useStyles(colors: ReturnType<typeof useAppColors>, hasRightSlot: boolea
           borderColor: colors.border,
           borderRadius: RADIUS.md,
           paddingHorizontal: SPACING.base,
-          paddingRight: hasRightSlot ? SPACING['4xl'] : SPACING.base,
+          paddingRight: hasRightSlot ? SPACING["4xl"] : SPACING.base,
           fontFamily: FONT.sans,
           fontSize: 15,
           color: colors.text,
@@ -87,12 +87,12 @@ function useStyles(colors: ReturnType<typeof useAppColors>, hasRightSlot: boolea
           opacity: 0.5,
         },
         rightSlot: {
-          position: 'absolute',
+          position: "absolute",
           right: SPACING.base,
           top: 0,
           bottom: 0,
-          justifyContent: 'center',
-          alignItems: 'center',
+          justifyContent: "center",
+          alignItems: "center",
         },
         error: {
           fontFamily: FONT.sans,

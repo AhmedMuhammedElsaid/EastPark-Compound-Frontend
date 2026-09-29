@@ -1,29 +1,29 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { router, useLocalSearchParams } from 'expo-router';
-import { Eye, EyeSlash } from 'phosphor-react-native';
-import * as React from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { showMessage } from 'react-native-flash-message';
-import { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { router, useLocalSearchParams } from "expo-router";
+import { Eye, EyeSlash } from "phosphor-react-native";
+import * as React from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
+import { z } from "zod";
 
-import { AuthInput } from '@/components/auth/auth-input';
-import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
-import { BrandMark } from '@/components/auth/brand-mark';
-import { GoldButton } from '@/components/auth/gold-button';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { authApi } from '@/services/api/auth';
-import { FONT, SEMANTIC, SPACING } from '@/theme/tokens';
+import { AuthInput } from "@/components/auth/auth-input";
+import { AuthScreenWrapper } from "@/components/auth/auth-screen-wrapper";
+import { BrandMark } from "@/components/auth/brand-mark";
+import { GoldButton } from "@/components/auth/gold-button";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { authApi } from "@/services/api/auth";
+import { FONT, SEMANTIC, SPACING } from "@/theme/tokens";
 
 const schema = z
   .object({
-    password: z.string().min(8, 'auth.errors.password_too_short'),
+    password: z.string().min(8, "auth.errors.password_too_short"),
     confirmPassword: z.string(),
   })
   .refine(d => d.password === d.confirmPassword, {
-    message: 'auth.errors.passwords_no_match',
-    path: ['confirmPassword'],
+    message: "auth.errors.passwords_no_match",
+    path: ["confirmPassword"],
   });
 
 type FormData = z.infer<typeof schema>;
@@ -32,45 +32,45 @@ function useStyles() {
   const colors = useAppColors();
   return React.useMemo(() => StyleSheet.create({
     header: {
-      alignItems: 'center' as const,
+      alignItems: "center" as const,
       marginTop: SPACING.xl,
-      marginBottom: SPACING['2xl'],
+      marginBottom: SPACING["2xl"],
     },
     title: {
       fontFamily: FONT.sans,
-      fontWeight: '700',
+      fontWeight: "700",
       fontSize: 24,
       color: colors.text,
-      textAlign: 'center' as const,
+      textAlign: "center" as const,
       marginBottom: SPACING.xs,
     },
     subtitle: {
       fontFamily: FONT.sans,
       fontSize: 14,
       color: colors.textMuted,
-      textAlign: 'center' as const,
+      textAlign: "center" as const,
       marginBottom: SPACING.xl,
     },
     form: { gap: SPACING.xs, marginBottom: SPACING.sm },
     errorCard: {
       flex: 1,
-      alignItems: 'center' as const,
-      justifyContent: 'center' as const,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
       gap: SPACING.md,
       paddingHorizontal: SPACING.lg,
     },
     errorTitle: {
       fontFamily: FONT.sans,
-      fontWeight: '700',
+      fontWeight: "700",
       fontSize: 20,
       color: colors.text,
-      textAlign: 'center' as const,
+      textAlign: "center" as const,
     },
     errorBody: {
       fontFamily: FONT.sans,
       fontSize: 14,
       color: colors.textMuted,
-      textAlign: 'center' as const,
+      textAlign: "center" as const,
     },
   }), [colors]);
 }
@@ -89,7 +89,7 @@ export default function ResetPasswordScreen() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { password: '', confirmPassword: '' },
+    defaultValues: { password: "", confirmPassword: "" },
   });
 
   async function onSubmit({ password }: FormData) {
@@ -98,16 +98,16 @@ export default function ResetPasswordScreen() {
     try {
       await authApi.resetPassword(token, password);
       showMessage({
-        message: t('auth.password_reset_success'),
-        type: 'success',
+        message: t("auth.password_reset_success"),
+        type: "success",
         backgroundColor: SEMANTIC.success,
       });
-      router.replace('/(auth)/login');
+      router.replace("/(auth)/login");
     }
     catch {
       showMessage({
-        message: t('auth.reset_link_expired'),
-        type: 'danger',
+        message: t("auth.reset_link_expired"),
+        type: "danger",
         backgroundColor: SEMANTIC.error,
       });
     }
@@ -120,13 +120,13 @@ export default function ResetPasswordScreen() {
           <BrandMark size="sm" />
         </View>
         <View style={styles.errorCard}>
-          <Text style={styles.errorTitle}>{t('auth.invalid_reset_link')}</Text>
-          <Text style={styles.errorBody}>{t('auth.contact_administrator')}</Text>
+          <Text style={styles.errorTitle}>{t("auth.invalid_reset_link")}</Text>
+          <Text style={styles.errorBody}>{t("auth.contact_administrator")}</Text>
         </View>
         <GoldButton
           variant="outline"
-          label={t('auth.back_to_login')}
-          onPress={() => router.replace('/(auth)/login')}
+          label={t("auth.back_to_login")}
+          onPress={() => router.replace("/(auth)/login")}
         />
       </AuthScreenWrapper>
     );
@@ -138,8 +138,8 @@ export default function ResetPasswordScreen() {
         <BrandMark size="sm" />
       </View>
 
-      <Text style={styles.title}>{t('auth.reset_password')}</Text>
-      <Text style={styles.subtitle}>{t('auth.choose_new_password')}</Text>
+      <Text style={styles.title}>{t("auth.reset_password")}</Text>
+      <Text style={styles.subtitle}>{t("auth.choose_new_password")}</Text>
 
       <View style={styles.form}>
         <Controller
@@ -147,7 +147,7 @@ export default function ResetPasswordScreen() {
           name="password"
           render={({ field: { onChange, onBlur, value } }) => (
             <AuthInput
-              label={t('auth.password')}
+              label={t("auth.password")}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -156,7 +156,7 @@ export default function ResetPasswordScreen() {
               autoComplete="new-password"
               returnKeyType="next"
               rightSlot={(
-                <Pressable onPress={() => setShowPwd(v => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={showPwd ? 'Hide password' : 'Show password'}>
+                <Pressable onPress={() => setShowPwd(v => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={showPwd ? "Hide password" : "Show password"}>
                   {showPwd ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
                 </Pressable>
               )}
@@ -168,7 +168,7 @@ export default function ResetPasswordScreen() {
           name="confirmPassword"
           render={({ field: { onChange, onBlur, value } }) => (
             <AuthInput
-              label={t('auth.confirm_password')}
+              label={t("auth.confirm_password")}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -177,7 +177,7 @@ export default function ResetPasswordScreen() {
               returnKeyType="done"
               onSubmitEditing={handleSubmit(onSubmit)}
               rightSlot={(
-                <Pressable onPress={() => setShowConfirm(v => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={showConfirm ? 'Hide password' : 'Show password'}>
+                <Pressable onPress={() => setShowConfirm(v => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={showConfirm ? "Hide password" : "Show password"}>
                   {showConfirm ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
                 </Pressable>
               )}
@@ -187,7 +187,7 @@ export default function ResetPasswordScreen() {
       </View>
 
       <GoldButton
-        label={t('auth.reset_password')}
+        label={t("auth.reset_password")}
         onPress={handleSubmit(onSubmit)}
         loading={isSubmitting}
       />

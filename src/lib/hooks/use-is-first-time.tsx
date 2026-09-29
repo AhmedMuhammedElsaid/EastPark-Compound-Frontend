@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
 
-const IS_FIRST_TIME = 'IS_FIRST_TIME';
+const IS_FIRST_TIME = "IS_FIRST_TIME";
 
 export function useIsFirstTime() {
   const [isFirstTime, setIsFirstTimeState] = useState<boolean>(true);

@@ -1,49 +1,49 @@
 /* eslint-disable better-tailwindcss/no-unknown-classes */
-import type { BottomSheetModal } from '@gorhom/bottom-sheet';
-import type { PressableProps } from 'react-native';
-import type { SvgProps } from 'react-native-svg';
+import type { BottomSheetModal } from "@gorhom/bottom-sheet";
+import type { PressableProps } from "react-native";
+import type { SvgProps } from "react-native-svg";
 import {
   BottomSheetFlatList,
 
-} from '@gorhom/bottom-sheet';
-import { FlashList } from '@shopify/flash-list';
-import * as React from 'react';
-import { Platform, Pressable, View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
-import { tv } from 'tailwind-variants';
+} from "@gorhom/bottom-sheet";
+import { FlashList } from "@shopify/flash-list";
+import * as React from "react";
+import { Platform, Pressable, View } from "react-native";
+import Svg, { Path } from "react-native-svg";
+import { tv } from "tailwind-variants";
 
-import { useUniwind } from 'uniwind';
-import colors from '@/components/ui/colors';
+import { useUniwind } from "uniwind";
+import colors from "@/components/ui/colors";
 
-import { CaretDown } from '@/components/ui/icons';
-import { Modal, useModal } from './modal';
-import { Text } from './text';
+import { CaretDown } from "@/components/ui/icons";
+import { Modal, useModal } from "./modal";
+import { Text } from "./text";
 
 const selectTv = tv({
   slots: {
-    container: 'mb-4',
-    label: 'text-grey-100 mb-1 text-lg dark:text-neutral-100',
+    container: "mb-4",
+    label: "text-grey-100 mb-1 text-lg dark:text-neutral-100",
     input:
-      'border-grey-50 mt-0 flex-row items-center justify-center rounded-xl border-[0.5px] p-3 dark:border-neutral-500 dark:bg-neutral-800',
-    inputValue: 'dark:text-neutral-100',
+      "border-grey-50 mt-0 flex-row items-center justify-center rounded-xl border-[0.5px] p-3 dark:border-neutral-500 dark:bg-neutral-800",
+    inputValue: "dark:text-neutral-100",
   },
 
   variants: {
     focused: {
       true: {
-        input: 'border-neutral-600',
+        input: "border-neutral-600",
       },
     },
     error: {
       true: {
-        input: 'border-danger-600',
-        label: 'text-danger-600 dark:text-danger-600',
-        inputValue: 'text-danger-600',
+        input: "border-danger-600",
+        label: "text-danger-600 dark:text-danger-600",
+        inputValue: "text-danger-600",
       },
     },
     disabled: {
       true: {
-        input: 'bg-neutral-200',
+        input: "bg-neutral-200",
       },
     },
   },
@@ -53,7 +53,7 @@ const selectTv = tv({
   },
 });
 
-const List = Platform.OS === 'web' ? FlashList : BottomSheetFlatList;
+const List = Platform.OS === "web" ? FlashList : BottomSheetFlatList;
 
 export type OptionType = { label: string; value: string | number };
 
@@ -72,7 +72,7 @@ export function Options({ ref, options, onSelect, value, testID }: OptionsProps 
   const height = options.length * 70 + 100;
   const snapPoints = React.useMemo(() => [height], [height]);
   const { theme } = useUniwind();
-  const isDark = theme === 'dark';
+  const isDark = theme === "dark";
 
   const renderSelectItem = React.useCallback(
     ({ item }: { item: OptionType }) => (
@@ -144,7 +144,7 @@ export function Select(props: SelectProps) {
     value,
     error,
     options = [],
-    placeholder = 'select...',
+    placeholder = "select...",
     disabled = false,
     onSelect,
     testID,

@@ -1,4 +1,4 @@
-import { client } from './client';
+import { client } from "./client";
 
 export type MerchantShop = {
   id: string;
@@ -59,10 +59,10 @@ export type ShopUpdatePayload = {
 export const merchantApi = {
   // Shop
   getMyShop: () =>
-    client.get<{ data: MerchantShop }>('/merchant/shop'),
+    client.get<{ data: MerchantShop }>("/merchant/shop"),
 
   toggleShopOpen: (isOpen: boolean) =>
-    client.patch<{ data: MerchantShop }>('/merchant/shop', { isOpen }),
+    client.patch<{ data: MerchantShop }>("/merchant/shop", { isOpen }),
 
   // TODO: backend endpoint is PATCH /shops/:id (merchant can update own shop).
   // The frontend calls this as /shops/:shopId — get the shopId from getMyShop() first.
@@ -73,7 +73,7 @@ export const merchantApi = {
 
   // Products
   getMyProducts: (params?: { cursor?: string; limit?: number; includeUnavailable?: boolean }) =>
-    client.get<{ data: { items: Product[]; nextCursor: string | null } }>('/merchant/products', { params }),
+    client.get<{ data: { items: Product[]; nextCursor: string | null } }>("/merchant/products", { params }),
 
   createProduct: (data: {
     name: string;
@@ -82,7 +82,7 @@ export const merchantApi = {
     descriptionAr?: string;
     price: number;
     imageUrl?: string;
-  }) => client.post<{ data: Product }>('/merchant/products', data),
+  }) => client.post<{ data: Product }>("/merchant/products", data),
 
   updateProduct: (productId: string, data: Partial<{
     name: string;
@@ -99,7 +99,7 @@ export const merchantApi = {
 
   // Orders (incoming to my shop)
   getIncomingOrders: (params?: { cursor?: string; limit?: number; status?: string }) =>
-    client.get<{ data: { items: MerchantOrder[]; nextCursor: string | null } }>('/merchant/orders', { params }),
+    client.get<{ data: { items: MerchantOrder[]; nextCursor: string | null } }>("/merchant/orders", { params }),
 
   getOrder: (orderId: string) =>
     client.get<{ data: MerchantOrder }>(`/merchant/orders/${orderId}`),

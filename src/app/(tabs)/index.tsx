@@ -1,26 +1,26 @@
-import type { ReactNode } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { router } from 'expo-router';
-import { ChatCircle, CheckSquare, FileText, Megaphone, Package, Storefront } from 'phosphor-react-native';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
+import { ChatCircle, CheckSquare, FileText, Megaphone, Package, Storefront } from "phosphor-react-native";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Skeleton } from '@/components/ui/skeleton';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
-import { communityApi } from '@/services/api/community';
-import { shopsApi } from '@/services/api/shops';
-import { useAppSelector } from '@/store';
-import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { useAuthGuard } from "@/lib/hooks/use-auth-guard";
+import { communityApi } from "@/services/api/community";
+import { shopsApi } from "@/services/api/shops";
+import { useAppSelector } from "@/store";
+import { BRAND, FONT, RADIUS, SPACING } from "@/theme/tokens";
 
 function greeting(h: number): string {
   if (h < 12)
-    return 'home.greeting_morning';
+    return "home.greeting_morning";
   if (h < 18)
-    return 'home.greeting_afternoon';
-  return 'home.greeting_evening';
+    return "home.greeting_afternoon";
+  return "home.greeting_evening";
 }
 
 function useStyles() {
@@ -29,23 +29,23 @@ function useStyles() {
     container: { flex: 1, backgroundColor: colors.bg },
     scroll: { padding: SPACING.base, gap: SPACING.lg },
     greeting: { gap: SPACING.xs },
-    greetText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 26, color: colors.text },
+    greetText: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 26, color: colors.text },
     unitText: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
-    sectionHeader: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const },
-    sectionTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
-    seeAll: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: '600' },
-    quickGrid: { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: SPACING.sm },
+    sectionHeader: { flexDirection: "row" as const, justifyContent: "space-between" as const, alignItems: "center" as const },
+    sectionTitle: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 18, color: colors.text },
+    seeAll: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: "600" },
+    quickGrid: { flexDirection: "row" as const, flexWrap: "wrap" as const, gap: SPACING.sm },
     quickCard: {
-      width: '30.5%',
+      width: "30.5%",
       backgroundColor: colors.card,
       borderRadius: RADIUS.md,
       padding: SPACING.md,
-      alignItems: 'center' as const,
+      alignItems: "center" as const,
       gap: SPACING.xs,
       aspectRatio: 1,
-      justifyContent: 'center' as const,
+      justifyContent: "center" as const,
     },
-    quickLabel: { fontFamily: FONT.sans, fontSize: 11, color: colors.textMuted, textAlign: 'center' as const, fontWeight: '500' },
+    quickLabel: { fontFamily: FONT.sans, fontSize: 11, color: colors.textMuted, textAlign: "center" as const, fontWeight: "500" },
     annList: { gap: SPACING.sm },
     annCard: {
       backgroundColor: colors.card,
@@ -53,17 +53,17 @@ function useStyles() {
       padding: SPACING.md,
       gap: SPACING.xs,
     },
-    annCategory: { fontFamily: FONT.sans, fontSize: 11, color: BRAND.gold, fontWeight: '600', textTransform: 'uppercase' as const },
-    annTitle: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text, lineHeight: 20 },
-    shopsGrid: { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: SPACING.sm },
+    annCategory: { fontFamily: FONT.sans, fontSize: 11, color: BRAND.gold, fontWeight: "600", textTransform: "uppercase" as const },
+    annTitle: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 14, color: colors.text, lineHeight: 20 },
+    shopsGrid: { flexDirection: "row" as const, flexWrap: "wrap" as const, gap: SPACING.sm },
     shopCard: {
-      width: '30.5%',
+      width: "30.5%",
       backgroundColor: colors.card,
       borderRadius: RADIUS.md,
-      overflow: 'hidden' as const,
+      overflow: "hidden" as const,
     },
-    shopImg: { width: '100%', aspectRatio: 1 },
-    shopName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 12, color: colors.text, padding: SPACING.xs },
+    shopImg: { width: "100%", aspectRatio: 1 },
+    shopName: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 12, color: colors.text, padding: SPACING.xs },
   }), [colors]);
 }
 
@@ -74,17 +74,17 @@ export default function HomeScreen() {
   const { requireAuthNavigation } = useAuthGuard();
   const colors = useAppColors();
   const styles = useStyles();
-  const isAr = i18n.language === 'ar';
+  const isAr = i18n.language === "ar";
 
   const greetKey = greeting(new Date().getHours());
 
   const { data: announcementsData, isLoading: annLoading } = useQuery({
-    queryKey: ['home-announcements'],
+    queryKey: ["home-announcements"],
     queryFn: () => communityApi.getAnnouncements({ limit: 3 }),
   });
 
   const { data: shopsData, isLoading: shopsLoading } = useQuery({
-    queryKey: ['home-shops'],
+    queryKey: ["home-shops"],
     queryFn: () => shopsApi.getShops({ limit: 6 }),
   });
 
@@ -101,28 +101,28 @@ export default function HomeScreen() {
         <View style={styles.greeting}>
           <Text style={styles.greetText}>
             {t(greetKey)}
-            {user ? `, ${user.name.split(' ')[0]}` : ''}
+            {user ? `, ${user.name.split(" ")[0]}` : ""}
           </Text>
           {user?.unitNumber
             ? (
-                <Text style={styles.unitText}>{t('checkout.unit', { number: user.unitNumber })}</Text>
+                <Text style={styles.unitText}>{t("checkout.unit", { number: user.unitNumber })}</Text>
               )
             : null}
         </View>
 
         {/* Quick actions */}
-        <Text style={styles.sectionTitle}>{t('home.quick_actions')}</Text>
+        <Text style={styles.sectionTitle}>{t("home.quick_actions")}</Text>
         <QuickActionsGrid requireAuthNavigation={requireAuthNavigation} colors={colors} />
 
         {/* What's new */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t('home.whats_new')}</Text>
+          <Text style={styles.sectionTitle}>{t("home.whats_new")}</Text>
           <Pressable
-            onPress={() => router.push('/(tabs)/community' as any)}
+            onPress={() => router.push("/(tabs)/community" as any)}
             accessibilityRole="button"
-            accessibilityLabel={t('common.see_all')}
+            accessibilityLabel={t("common.see_all")}
           >
-            <Text style={styles.seeAll}>{t('common.see_all')}</Text>
+            <Text style={styles.seeAll}>{t("common.see_all")}</Text>
           </Pressable>
         </View>
 
@@ -132,13 +132,13 @@ export default function HomeScreen() {
 
         {/* Shops */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t('home.shops')}</Text>
+          <Text style={styles.sectionTitle}>{t("home.shops")}</Text>
           <Pressable
-            onPress={() => router.push('/(tabs)/directory' as any)}
+            onPress={() => router.push("/(tabs)/directory" as any)}
             accessibilityRole="button"
-            accessibilityLabel={t('common.see_all')}
+            accessibilityLabel={t("common.see_all")}
           >
-            <Text style={styles.seeAll}>{t('common.see_all')}</Text>
+            <Text style={styles.seeAll}>{t("common.see_all")}</Text>
           </Pressable>
         </View>
 
@@ -158,12 +158,12 @@ const QUICK_ACTIONS: Array<{
   route: string;
   authRequired?: boolean;
 }> = [
-  { renderIcon: color => <Storefront size={28} color={color} />, labelKey: 'home.shops', route: '/(tabs)/directory' },
-  { renderIcon: color => <Megaphone size={28} color={color} />, labelKey: 'home.community', route: '/(tabs)/community' },
-  { renderIcon: color => <CheckSquare size={28} color={color} />, labelKey: 'governance.title', route: '/(tabs)/community/governance', authRequired: false },
-  { renderIcon: color => <Package size={28} color={color} />, labelKey: 'home.my_orders', route: '/(tabs)/orders', authRequired: true },
-  { renderIcon: color => <ChatCircle size={28} color={color} />, labelKey: 'home.feedback', route: '/(tabs)/community/feedback', authRequired: true },
-  { renderIcon: color => <FileText size={28} color={color} />, labelKey: 'community.reports', route: '/(tabs)/community/reports' },
+  { renderIcon: color => <Storefront size={28} color={color} />, labelKey: "home.shops", route: "/(tabs)/directory" },
+  { renderIcon: color => <Megaphone size={28} color={color} />, labelKey: "home.community", route: "/(tabs)/community" },
+  { renderIcon: color => <CheckSquare size={28} color={color} />, labelKey: "governance.title", route: "/(tabs)/community/governance", authRequired: false },
+  { renderIcon: color => <Package size={28} color={color} />, labelKey: "home.my_orders", route: "/(tabs)/orders", authRequired: true },
+  { renderIcon: color => <ChatCircle size={28} color={color} />, labelKey: "home.feedback", route: "/(tabs)/community/feedback", authRequired: true },
+  { renderIcon: color => <FileText size={28} color={color} />, labelKey: "community.reports", route: "/(tabs)/community/reports" },
 ];
 
 function QuickActionsGrid({ requireAuthNavigation, colors }: { requireAuthNavigation: (href: string) => void; colors: any }) {
@@ -248,7 +248,7 @@ function ShopsGrid({ shops, isAr }: { shops: any[]; isAr: boolean }) {
 
 function HomeSectionSkeleton() {
   return (
-    <View style={{ flexDirection: 'row', gap: SPACING.sm }}>
+    <View style={{ flexDirection: "row", gap: SPACING.sm }}>
       <Skeleton width="48%" height={80} borderRadius={RADIUS.md} />
       <Skeleton width="48%" height={80} borderRadius={RADIUS.md} />
     </View>

@@ -1,48 +1,48 @@
-import type { Control, FieldErrors } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as Haptics from 'expo-haptics';
-import { router, useLocalSearchParams } from 'expo-router';
-import { Eye, EyeSlash } from 'phosphor-react-native';
-import * as React from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { showMessage } from 'react-native-flash-message';
-import { z } from 'zod';
-import { AuthInput } from '@/components/auth/auth-input';
+import type { Control, FieldErrors } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as Haptics from "expo-haptics";
+import { router, useLocalSearchParams } from "expo-router";
+import { Eye, EyeSlash } from "phosphor-react-native";
+import * as React from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
+import { z } from "zod";
+import { AuthInput } from "@/components/auth/auth-input";
 
-import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
-import { BrandMark } from '@/components/auth/brand-mark';
-import { GoldButton } from '@/components/auth/gold-button';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { setSecureItem } from '@/lib/secure-storage';
-import { authApi } from '@/services/api/auth';
-import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
-import { registerPushToken } from '@/services/push';
-import { useAppDispatch } from '@/store';
-import { login } from '@/store/slices/authSlice';
-import { BRAND, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
+import { AuthScreenWrapper } from "@/components/auth/auth-screen-wrapper";
+import { BrandMark } from "@/components/auth/brand-mark";
+import { GoldButton } from "@/components/auth/gold-button";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { setSecureItem } from "@/lib/secure-storage";
+import { authApi } from "@/services/api/auth";
+import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from "@/services/api/client";
+import { registerPushToken } from "@/services/push";
+import { useAppDispatch } from "@/store";
+import { login } from "@/store/slices/auth-slice";
+import { BRAND, FONT, SEMANTIC, SPACING } from "@/theme/tokens";
 
 const schema = z.object({
-  name: z.string().min(2, 'auth.errors.name_too_short'),
-  password: z.string().min(8, 'auth.errors.password_too_short'),
+  name: z.string().min(2, "auth.errors.name_too_short"),
+  password: z.string().min(8, "auth.errors.password_too_short"),
   confirmPassword: z.string(),
-}).refine(d => d.password === d.confirmPassword, { message: 'auth.errors.passwords_no_match', path: ['confirmPassword'] });
+}).refine(d => d.password === d.confirmPassword, { message: "auth.errors.passwords_no_match", path: ["confirmPassword"] });
 type FormData = z.infer<typeof schema>;
 
 function useStyles() {
   const colors = useAppColors();
   return React.useMemo(() => StyleSheet.create({
-    header: { alignItems: 'center' as const, marginTop: SPACING.xl, marginBottom: SPACING.xl },
-    title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 24, color: colors.text, textAlign: 'center' as const, marginBottom: SPACING.md },
-    roleBadgeRow: { alignItems: 'center' as const, marginBottom: SPACING.xl },
+    header: { alignItems: "center" as const, marginTop: SPACING.xl, marginBottom: SPACING.xl },
+    title: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 24, color: colors.text, textAlign: "center" as const, marginBottom: SPACING.md },
+    roleBadgeRow: { alignItems: "center" as const, marginBottom: SPACING.xl },
     roleBadge: { borderWidth: 1.5, borderColor: BRAND.gold, borderRadius: 9999, paddingHorizontal: SPACING.lg, paddingVertical: SPACING.xs },
-    roleBadgeText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 13, color: BRAND.gold, letterSpacing: 1 },
+    roleBadgeText: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 13, color: BRAND.gold, letterSpacing: 1 },
     form: { gap: SPACING.xs, marginBottom: SPACING.sm },
-    bottomPad: { height: SPACING['2xl'] },
-    errorCard: { flex: 1, justifyContent: 'center' as const, paddingHorizontal: SPACING.base },
+    bottomPad: { height: SPACING["2xl"] },
+    errorCard: { flex: 1, justifyContent: "center" as const, paddingHorizontal: SPACING.base },
     errorBorder: { borderLeftWidth: 4, borderRadius: 8, backgroundColor: colors.card, padding: SPACING.lg, gap: SPACING.sm },
-    errorTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    errorTitle: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 18, color: colors.text },
     errorBody: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, lineHeight: 22 },
   }), [colors]);
 }
@@ -56,7 +56,7 @@ export default function AcceptInvitationScreen() {
   const [confirmedRole, setConfirmedRole] = React.useState<string | null>(null);
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { name: '', password: '', confirmPassword: '' },
+    defaultValues: { name: "", password: "", confirmPassword: "" },
   });
 
   async function onSubmit({ name, password }: FormData) {
@@ -71,15 +71,15 @@ export default function AcceptInvitationScreen() {
       dispatch(login({ user, accessToken, refreshToken }));
       await registerPushToken();
       router.replace(
-        user.role === 'MERCHANT'
-          ? '/(merchant)/dashboard'
-          : user.role === 'ADMIN'
-            ? '/(admin)'
-            : '/(tabs)',
+        user.role === "MERCHANT"
+          ? "/(merchant)/dashboard"
+          : user.role === "ADMIN"
+            ? "/(admin)"
+            : "/(tabs)",
       );
     }
     catch {
-      showMessage({ message: t('common.error'), type: 'danger', backgroundColor: SEMANTIC.error });
+      showMessage({ message: t("common.error"), type: "danger", backgroundColor: SEMANTIC.error });
     }
   }
 
@@ -89,8 +89,8 @@ export default function AcceptInvitationScreen() {
         <View style={styles.header}><BrandMark size="md" /></View>
         <View style={styles.errorCard}>
           <View style={[styles.errorBorder, { borderLeftColor: SEMANTIC.error }]}>
-            <Text style={styles.errorTitle}>{t('auth.invitation_invalid')}</Text>
-            <Text style={styles.errorBody}>{t('auth.contact_administrator')}</Text>
+            <Text style={styles.errorTitle}>{t("auth.invitation_invalid")}</Text>
+            <Text style={styles.errorBody}>{t("auth.contact_administrator")}</Text>
           </View>
         </View>
       </AuthScreenWrapper>
@@ -100,16 +100,16 @@ export default function AcceptInvitationScreen() {
   return (
     <AuthScreenWrapper>
       <View style={styles.header}><BrandMark size="md" /></View>
-      <Text style={styles.title}>{t('auth.accept_invitation')}</Text>
+      <Text style={styles.title}>{t("auth.accept_invitation")}</Text>
       {confirmedRole != null && (
         <View style={styles.roleBadgeRow}>
           <View style={styles.roleBadge}>
-            <Text style={styles.roleBadgeText}>{confirmedRole === 'ADMIN' ? t('auth.role_admin') : t('auth.role_merchant')}</Text>
+            <Text style={styles.roleBadgeText}>{confirmedRole === "ADMIN" ? t("auth.role_admin") : t("auth.role_merchant")}</Text>
           </View>
         </View>
       )}
       <InvitationForm control={control} errors={errors} onSubmitEditing={handleSubmit(onSubmit)} />
-      <GoldButton label={t('auth.complete_setup')} onPress={handleSubmit(onSubmit)} loading={isSubmitting} />
+      <GoldButton label={t("auth.complete_setup")} onPress={handleSubmit(onSubmit)} loading={isSubmitting} />
       <View style={styles.bottomPad} />
     </AuthScreenWrapper>
   );
@@ -127,7 +127,7 @@ function InvitationForm({ control, errors, onSubmitEditing }: { control: Control
         control={control}
         name="name"
         render={({ field: { onChange, onBlur, value } }) => (
-          <AuthInput label={t('auth.name')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.name ? t(errors.name.message as string) : undefined} autoComplete="name" returnKeyType="next" />
+          <AuthInput label={t("auth.name")} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.name ? t(errors.name.message as string) : undefined} autoComplete="name" returnKeyType="next" />
         )}
       />
       <Controller
@@ -135,7 +135,7 @@ function InvitationForm({ control, errors, onSubmitEditing }: { control: Control
         name="password"
         render={({ field: { onChange, onBlur, value } }) => (
           <AuthInput
-            label={t('auth.password')}
+            label={t("auth.password")}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
@@ -143,7 +143,7 @@ function InvitationForm({ control, errors, onSubmitEditing }: { control: Control
             secureTextEntry={!showPwd}
             returnKeyType="next"
             rightSlot={(
-              <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowPwd(v => !v); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={showPwd ? 'Hide password' : 'Show password'}>
+              <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowPwd(v => !v); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={showPwd ? "Hide password" : "Show password"}>
                 {showPwd ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
               </Pressable>
             )}
@@ -155,7 +155,7 @@ function InvitationForm({ control, errors, onSubmitEditing }: { control: Control
         name="confirmPassword"
         render={({ field: { onChange, onBlur, value } }) => (
           <AuthInput
-            label={t('auth.confirm_password')}
+            label={t("auth.confirm_password")}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
@@ -164,7 +164,7 @@ function InvitationForm({ control, errors, onSubmitEditing }: { control: Control
             returnKeyType="done"
             onSubmitEditing={onSubmitEditing}
             rightSlot={(
-              <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowConfirm(v => !v); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={showConfirm ? 'Hide password' : 'Show password'}>
+              <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowConfirm(v => !v); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={showConfirm ? "Hide password" : "Show password"}>
                 {showConfirm ? <EyeSlash size={20} color={colors.textMuted} /> : <Eye size={20} color={colors.textMuted} />}
               </Pressable>
             )}

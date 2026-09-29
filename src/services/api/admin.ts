@@ -1,7 +1,7 @@
-import { client } from './client';
+import { client } from "./client";
 
-export type InvitationRole = 'MERCHANT' | 'ADMIN';
-export type InvitationStatus = 'PENDING' | 'USED' | 'EXPIRED';
+export type InvitationRole = "MERCHANT" | "ADMIN";
+export type InvitationStatus = "PENDING" | "USED" | "EXPIRED";
 
 export type Invitation = {
   id: string;
@@ -14,8 +14,8 @@ export type Invitation = {
 
 export const adminApi = {
   sendInvitation: (email: string, role: InvitationRole) =>
-    client.post<{ data: Invitation }>('/admin/invitations', { email, role }),
+    client.post<{ data: Invitation }>("/admin/invitations", { email, role }),
 
   getInvitations: (params?: { cursor?: string; limit?: number }) =>
-    client.get<{ data: { items: Invitation[]; nextCursor: string | null } }>('/admin/invitations', { params }),
+    client.get<{ data: { items: Invitation[]; nextCursor: string | null } }>("/admin/invitations", { params }),
 };

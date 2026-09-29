@@ -1,26 +1,26 @@
-import type { MerchantOrder } from '@/services/api/merchant';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { router, useLocalSearchParams } from 'expo-router';
-import { ArrowLeft } from 'phosphor-react-native';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { showMessage } from 'react-native-flash-message';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { MerchantOrder } from "@/services/api/merchant";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { router, useLocalSearchParams } from "expo-router";
+import { ArrowLeft } from "phosphor-react-native";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Skeleton } from '@/components/ui/skeleton';
-import { formatCurrency } from '@/lib/formatCurrency';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import i18n from '@/lib/i18n';
-import { merchantApi } from '@/services/api/merchant';
-import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency } from "@/lib/format-currency";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import i18n from "@/lib/i18n";
+import { merchantApi } from "@/services/api/merchant";
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from "@/theme/tokens";
 
 // Merchants control: PLACED → CONFIRMED → PREPARING → READY
 // ON_THE_WAY and DELIVERED are set by delivery/logistics or webhook
 const NEXT_STATUS: Record<string, string | null> = {
-  PLACED: 'CONFIRMED',
-  CONFIRMED: 'PREPARING',
-  PREPARING: 'READY',
+  PLACED: "CONFIRMED",
+  CONFIRMED: "PREPARING",
+  PREPARING: "READY",
   READY: null,
   ON_THE_WAY: null,
   DELIVERED: null,
@@ -32,8 +32,8 @@ function useStyles() {
   return React.useMemo(() => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
     nav: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       paddingHorizontal: SPACING.base,
       paddingVertical: SPACING.md,
       backgroundColor: colors.card,
@@ -46,11 +46,11 @@ function useStyles() {
       height: 36,
       borderRadius: 18,
       backgroundColor: colors.elevated,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
     navInfo: { flex: 1 },
-    navUnit: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: BRAND.gold },
+    navUnit: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 15, color: BRAND.gold },
     navName: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
     navTime: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
     scroll: { padding: SPACING.base, gap: SPACING.md },
@@ -61,49 +61,49 @@ function useStyles() {
       borderLeftWidth: 4,
       borderLeftColor: BRAND.gold,
     },
-    statusLabel: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text },
+    statusLabel: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 16, color: colors.text },
     itemsCard: {
       backgroundColor: colors.card,
       borderRadius: RADIUS.md,
       padding: SPACING.md,
       gap: SPACING.sm,
     },
-    itemRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: SPACING.sm },
-    itemQty: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: BRAND.gold, minWidth: 28 },
+    itemRow: { flexDirection: "row" as const, alignItems: "center" as const, gap: SPACING.sm },
+    itemQty: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 14, color: BRAND.gold, minWidth: 28 },
     itemName: { flex: 1, fontFamily: FONT.sans, fontSize: 14, color: colors.text },
-    itemPrice: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text },
-    totalRow: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: SPACING.sm, marginTop: SPACING.xs },
-    totalLabel: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: colors.text },
-    totalValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: BRAND.gold },
+    itemPrice: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 14, color: colors.text },
+    totalRow: { flexDirection: "row" as const, justifyContent: "space-between" as const, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: SPACING.sm, marginTop: SPACING.xs },
+    totalLabel: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 15, color: colors.text },
+    totalValue: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 16, color: BRAND.gold },
     metaCard: {
       backgroundColor: colors.card,
       borderRadius: RADIUS.md,
       padding: SPACING.md,
       gap: SPACING.sm,
     },
-    metaRow: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, gap: SPACING.sm },
+    metaRow: { flexDirection: "row" as const, justifyContent: "space-between" as const, gap: SPACING.sm },
     metaLabel: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
-    metaValue: { fontFamily: FONT.sans, fontSize: 13, color: colors.text, fontWeight: '500', flex: 1, textAlign: 'right' as const },
-    actions: { flexDirection: 'row' as const, gap: SPACING.md },
+    metaValue: { fontFamily: FONT.sans, fontSize: 13, color: colors.text, fontWeight: "500", flex: 1, textAlign: "right" as const },
+    actions: { flexDirection: "row" as const, gap: SPACING.md },
     acceptBtn: {
       flex: 1,
       height: 52,
       borderRadius: RADIUS.md,
       backgroundColor: SEMANTIC.success,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    acceptBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: colors.text },
+    acceptBtnText: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 15, color: colors.text },
     rejectBtn: {
       flex: 1,
       height: 52,
       borderRadius: RADIUS.md,
       borderWidth: 1,
       borderColor: SEMANTIC.error,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    rejectBtnText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: SEMANTIC.error },
+    rejectBtnText: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 15, color: SEMANTIC.error },
     btnDisabled: { opacity: 0.5 },
   }), [colors]);
 }
@@ -117,7 +117,7 @@ export default function MerchantOrderDetailScreen() {
   const colors = useAppColors();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['merchant-order', orderId],
+    queryKey: ["merchant-order", orderId],
     queryFn: () => merchantApi.getOrder(orderId),
     enabled: !!orderId,
     refetchInterval: 10000,
@@ -128,29 +128,29 @@ export default function MerchantOrderDetailScreen() {
   const { mutate: updateStatus, isPending } = useMutation({
     mutationFn: (status: string) => merchantApi.updateOrderStatus(orderId, status),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['merchant-order', orderId] });
-      queryClient.invalidateQueries({ queryKey: ['merchant-orders'] });
+      queryClient.invalidateQueries({ queryKey: ["merchant-order", orderId] });
+      queryClient.invalidateQueries({ queryKey: ["merchant-orders"] });
     },
-    onError: () => showMessage({ message: t('common.error'), type: 'danger', backgroundColor: SEMANTIC.error }),
+    onError: () => showMessage({ message: t("common.error"), type: "danger", backgroundColor: SEMANTIC.error }),
   });
 
   const { mutate: rejectOrder, isPending: rejecting } = useMutation({
-    mutationFn: () => merchantApi.updateOrderStatus(orderId, 'CANCELLED'),
+    mutationFn: () => merchantApi.updateOrderStatus(orderId, "CANCELLED"),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['merchant-order', orderId] });
-      queryClient.invalidateQueries({ queryKey: ['merchant-orders'] });
+      queryClient.invalidateQueries({ queryKey: ["merchant-order", orderId] });
+      queryClient.invalidateQueries({ queryKey: ["merchant-orders"] });
       router.back();
     },
-    onError: () => showMessage({ message: t('common.error'), type: 'danger', backgroundColor: SEMANTIC.error }),
+    onError: () => showMessage({ message: t("common.error"), type: "danger", backgroundColor: SEMANTIC.error }),
   });
 
   if (isLoading || !order)
     return <OrderDetailSkeleton insets={insets} />;
 
   const nextStatus = NEXT_STATUS[order.status];
-  const isActive = order.status !== 'DELIVERED' && order.status !== 'CANCELLED';
-  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-GB';
-  const time = new Date(order.createdAt).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+  const isActive = order.status !== "DELIVERED" && order.status !== "CANCELLED";
+  const locale = i18n.language === "ar" ? "ar-EG" : "en-GB";
+  const time = new Date(order.createdAt).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -159,7 +159,7 @@ export default function MerchantOrderDetailScreen() {
           <ArrowLeft size={18} color={colors.text} />
         </Pressable>
         <View style={styles.navInfo}>
-          <Text style={styles.navUnit}>{t('checkout.unit', { number: order.user.unitNumber })}</Text>
+          <Text style={styles.navUnit}>{t("checkout.unit", { number: order.user.unitNumber })}</Text>
           <Text style={styles.navName}>{order.user.name}</Text>
         </View>
         <Text style={styles.navTime}>{time}</Text>
@@ -227,7 +227,7 @@ function OrderItemsList({ order, styles }: { order: MerchantOrder; styles: any }
         </View>
       ))}
       <View style={styles.totalRow}>
-        <Text style={styles.totalLabel}>{t('cart.total')}</Text>
+        <Text style={styles.totalLabel}>{t("cart.total")}</Text>
         <Text style={styles.totalValue}>{formatCurrency(order.totalAmount)}</Text>
       </View>
     </View>
@@ -239,12 +239,12 @@ function OrderMeta({ order, styles }: { order: MerchantOrder; styles: any }) {
   return (
     <View style={styles.metaCard}>
       <View style={styles.metaRow}>
-        <Text style={styles.metaLabel}>{t('checkout.payment')}</Text>
-        <Text style={styles.metaValue}>{order.paymentMethod === 'CASH' ? t('checkout.cash') : t('checkout.card')}</Text>
+        <Text style={styles.metaLabel}>{t("checkout.payment")}</Text>
+        <Text style={styles.metaValue}>{order.paymentMethod === "CASH" ? t("checkout.cash") : t("checkout.card")}</Text>
       </View>
       {order.notes && (
         <View style={styles.metaRow}>
-          <Text style={styles.metaLabel}>{t('checkout.notes')}</Text>
+          <Text style={styles.metaLabel}>{t("checkout.notes")}</Text>
           <Text style={styles.metaValue}>{order.notes}</Text>
         </View>
       )}
@@ -272,13 +272,13 @@ function ActionButtons({
   const { t } = useTranslation();
   return (
     <View style={styles.actions}>
-      {status === 'PLACED' && (
+      {status === "PLACED" && (
         <Pressable
           style={[styles.rejectBtn, isRejecting && styles.btnDisabled]}
           onPress={onReject}
           disabled={isRejecting}
         >
-          <Text style={styles.rejectBtnText}>{t('merchant.reject')}</Text>
+          <Text style={styles.rejectBtnText}>{t("merchant.reject")}</Text>
         </Pressable>
       )}
       {nextStatus && (
@@ -288,7 +288,7 @@ function ActionButtons({
           disabled={isPending}
         >
           <Text style={styles.acceptBtnText}>
-            {status === 'PLACED' ? t('merchant.accept') : t('merchant.update_status')}
+            {status === "PLACED" ? t("merchant.accept") : t("merchant.update_status")}
           </Text>
         </Pressable>
       )}

@@ -1,37 +1,37 @@
-import type { AxiosResponse } from 'axios';
-import type { CursorPage, Product, Review, Shop } from '@/services/api/shops';
-import type { CartItem } from '@/store/slices/cartSlice';
-import { FlashList } from '@shopify/flash-list';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { router, useLocalSearchParams } from 'expo-router';
-import { ArrowLeft, ChatCircle, Heart, HeartStraight, Phone, Plus, Star } from 'phosphor-react-native';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import type { AxiosResponse } from "axios";
+import type { CursorPage, Product, Review, Shop } from "@/services/api/shops";
+import type { CartItem } from "@/store/slices/cart-slice";
+import { FlashList } from "@shopify/flash-list";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { router, useLocalSearchParams } from "expo-router";
+import { ArrowLeft, ChatCircle, Heart, HeartStraight, Phone, Plus, Star } from "phosphor-react-native";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
 
-import { Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Skeleton } from '@/components/ui/skeleton';
-import { formatCurrency } from '@/lib/formatCurrency';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
-import { shopsApi } from '@/services/api/shops';
-import { useAppDispatch, useAppSelector } from '@/store';
-import { addItem } from '@/store/slices/cartSlice';
-import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency } from "@/lib/format-currency";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { useAuthGuard } from "@/lib/hooks/use-auth-guard";
+import { shopsApi } from "@/services/api/shops";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { addItem } from "@/store/slices/cart-slice";
+import { BRAND, DARK, FONT, RADIUS, SEMANTIC, SPACING } from "@/theme/tokens";
 
 function useStyles() {
   const colors = useAppColors();
   return React.useMemo(() => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
-    hero: { width: '100%', height: 240, backgroundColor: colors.elevated },
-    heroImage: { width: '100%', height: '100%' },
+    hero: { width: "100%", height: 240, backgroundColor: colors.elevated },
+    heroImage: { width: "100%", height: "100%" },
     heroPlaceholder: { backgroundColor: colors.elevated },
     heroNav: {
-      position: 'absolute' as const,
+      position: "absolute" as const,
       left: 0,
       right: 0,
-      flexDirection: 'row' as const,
-      justifyContent: 'space-between' as const,
+      flexDirection: "row" as const,
+      justifyContent: "space-between" as const,
       paddingHorizontal: SPACING.base,
     },
     navBtn: {
@@ -39,11 +39,11 @@ function useStyles() {
       height: 40,
       borderRadius: 20,
       backgroundColor: `${DARK.bg}99`,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
     tabBar: {
-      flexDirection: 'row' as const,
+      flexDirection: "row" as const,
       backgroundColor: colors.card,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
@@ -51,25 +51,25 @@ function useStyles() {
     tab: {
       flex: 1,
       height: 48,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
       borderBottomWidth: 2,
-      borderBottomColor: 'transparent',
+      borderBottomColor: "transparent",
     },
     tabActive: { borderBottomColor: BRAND.gold },
-    tabText: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, fontWeight: '500' },
+    tabText: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, fontWeight: "500" },
     tabTextActive: { color: BRAND.gold },
     info: { padding: SPACING.base, gap: SPACING.sm },
-    nameRow: { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, gap: SPACING.sm },
-    name: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 22, color: colors.text, flex: 1 },
+    nameRow: { flexDirection: "row" as const, alignItems: "center" as const, justifyContent: "space-between" as const, gap: SPACING.sm },
+    name: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 22, color: colors.text, flex: 1 },
     statusBadge: { paddingHorizontal: SPACING.sm, paddingVertical: 3, borderRadius: RADIUS.full },
     badgeOpen: { backgroundColor: SEMANTIC.success },
     badgeClosed: { backgroundColor: colors.elevated, borderWidth: 1, borderColor: colors.border },
-    statusText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: colors.text },
-    ratingRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: SPACING.xs },
+    statusText: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 11, color: colors.text },
+    ratingRow: { flexDirection: "row" as const, alignItems: "center" as const, gap: SPACING.xs },
     rating: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted },
     description: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, lineHeight: 22 },
-    ctaRow: { flexDirection: 'row' as const, gap: SPACING.sm, marginTop: SPACING.xs },
+    ctaRow: { flexDirection: "row" as const, gap: SPACING.sm, marginTop: SPACING.xs },
     ctaBtn: {
       flex: 1,
       height: 44,
@@ -77,16 +77,16 @@ function useStyles() {
       backgroundColor: colors.card,
       borderWidth: 1,
       borderColor: colors.border,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    ctaBtnWhatsapp: { borderColor: '#25D366' }, // WhatsApp brand green — intentional
-    ctaBtnText: { fontFamily: FONT.sans, fontSize: 14, color: colors.text, fontWeight: '500' },
+    ctaBtnWhatsapp: { borderColor: "#25D366" }, // WhatsApp brand green — intentional
+    ctaBtnText: { fontFamily: FONT.sans, fontSize: 14, color: colors.text, fontWeight: "500" },
     tabContent: { padding: SPACING.base, gap: SPACING.sm },
-    emptyTab: { padding: SPACING['3xl'], alignItems: 'center' as const },
+    emptyTab: { padding: SPACING["3xl"], alignItems: "center" as const },
     emptyText: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted },
     productRow: {
-      flexDirection: 'row' as const,
+      flexDirection: "row" as const,
       backgroundColor: colors.card,
       borderRadius: RADIUS.sm,
       padding: SPACING.md,
@@ -94,18 +94,18 @@ function useStyles() {
       marginBottom: SPACING.sm,
     },
     productInfo: { flex: 1, gap: SPACING.xs },
-    productName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 15, color: colors.text },
+    productName: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 15, color: colors.text },
     productDesc: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, lineHeight: 20 },
-    productPrice: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: BRAND.gold },
-    productRight: { alignItems: 'center' as const, gap: SPACING.xs },
+    productPrice: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 15, color: BRAND.gold },
+    productRight: { alignItems: "center" as const, gap: SPACING.xs },
     productImage: { width: 72, height: 72, borderRadius: RADIUS.sm },
     addBtn: {
       width: 32,
       height: 32,
       borderRadius: 16,
       backgroundColor: BRAND.gold,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
     reviewCard: {
       backgroundColor: colors.card,
@@ -114,18 +114,18 @@ function useStyles() {
       gap: SPACING.xs,
       marginBottom: SPACING.sm,
     },
-    reviewHeader: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const },
-    reviewerName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text },
-    reviewStars: { flexDirection: 'row' as const, gap: 2 },
+    reviewHeader: { flexDirection: "row" as const, justifyContent: "space-between" as const, alignItems: "center" as const },
+    reviewerName: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 14, color: colors.text },
+    reviewStars: { flexDirection: "row" as const, gap: 2 },
     reviewComment: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, lineHeight: 22 },
     cartBar: {
-      position: 'absolute' as const,
+      position: "absolute" as const,
       bottom: 0,
       left: 0,
       right: 0,
       backgroundColor: BRAND.gold,
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       paddingHorizontal: SPACING.base,
       paddingTop: SPACING.md,
       gap: SPACING.sm,
@@ -135,12 +135,12 @@ function useStyles() {
       height: 28,
       borderRadius: 14,
       backgroundColor: `${DARK.bg}33`,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    cartBarBadgeText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 13, color: colors.text },
-    cartBarLabel: { flex: 1, fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: colors.bg },
-    cartBarTotal: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 15, color: colors.bg },
+    cartBarBadgeText: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 13, color: colors.text },
+    cartBarLabel: { flex: 1, fontFamily: FONT.sans, fontWeight: "700", fontSize: 15, color: colors.bg },
+    cartBarTotal: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 15, color: colors.bg },
   }), [colors]);
 }
 
@@ -151,16 +151,16 @@ export default function ShopDetailScreen() {
   const { requireAuth } = useAuthGuard();
   const styles = useStyles();
   const [saved, setSaved] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState<'menu' | 'reviews'>('menu');
+  const [activeTab, setActiveTab] = React.useState<"menu" | "reviews">("menu");
 
   const { data, isLoading } = useQuery({
-    queryKey: ['shop', shopId],
+    queryKey: ["shop", shopId],
     queryFn: () => shopsApi.getShop(shopId),
     enabled: !!shopId,
   });
 
   const shop = data?.data.data;
-  const isAr = i18n.language === 'ar';
+  const isAr = i18n.language === "ar";
 
   async function handleSave() {
     requireAuth(async () => {
@@ -196,8 +196,8 @@ export default function ShopDetailScreen() {
 
         <ShopInfoSection shop={shop} isAr={isAr} />
 
-        {activeTab === 'menu' && <MenuTabContent shopId={shopId} shopName={shop.name} />}
-        {activeTab === 'reviews' && <ReviewsTabContent shopId={shopId} />}
+        {activeTab === "menu" && <MenuTabContent shopId={shopId} shopName={shop.name} />}
+        {activeTab === "reviews" && <ReviewsTabContent shopId={shopId} />}
       </ScrollView>
       <CartBar shopId={shopId} bottomInset={insets.bottom} />
     </View>
@@ -225,10 +225,10 @@ function ShopHero({ shop, saved, onBack, onSave, topInset }: ShopHeroProps) {
         ? <Image source={{ uri: coverPhoto.url }} style={styles.heroImage} resizeMode="cover" />
         : <View style={[styles.heroImage, styles.heroPlaceholder]} />}
       <View style={[styles.heroNav, { top: topInset + SPACING.sm }]}>
-        <Pressable style={styles.navBtn} onPress={onBack} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
+        <Pressable style={styles.navBtn} onPress={onBack} hitSlop={8} accessibilityRole="button" accessibilityLabel={t("common.back")}>
           <ArrowLeft size={20} color={colors.text} />
         </Pressable>
-        <Pressable style={styles.navBtn} onPress={onSave} hitSlop={8} accessibilityRole="button" accessibilityLabel={saved ? t('directory.saved') : t('directory.save')}>
+        <Pressable style={styles.navBtn} onPress={onSave} hitSlop={8} accessibilityRole="button" accessibilityLabel={saved ? t("directory.saved") : t("directory.save")}>
           {saved ? <Heart size={20} color={colors.text} weight="fill" /> : <HeartStraight size={20} color={colors.text} />}
         </Pressable>
       </View>
@@ -240,24 +240,24 @@ function ShopTabBar({
   activeTab,
   onTabChange,
 }: {
-  activeTab: 'menu' | 'reviews';
-  onTabChange: (tab: 'menu' | 'reviews') => void;
+  activeTab: "menu" | "reviews";
+  onTabChange: (tab: "menu" | "reviews") => void;
 }) {
   const { t } = useTranslation();
   const styles = useStyles();
   return (
     <View style={styles.tabBar}>
-      {(['menu', 'reviews'] as const).map(tab => (
+      {(["menu", "reviews"] as const).map(tab => (
         <Pressable
           key={tab}
           style={[styles.tab, activeTab === tab && styles.tabActive]}
           onPress={() => onTabChange(tab)}
           accessibilityRole="tab"
-          accessibilityLabel={tab === 'menu' ? t('directory.menu') : t('directory.reviews_tab')}
+          accessibilityLabel={tab === "menu" ? t("directory.menu") : t("directory.reviews_tab")}
           accessibilityState={{ selected: activeTab === tab }}
         >
           <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
-            {tab === 'menu' ? t('directory.menu') : t('directory.reviews_tab')}
+            {tab === "menu" ? t("directory.menu") : t("directory.reviews_tab")}
           </Text>
         </Pressable>
       ))}
@@ -278,7 +278,7 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
         <Text style={styles.name}>{displayName}</Text>
         <View style={[styles.statusBadge, shop.isOpen ? styles.badgeOpen : styles.badgeClosed]}>
           <Text style={styles.statusText}>
-            {shop.isOpen ? t('common.open') : t('common.closed')}
+            {shop.isOpen ? t("common.open") : t("common.closed")}
           </Text>
         </View>
       </View>
@@ -287,12 +287,12 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
           <Star size={14} weight="fill" color={BRAND.gold} />
           <Text style={styles.rating}>
             {shop.averageRating.toFixed(1)}
-            {' '}
+            {" "}
             ·
-            {' '}
+            {" "}
             {shop.reviewCount}
-            {' '}
-            {t('directory.reviews_tab').toLowerCase()}
+            {" "}
+            {t("directory.reviews_tab").toLowerCase()}
           </Text>
         </View>
       )}
@@ -307,11 +307,11 @@ function ShopInfoSection({ shop, isAr }: { shop: Shop; isAr: boolean }) {
                     Linking.openURL(`tel:${shop.phone}`);
                 }}
                 accessibilityRole="button"
-                accessibilityLabel={t('directory.call')}
+                accessibilityLabel={t("directory.call")}
               >
                 <Phone size={16} color={colors.text} />
                 <Text style={styles.ctaBtnText}>
-                  {t('directory.call')}
+                  {t("directory.call")}
                 </Text>
               </Pressable>
             )
@@ -338,7 +338,7 @@ function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string
   const { t, i18n } = useTranslation();
   const styles = useStyles();
 
-  const isAr = i18n.language === 'ar';
+  const isAr = i18n.language === "ar";
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery<
     AxiosResponse<{ data: CursorPage<Product> }>,
@@ -347,7 +347,7 @@ function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string
     string[],
     string | undefined
   >({
-    queryKey: ['shop-products', shopId],
+    queryKey: ["shop-products", shopId],
     queryFn: ({ pageParam }) => shopsApi.getProducts(shopId, { cursor: pageParam, limit: 20 }),
     getNextPageParam: last => last.data.data.nextCursor ?? undefined,
     initialPageParam: undefined,
@@ -380,7 +380,7 @@ function MenuTabContent({ shopId, shopName }: { shopId: string; shopName: string
       onEndReachedThreshold={0.5}
       ListEmptyComponent={(
         <View style={styles.emptyTab}>
-          <Text style={styles.emptyText}>{t('common.no_results')}</Text>
+          <Text style={styles.emptyText}>{t("common.no_results")}</Text>
         </View>
       )}
       ListFooterComponent={
@@ -434,7 +434,7 @@ function ProductRow({
               <Image source={{ uri: product.imageUrl }} style={styles.productImage} resizeMode="cover" />
             )
           : null}
-        <Pressable style={styles.addBtn} onPress={handleAddToCart} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('directory.add_to_cart')}>
+        <Pressable style={styles.addBtn} onPress={handleAddToCart} hitSlop={8} accessibilityRole="button" accessibilityLabel={t("directory.add_to_cart")}>
           <Plus size={20} color={colors.bg} />
         </Pressable>
       </View>
@@ -452,7 +452,7 @@ function ReviewsTabContent({ shopId }: { shopId: string }) {
     string[],
     string | undefined
   >({
-    queryKey: ['shop-reviews', shopId],
+    queryKey: ["shop-reviews", shopId],
     queryFn: ({ pageParam }) => shopsApi.getReviews(shopId, { cursor: pageParam, limit: 20 }),
     getNextPageParam: last => last.data.data.nextCursor ?? undefined,
     initialPageParam: undefined,
@@ -495,7 +495,7 @@ function ReviewsTabContent({ shopId }: { shopId: string }) {
       onEndReachedThreshold={0.5}
       ListEmptyComponent={(
         <View style={styles.emptyTab}>
-          <Text style={styles.emptyText}>{t('common.no_results')}</Text>
+          <Text style={styles.emptyText}>{t("common.no_results")}</Text>
         </View>
       )}
       ListFooterComponent={
@@ -521,14 +521,14 @@ function CartBar({ shopId, bottomInset }: { shopId: string; bottomInset: number 
   return (
     <Pressable
       style={[styles.cartBar, { paddingBottom: bottomInset + SPACING.sm }]}
-      onPress={() => router.push('/checkout/cart' as any)}
+      onPress={() => router.push("/checkout/cart" as any)}
       accessibilityRole="button"
-      accessibilityLabel={t('cart.checkout')}
+      accessibilityLabel={t("cart.checkout")}
     >
       <View style={styles.cartBarBadge}>
         <Text style={styles.cartBarBadgeText}>{count}</Text>
       </View>
-      <Text style={styles.cartBarLabel}>{t('cart.checkout')}</Text>
+      <Text style={styles.cartBarLabel}>{t("cart.checkout")}</Text>
       <Text style={styles.cartBarTotal}>{formatCurrency(total)}</Text>
     </Pressable>
   );

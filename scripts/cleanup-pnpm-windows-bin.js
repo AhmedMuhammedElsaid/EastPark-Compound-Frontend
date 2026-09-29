@@ -1,11 +1,11 @@
-const fs = require('node:fs');
-const path = require('node:path');
+const fs = require("node:fs");
+const path = require("node:path");
 
-if (process.platform !== 'win32') {
+if (process.platform !== "win32") {
   process.exit(0);
 }
 
-const root = path.join(process.cwd(), 'node_modules');
+const root = path.join(process.cwd(), "node_modules");
 
 if (!fs.existsSync(root)) {
   process.exit(0);
@@ -17,7 +17,7 @@ function cleanBinDirectory(binDir) {
   const entries = fs.readdirSync(binDir, { withFileTypes: true });
 
   for (const entry of entries) {
-    if (!entry.name.startsWith('.')) {
+    if (!entry.name.startsWith(".")) {
       continue;
     }
 
@@ -43,7 +43,7 @@ function walk(directory) {
 
     const entryPath = path.join(directory, entry.name);
 
-    if (entry.name === '.bin') {
+    if (entry.name === ".bin") {
       cleanBinDirectory(entryPath);
       continue;
     }

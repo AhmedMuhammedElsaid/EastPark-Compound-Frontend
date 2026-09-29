@@ -1,31 +1,31 @@
-import type { TypedUseSelectorHook } from 'react-redux';
+import type { TypedUseSelectorHook } from "react-redux";
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { configureStore } from '@reduxjs/toolkit';
-import { useDispatch, useSelector } from 'react-redux';
-import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { configureStore } from "@reduxjs/toolkit";
+import { useDispatch, useSelector } from "react-redux";
+import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
 
-import authReducer from './slices/authSlice';
-import cartReducer from './slices/cartSlice';
-import preferencesReducer from './slices/preferencesSlice';
+import authReducer from "./slices/auth-slice";
+import cartReducer from "./slices/cart-slice";
+import preferencesReducer from "./slices/preferences-slice";
 
 const authPersistConfig = {
-  key: 'auth',
+  key: "auth",
   storage: AsyncStorage,
   // Tokens kept in SecureStore; Redux holds in-memory copy only for interceptors.
   // We still persist user + isAuthenticated for UI state (tokens re-read from SecureStore on startup).
-  blacklist: ['showAuthWall', 'authWallConfig', 'accessToken', 'refreshToken'],
+  blacklist: ["showAuthWall", "authWallConfig", "accessToken", "refreshToken"],
 };
 
 const cartPersistConfig = {
-  key: 'cart',
+  key: "cart",
   storage: AsyncStorage,
   // Don't persist conflict-sheet transient state
-  blacklist: ['pendingItem', 'pendingShopId', 'pendingShopName', 'showConflictSheet'],
+  blacklist: ["pendingItem", "pendingShopId", "pendingShopName", "showConflictSheet"],
 };
 
 const preferencesPersistConfig = {
-  key: 'preferences',
+  key: "preferences",
   storage: AsyncStorage,
 };
 

@@ -2,15 +2,15 @@
 /* eslint-disable no-restricted-globals */
 
 // Mock AsyncStorage (required by redux-persist and TanStack Query persister)
-jest.mock('@react-native-async-storage/async-storage', () =>
-  require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
+jest.mock("@react-native-async-storage/async-storage", () =>
+  require("@react-native-async-storage/async-storage/jest/async-storage-mock"));
 
 // Mock the Redux store — UI component tests transitively import @/store via i18n/utils.tsx.
 // @reduxjs/toolkit and react-redux ship ESM-only builds that Jest (CJS) cannot parse,
 // so we mock the store module entirely rather than trying to transform those packages.
-jest.mock('@/store', () => {
+jest.mock("@/store", () => {
   const state = {
-    preferences: { language: 'en', theme: 'dark' },
+    preferences: { language: "en", theme: "dark" },
     auth: { user: null, accessToken: null, refreshToken: null, isVerified: false, showAuthWall: false, authWallConfig: null },
     cart: { items: [], shopId: null },
   };
@@ -30,23 +30,23 @@ jest.mock('@/store', () => {
   };
 });
 
-jest.mock('@/store/slices/preferencesSlice', () => ({
-  setLanguage: jest.fn((lang: string) => ({ type: 'preferences/setLanguage', payload: lang })),
-  default: (state = { language: 'en', theme: 'dark' }, _action: any) => state,
+jest.mock("@/store/slices/preferences-slice", () => ({
+  setLanguage: jest.fn((lang: string) => ({ type: "preferences/setLanguage", payload: lang })),
+  default: (state = { language: "en", theme: "dark" }, _action: any) => state,
 }));
 
 // Mock react-native-restart (native module — not available in Jest environment)
-jest.mock('react-native-restart', () => ({ restart: jest.fn() }));
+jest.mock("react-native-restart", () => ({ restart: jest.fn() }));
 
 // Mock react-native-worklets first
-jest.mock('react-native-worklets', () => ({
+jest.mock("react-native-worklets", () => ({
   __esModule: true,
   default: {},
 }));
 
 // Mock react-native-reanimated
-jest.mock('react-native-reanimated', () => {
-  const View = require('react-native').View;
+jest.mock("react-native-reanimated", () => {
+  const View = require("react-native").View;
 
   return {
     __esModule: true,
@@ -90,24 +90,24 @@ jest.mock('react-native-reanimated', () => {
 });
 
 // Mock expo-localization
-jest.mock('expo-localization', () => ({
+jest.mock("expo-localization", () => ({
   getLocales: jest.fn(() => [
     {
-      languageTag: 'en-US',
-      languageCode: 'en',
-      textDirection: 'ltr',
-      digitGroupingSeparator: ',',
-      decimalSeparator: '.',
-      measurementSystem: 'metric',
-      currencyCode: 'USD',
-      currencySymbol: '$',
-      regionCode: 'US',
+      languageTag: "en-US",
+      languageCode: "en",
+      textDirection: "ltr",
+      digitGroupingSeparator: ",",
+      decimalSeparator: ".",
+      measurementSystem: "metric",
+      currencyCode: "USD",
+      currencySymbol: "$",
+      regionCode: "US",
     },
   ]),
 }));
 
 // Mock react-native-mmkv
-jest.mock('react-native-mmkv', () => ({
+jest.mock("react-native-mmkv", () => ({
   MMKV: jest.fn(() => ({
     set: jest.fn(),
     getString: jest.fn(),

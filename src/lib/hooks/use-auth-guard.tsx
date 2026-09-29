@@ -1,8 +1,8 @@
-import { router } from 'expo-router';
-import { useCallback } from 'react';
+import { router } from "expo-router";
+import { useCallback } from "react";
 
-import { useAppDispatch, useAppSelector } from '@/store';
-import { showAuthWall } from '@/store/slices/authSlice';
+import { useAppDispatch, useAppSelector } from "@/store";
+import { showAuthWall } from "@/store/slices/auth-slice";
 
 /**
  * useAuthGuard — for in-screen actions that require auth (e.g. "Add to Cart" as guest).

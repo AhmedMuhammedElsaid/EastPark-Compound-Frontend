@@ -1,8 +1,8 @@
-import type { TxKeyPath } from '@/lib/i18n';
+import type { TxKeyPath } from "@/lib/i18n";
 
-import * as React from 'react';
-import { Pressable, Text, View } from '@/components/ui';
-import { ArrowRight } from '@/components/ui/icons';
+import * as React from "react";
+import { Pressable, Text, View } from "@/components/ui";
+import { ArrowRight } from "@/components/ui/icons";
 
 type ItemProps = {
   text: TxKeyPath;
@@ -16,7 +16,7 @@ export function SettingsItem({ text, value, icon, onPress }: ItemProps) {
   return (
     <Pressable
       onPress={onPress}
-      pointerEvents={isPressable ? 'auto' : 'none'}
+      pointerEvents={isPressable ? "auto" : "none"}
       className="flex-1 flex-row items-center justify-between px-4 py-2"
     >
       <View className="flex-row items-center">

@@ -1,22 +1,22 @@
-import type { AxiosResponse } from 'axios';
-import type { CursorPage, Shop, ShopCategory } from '@/services/api/shops';
-import { FlashList } from '@shopify/flash-list';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { MagnifyingGlass, Storefront, X } from 'phosphor-react-native';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { AxiosResponse } from "axios";
+import type { CursorPage, Shop, ShopCategory } from "@/services/api/shops";
+import { FlashList } from "@shopify/flash-list";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { MagnifyingGlass, Storefront, X } from "phosphor-react-native";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CategoryChips } from '@/components/directory/category-chips';
-import { ShopCard } from '@/components/directory/shop-card';
-import { ErrorState } from '@/components/ui/error-state';
-import { ShopCardSkeleton } from '@/components/ui/skeleton';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { shopsApi } from '@/services/api/shops';
-import { FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { CategoryChips } from "@/components/directory/category-chips";
+import { ShopCard } from "@/components/directory/shop-card";
+import { ErrorState } from "@/components/ui/error-state";
+import { ShopCardSkeleton } from "@/components/ui/skeleton";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { shopsApi } from "@/services/api/shops";
+import { FONT, RADIUS, SPACING } from "@/theme/tokens";
 
-type Category = ShopCategory | 'ALL';
+type Category = ShopCategory | "ALL";
 
 const PAGE_LIMIT = 20;
 
@@ -25,8 +25,8 @@ function useStyles() {
   return React.useMemo(() => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
     searchBar: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       backgroundColor: colors.card,
       borderRadius: RADIUS.full,
       marginHorizontal: SPACING.base,
@@ -41,19 +41,19 @@ function useStyles() {
       fontFamily: FONT.sans,
       fontSize: 15,
       color: colors.text,
-      height: '100%',
+      height: "100%",
     },
     listPad: { paddingHorizontal: SPACING.base, paddingTop: SPACING.sm },
     listContent: { paddingHorizontal: SPACING.base, paddingTop: SPACING.sm },
     empty: {
-      alignItems: 'center' as const,
-      justifyContent: 'center' as const,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
       paddingTop: 80,
       gap: SPACING.md,
       paddingHorizontal: SPACING.xl,
     },
-    emptyTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text, textAlign: 'center' as const },
-    emptyBody: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, textAlign: 'center' as const, lineHeight: 22 },
+    emptyTitle: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 18, color: colors.text, textAlign: "center" as const },
+    emptyBody: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, textAlign: "center" as const, lineHeight: 22 },
   }), [colors]);
 }
 
@@ -63,9 +63,9 @@ export default function DirectoryScreen() {
   const colors = useAppColors();
   const styles = useStyles();
 
-  const [search, setSearch] = React.useState('');
-  const [category, setCategory] = React.useState<Category>('ALL');
-  const [debouncedSearch, setDebouncedSearch] = React.useState('');
+  const [search, setSearch] = React.useState("");
+  const [category, setCategory] = React.useState<Category>("ALL");
+  const [debouncedSearch, setDebouncedSearch] = React.useState("");
 
   // 300ms debounce for search
   React.useEffect(() => {
@@ -81,12 +81,12 @@ export default function DirectoryScreen() {
       string[],
       string | undefined
     >({
-      queryKey: ['shops', category, debouncedSearch],
+      queryKey: ["shops", category, debouncedSearch],
       queryFn: ({ pageParam }) =>
         shopsApi.getShops({
           cursor: pageParam,
           limit: PAGE_LIMIT,
-          category: category === 'ALL' ? undefined : category,
+          category: category === "ALL" ? undefined : category,
           search: debouncedSearch || undefined,
         }),
       getNextPageParam: last => last.data.data.nextCursor ?? undefined,
@@ -103,7 +103,7 @@ export default function DirectoryScreen() {
         <TextInput
           value={search}
           onChangeText={setSearch}
-          placeholder={t('directory.search_placeholder')}
+          placeholder={t("directory.search_placeholder")}
           placeholderTextColor={colors.textMuted}
           style={styles.searchInput}
           returnKeyType="search"
@@ -111,10 +111,10 @@ export default function DirectoryScreen() {
         />
         {search.length > 0 && (
           <Pressable
-            onPress={() => setSearch('')}
+            onPress={() => setSearch("")}
             hitSlop={8}
             accessibilityRole="button"
-            accessibilityLabel={t('common.clear')}
+            accessibilityLabel={t("common.clear")}
           >
             <X size={16} color={colors.textMuted} />
           </Pressable>
@@ -162,14 +162,14 @@ function EmptyState({ search }: { search: string }) {
   const styles = useStyles();
   return (
     <View style={styles.empty}>
-      <View style={{ alignItems: 'center' }}>
+      <View style={{ alignItems: "center" }}>
         <Storefront size={48} color={colors.textMuted} />
       </View>
       <Text style={styles.emptyTitle}>
-        {search ? t('common.no_results') : t('directory.no_shops')}
+        {search ? t("common.no_results") : t("directory.no_shops")}
       </Text>
       <Text style={styles.emptyBody}>
-        {t('directory.no_shops_subtitle')}
+        {t("directory.no_shops_subtitle")}
       </Text>
     </View>
   );

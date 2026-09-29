@@ -15,10 +15,10 @@ on:
       - master
       - main
     paths:
-      - '**.jpg'
-      - '**.jpeg'
-      - '**.png'
-      - '**.webp'
+      - "**.jpg"
+      - "**.jpeg"
+      - "**.png"
+      - "**.webp"
   workflow_dispatch:
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           compressOnly: true
-          ignorePaths: 'node_modules/**,ios/**,android/**'
+          ignorePaths: "node_modules/**,ios/**,android/**"
 
       - name: Create Pull Request
         if: steps.calibre.outputs.markdown != ''

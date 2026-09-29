@@ -8,20 +8,20 @@ module.exports = {
     parserOpts: {
       // Match: [AhmedMuhammedElsaid][feat]: subject or standard feat: subject
       headerPattern: /^(?:\[AhmedMuhammedElsaid\])?\[?(\w+)\]?:\s(.+)$/,
-      headerCorrespondence: ['type', 'subject'],
+      headerCorrespondence: ["type", "subject"],
     },
   },
   rules: {
-    'type-enum': [
+    "type-enum": [
       2,
-      'always',
-      ['feat', 'fix', 'chore', 'wip', 'docs', 'style', 'refactor', 'test', 'perf', 'revert', 'ci'],
+      "always",
+      ["feat", "fix", "chore", "wip", "docs", "style", "refactor", "test", "perf", "revert", "ci"],
     ],
-    'type-case': [2, 'always', 'lower-case'],
-    'type-empty': [2, 'never'],
-    'subject-empty': [2, 'never'],
-    'subject-case': [0], // allow any case in subject
-    'header-max-length': [2, 'always', 120],
-    'body-max-line-length': [2, 'always', 120],
+    "type-case": [2, "always", "lower-case"],
+    "type-empty": [2, "never"],
+    "subject-empty": [2, "never"],
+    "subject-case": [0], // allow any case in subject
+    "header-max-length": [2, "always", 120],
+    "body-max-line-length": [2, "always", 120],
   },
 };

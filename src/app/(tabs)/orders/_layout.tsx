@@ -1,7 +1,7 @@
-import { Redirect, Stack } from 'expo-router';
+import { Redirect, Stack } from "expo-router";
 
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { useAppSelector } from '@/store';
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { useAppSelector } from "@/store";
 
 /**
  * Orders stack — auth-guarded.

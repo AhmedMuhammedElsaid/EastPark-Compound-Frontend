@@ -1,21 +1,21 @@
-import type { Socket } from 'socket.io-client';
-import type { Order, OrderStatus } from '@/services/api/orders';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { router, useLocalSearchParams } from 'expo-router';
-import { ArrowLeft } from 'phosphor-react-native';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { Socket } from "socket.io-client";
+import type { Order, OrderStatus } from "@/services/api/orders";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { router, useLocalSearchParams } from "expo-router";
+import { ArrowLeft } from "phosphor-react-native";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Skeleton } from '@/components/ui/skeleton';
-import { formatCurrency } from '@/lib/formatCurrency';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { ordersApi } from '@/services/api/orders';
-import { getOrdersSocket, joinOrderRoom, leaveOrderRoom } from '@/services/socket/client';
-import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency } from "@/lib/format-currency";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { ordersApi } from "@/services/api/orders";
+import { getOrdersSocket, joinOrderRoom, leaveOrderRoom } from "@/services/socket/client";
+import { BRAND, FONT, RADIUS, SEMANTIC, SPACING } from "@/theme/tokens";
 
-const STATUS_STEPS: OrderStatus[] = ['PLACED', 'CONFIRMED', 'PREPARING', 'READY', 'ON_THE_WAY', 'DELIVERED'];
+const STATUS_STEPS: OrderStatus[] = ["PLACED", "CONFIRMED", "PREPARING", "READY", "ON_THE_WAY", "DELIVERED"];
 
 const STATUS_COLOR: Record<string, string> = {
   PLACED: SEMANTIC.info,
@@ -31,8 +31,8 @@ function useStyles() {
   return React.useMemo(() => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
     nav: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       paddingHorizontal: SPACING.base,
       paddingVertical: SPACING.md,
       gap: SPACING.md,
@@ -45,37 +45,37 @@ function useStyles() {
       height: 36,
       borderRadius: 18,
       backgroundColor: colors.elevated,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    navInfo: { flex: 1, flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, gap: SPACING.sm },
-    navShop: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text, flex: 1 },
+    navInfo: { flex: 1, flexDirection: "row" as const, alignItems: "center" as const, justifyContent: "space-between" as const, gap: SPACING.sm },
+    navShop: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 16, color: colors.text, flex: 1 },
     statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.full },
-    statusText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 11, color: colors.text },
+    statusText: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 11, color: colors.text },
     scroll: { padding: SPACING.base, gap: SPACING.md },
     timeline: {
-      flexDirection: 'row' as const,
-      alignItems: 'flex-start' as const,
+      flexDirection: "row" as const,
+      alignItems: "flex-start" as const,
       backgroundColor: colors.card,
       borderRadius: RADIUS.md,
       padding: SPACING.md,
-      overflow: 'hidden' as const,
+      overflow: "hidden" as const,
     },
-    timelineItem: { flex: 1, alignItems: 'center' as const, gap: 6 },
+    timelineItem: { flex: 1, alignItems: "center" as const, gap: 6 },
     timelineDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.elevated, borderWidth: 2, borderColor: colors.border },
     timelineDotDone: { backgroundColor: BRAND.gold, borderColor: BRAND.gold },
     timelineDotActive: { width: 16, height: 16, borderRadius: 8 },
     timelineLine: {
-      position: 'absolute' as const,
+      position: "absolute" as const,
       top: 6,
-      left: '50%',
+      left: "50%",
       right: -40,
       height: 2,
       backgroundColor: colors.border,
       zIndex: -1,
     },
     timelineLineDone: { backgroundColor: BRAND.gold },
-    timelineLabel: { fontFamily: FONT.sans, fontSize: 9, color: colors.textMuted, textAlign: 'center' as const },
+    timelineLabel: { fontFamily: FONT.sans, fontSize: 9, color: colors.textMuted, textAlign: "center" as const },
     timelineLabelDone: { color: BRAND.gold },
     section: {
       backgroundColor: colors.card,
@@ -84,26 +84,26 @@ function useStyles() {
       gap: SPACING.sm,
     },
     summarySection: { gap: SPACING.md },
-    itemRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: SPACING.sm },
-    itemQty: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: BRAND.gold, minWidth: 28 },
+    itemRow: { flexDirection: "row" as const, alignItems: "center" as const, gap: SPACING.sm },
+    itemQty: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 14, color: BRAND.gold, minWidth: 28 },
     itemName: { fontFamily: FONT.sans, fontSize: 14, color: colors.text, flex: 1 },
-    itemPrice: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text },
-    summaryRow: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const },
+    itemPrice: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 14, color: colors.text },
+    summaryRow: { flexDirection: "row" as const, justifyContent: "space-between" as const, alignItems: "center" as const },
     summaryLabel: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted },
-    summaryValue: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text },
+    summaryValue: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 14, color: colors.text },
     totalRow: { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: SPACING.md, marginTop: SPACING.xs },
-    totalLabel: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text },
-    totalValue: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: BRAND.gold },
+    totalLabel: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 16, color: colors.text },
+    totalValue: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 18, color: BRAND.gold },
     cancelBtn: {
       height: 48,
       borderRadius: RADIUS.md,
       borderWidth: 1,
       borderColor: SEMANTIC.error,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
     cancelBtnDisabled: { opacity: 0.5 },
-    cancelBtnText: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: SEMANTIC.error },
+    cancelBtnText: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 14, color: SEMANTIC.error },
   }), [colors]);
 }
 
@@ -114,10 +114,10 @@ export default function OrderDetailScreen() {
   const queryClient = useQueryClient();
   const colors = useAppColors();
   const styles = useStyles();
-  const isAr = i18n.language === 'ar';
+  const isAr = i18n.language === "ar";
 
   const { data, isLoading } = useQuery({
-    queryKey: ['order', orderId],
+    queryKey: ["order", orderId],
     queryFn: () => ordersApi.getOrder(orderId),
     enabled: !!orderId,
   });
@@ -135,8 +135,8 @@ export default function OrderDetailScreen() {
       if (!mounted)
         return;
       if (update.orderId === orderId) {
-        queryClient.invalidateQueries({ queryKey: ['order', orderId] });
-        queryClient.invalidateQueries({ queryKey: ['orders'] });
+        queryClient.invalidateQueries({ queryKey: ["order", orderId] });
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
       }
     };
 
@@ -145,14 +145,14 @@ export default function OrderDetailScreen() {
         return;
       socketRef = socket;
       joinOrderRoom(orderId);
-      socket.on('order_status_updated', handler);
+      socket.on("order_status_updated", handler);
     });
 
     return () => {
       mounted = false;
       leaveOrderRoom(orderId);
       if (socketRef) {
-        socketRef.off('order_status_updated', handler);
+        socketRef.off("order_status_updated", handler);
       }
     };
   }, [orderId, queryClient]);
@@ -160,18 +160,18 @@ export default function OrderDetailScreen() {
   const { mutate: cancelOrder, isPending: cancelling } = useMutation({
     mutationFn: () => ordersApi.cancelOrder(orderId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['order', orderId] });
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ["order", orderId] });
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
   });
 
   function handleCancel() {
     Alert.alert(
-      t('orders.cancel_order'),
-      t('orders.cancel_confirm'),
+      t("orders.cancel_order"),
+      t("orders.cancel_confirm"),
       [
-        { text: t('common.cancel'), style: 'cancel' },
-        { text: t('orders.cancel_order'), style: 'destructive', onPress: () => cancelOrder() },
+        { text: t("common.cancel"), style: "cancel" },
+        { text: t("orders.cancel_order"), style: "destructive", onPress: () => cancelOrder() },
       ],
     );
   }
@@ -186,18 +186,18 @@ export default function OrderDetailScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + SPACING.xl }]}
       >
-        {order.status !== 'CANCELLED' && (
+        {order.status !== "CANCELLED" && (
           <StatusTimeline currentStatus={order.status} styles={styles} />
         )}
         <OrderItems order={order} isAr={isAr} styles={styles} />
         <OrderSummary order={order} styles={styles} />
-        {order.status === 'PLACED' && (
+        {order.status === "PLACED" && (
           <Pressable
             style={[styles.cancelBtn, cancelling && styles.cancelBtnDisabled]}
             onPress={handleCancel}
             disabled={cancelling}
           >
-            <Text style={styles.cancelBtnText}>{t('orders.cancel_order')}</Text>
+            <Text style={styles.cancelBtnText}>{t("orders.cancel_order")}</Text>
           </Pressable>
         )}
       </ScrollView>
@@ -210,7 +210,7 @@ export default function OrderDetailScreen() {
 function OrderNav({ order, isAr, colors, styles }: { order: Order; isAr: boolean; colors: any; styles: any }) {
   const { t } = useTranslation();
   const shopName = isAr ? order.shop?.nameAr : order.shop?.name;
-  const statusColor = order.status === 'CANCELLED' ? colors.elevated : (STATUS_COLOR[order.status] ?? colors.elevated);
+  const statusColor = order.status === "CANCELLED" ? colors.elevated : (STATUS_COLOR[order.status] ?? colors.elevated);
 
   return (
     <View style={styles.nav}>
@@ -218,7 +218,7 @@ function OrderNav({ order, isAr, colors, styles }: { order: Order; isAr: boolean
         <ArrowLeft size={18} color={colors.text} />
       </Pressable>
       <View style={styles.navInfo}>
-        <Text style={styles.navShop} numberOfLines={1}>{shopName ?? t('orders.unknown_shop')}</Text>
+        <Text style={styles.navShop} numberOfLines={1}>{shopName ?? t("orders.unknown_shop")}</Text>
         <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
           <Text style={styles.statusText}>{t(`orders.${order.status}`)}</Text>
         </View>
@@ -278,19 +278,19 @@ function OrderSummary({ order, styles }: { order: Order; styles: any }) {
   return (
     <View style={[styles.section, styles.summarySection]}>
       <View style={styles.summaryRow}>
-        <Text style={styles.summaryLabel}>{t('checkout.payment')}</Text>
+        <Text style={styles.summaryLabel}>{t("checkout.payment")}</Text>
         <Text style={styles.summaryValue}>
-          {order.paymentMethod === 'CASH' ? t('checkout.cash') : t('checkout.card')}
+          {order.paymentMethod === "CASH" ? t("checkout.cash") : t("checkout.card")}
         </Text>
       </View>
       <View style={styles.summaryRow}>
-        <Text style={styles.summaryLabel}>{t('orders.paid')}</Text>
+        <Text style={styles.summaryLabel}>{t("orders.paid")}</Text>
         <Text style={[styles.summaryValue, { color: order.isPaid ? SEMANTIC.success : SEMANTIC.error }]}>
-          {order.isPaid ? t('orders.paid') : t('orders.unpaid')}
+          {order.isPaid ? t("orders.paid") : t("orders.unpaid")}
         </Text>
       </View>
       <View style={[styles.summaryRow, styles.totalRow]}>
-        <Text style={styles.totalLabel}>{t('cart.total')}</Text>
+        <Text style={styles.totalLabel}>{t("cart.total")}</Text>
         <Text style={styles.totalValue}>
           {formatCurrency(order.totalAmount)}
         </Text>

@@ -1,7 +1,7 @@
-import Constants from 'expo-constants';
-import * as Notifications from 'expo-notifications';
+import Constants from "expo-constants";
+import * as Notifications from "expo-notifications";
 
-import { authApi } from '@/services/api/auth';
+import { authApi } from "@/services/api/auth";
 
 /**
  * Requests push notification permission (if not yet granted) then registers
@@ -11,11 +11,11 @@ import { authApi } from '@/services/api/auth';
 export async function registerPushToken() {
   try {
     let { status } = await Notifications.getPermissionsAsync();
-    if (status !== 'granted') {
+    if (status !== "granted") {
       const result = await Notifications.requestPermissionsAsync();
       status = result.status;
     }
-    if (status === 'granted') {
+    if (status === "granted") {
       const projectId = Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
       const token = await Notifications.getExpoPushTokenAsync(
         projectId ? { projectId } : undefined,
@@ -25,6 +25,6 @@ export async function registerPushToken() {
   }
   catch (err) {
     if (__DEV__)
-      console.warn('[push] token registration failed', err);
+      console.warn("[push] token registration failed", err);
   }
 }

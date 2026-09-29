@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function */
-import type { SvgProps } from 'react-native-svg';
-import * as React from 'react';
-import Svg, { Circle, Path, Polygon } from 'react-native-svg';
+import type { SvgProps } from "react-native-svg";
+import * as React from "react";
+import Svg, { Circle, Path, Polygon } from "react-native-svg";
 // TODO: should be updated to simple images
 export function Cover(props: SvgProps) {
   return (

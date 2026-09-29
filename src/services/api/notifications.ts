@@ -1,4 +1,4 @@
-import { client } from './client';
+import { client } from "./client";
 
 export type AppNotification = {
   id: string;
@@ -17,16 +17,16 @@ export type NotificationPreference = {
 
 export const notificationsApi = {
   getNotifications: (params?: { cursor?: string; limit?: number }) =>
-    client.get<{ data: { items: AppNotification[]; nextCursor: string | null } }>('/notifications', { params }),
+    client.get<{ data: { items: AppNotification[]; nextCursor: string | null } }>("/notifications", { params }),
 
   markRead: (notificationId: string) =>
     client.patch<{ data: AppNotification }>(`/notifications/${notificationId}/read`),
 
   markAllRead: () =>
-    client.patch<{ data: { success: boolean } }>('/notifications/read-all'),
+    client.patch<{ data: { success: boolean } }>("/notifications/read-all"),
 
   getPreferences: () =>
-    client.get<{ data: NotificationPreference[] }>('/notifications/preferences'),
+    client.get<{ data: NotificationPreference[] }>("/notifications/preferences"),
 
   updatePreference: (type: string, enabled: boolean) =>
     client.put<{ data: NotificationPreference }>(`/notifications/preferences/${type}`, { enabled }),

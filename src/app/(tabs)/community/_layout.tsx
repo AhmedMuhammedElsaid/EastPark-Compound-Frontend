@@ -1,6 +1,6 @@
-import { Stack } from 'expo-router';
+import { Stack } from "expo-router";
 
-import { useAppColors } from '@/lib/hooks/use-app-colors';
+import { useAppColors } from "@/lib/hooks/use-app-colors";
 
 export default function CommunityLayout() {
   const colors = useAppColors();

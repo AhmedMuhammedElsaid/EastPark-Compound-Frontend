@@ -1,26 +1,26 @@
-import type { AxiosResponse } from 'axios';
-import type { Report } from '@/services/api/community';
-import { FlashList } from '@shopify/flash-list';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { router } from 'expo-router';
-import { ArrowLeft, ClipboardText, FilePdf } from 'phosphor-react-native';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import type { AxiosResponse } from "axios";
+import type { Report } from "@/services/api/community";
+import { FlashList } from "@shopify/flash-list";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
+import { ArrowLeft, ClipboardText, FilePdf } from "phosphor-react-native";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
 
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { communityApi } from '@/services/api/community';
-import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { communityApi } from "@/services/api/community";
+import { BRAND, FONT, RADIUS, SPACING } from "@/theme/tokens";
 
 function useStyles() {
   const colors = useAppColors();
   return React.useMemo(() => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
     nav: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       paddingHorizontal: SPACING.base,
       paddingVertical: SPACING.md,
       gap: SPACING.sm,
@@ -33,17 +33,17 @@ function useStyles() {
       height: 36,
       borderRadius: 18,
       backgroundColor: colors.elevated,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    title: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 18, color: colors.text },
     loadingPad: { padding: SPACING.base },
     listContent: { padding: SPACING.base },
-    empty: { alignItems: 'center' as const, paddingTop: 80, gap: SPACING.md },
+    empty: { alignItems: "center" as const, paddingTop: 80, gap: SPACING.md },
     emptyText: { fontFamily: FONT.sans, fontSize: 15, color: colors.textMuted },
     row: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       backgroundColor: colors.card,
       borderRadius: RADIUS.md,
       padding: SPACING.md,
@@ -55,13 +55,13 @@ function useStyles() {
       height: 44,
       borderRadius: RADIUS.sm,
       backgroundColor: colors.elevated,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
     rowContent: { flex: 1, gap: 4 },
-    rowTitle: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 14, color: colors.text, lineHeight: 20 },
+    rowTitle: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 14, color: colors.text, lineHeight: 20 },
     rowDate: { fontFamily: FONT.sans, fontSize: 12, color: colors.textMuted },
-    viewLabel: { fontFamily: FONT.sans, fontSize: 12, color: BRAND.gold, fontWeight: '600' },
+    viewLabel: { fontFamily: FONT.sans, fontSize: 12, color: BRAND.gold, fontWeight: "600" },
   }), [colors]);
 }
 
@@ -70,7 +70,7 @@ export default function ReportsScreen() {
   const insets = useSafeAreaInsets();
   const styles = useStyles();
   const colors = useAppColors();
-  const isAr = i18n.language === 'ar';
+  const isAr = i18n.language === "ar";
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch }
     = useInfiniteQuery<
@@ -80,7 +80,7 @@ export default function ReportsScreen() {
       string[],
       string | undefined
     >({
-      queryKey: ['reports'],
+      queryKey: ["reports"],
       queryFn: ({ pageParam }) => communityApi.getReports({ cursor: pageParam, limit: 20 }),
       getNextPageParam: last => last.data.data.nextCursor ?? undefined,
       initialPageParam: undefined,
@@ -91,10 +91,10 @@ export default function ReportsScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.nav}>
-        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('common.back')}>
+        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t("common.back")}>
           <ArrowLeft size={18} color={colors.text} />
         </Pressable>
-        <Text style={styles.title}>{t('community.reports')}</Text>
+        <Text style={styles.title}>{t("community.reports")}</Text>
       </View>
 
       {isLoading
@@ -121,7 +121,7 @@ export default function ReportsScreen() {
               ListEmptyComponent={(
                 <View style={styles.empty}>
                   <ClipboardText size={48} color={colors.textMuted} />
-                  <Text style={styles.emptyText}>{t('community.no_reports')}</Text>
+                  <Text style={styles.emptyText}>{t("community.no_reports")}</Text>
                 </View>
               )}
               ListFooterComponent={
@@ -138,10 +138,10 @@ export default function ReportsScreen() {
 function ReportRow({ report, isAr, styles }: { report: Report; isAr: boolean; styles: any }) {
   const { t } = useTranslation();
   const title = isAr ? report.titleAr : report.title;
-  const date = new Date(report.publishedAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-GB', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+  const date = new Date(report.publishedAt).toLocaleDateString(isAr ? "ar-EG" : "en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 
   return (
@@ -153,7 +153,7 @@ function ReportRow({ report, isAr, styles }: { report: Report; isAr: boolean; st
         <Text style={styles.rowTitle} numberOfLines={2}>{title}</Text>
         <Text style={styles.rowDate}>{date}</Text>
       </View>
-      <Text style={styles.viewLabel}>{t('community.view_pdf')}</Text>
+      <Text style={styles.viewLabel}>{t("community.view_pdf")}</Text>
     </Pressable>
   );
 }

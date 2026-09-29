@@ -1,25 +1,25 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as Haptics from 'expo-haptics';
-import { router } from 'expo-router';
-import { ArrowLeft, EnvelopeSimple } from 'phosphor-react-native';
-import * as React from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { showMessage } from 'react-native-flash-message';
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
+import { ArrowLeft, EnvelopeSimple } from "phosphor-react-native";
+import * as React from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
 
-import { z } from 'zod';
-import { AuthInput } from '@/components/auth/auth-input';
-import { AuthScreenWrapper } from '@/components/auth/auth-screen-wrapper';
-import { BrandMark } from '@/components/auth/brand-mark';
-import { GoldButton } from '@/components/auth/gold-button';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { authApi } from '@/services/api/auth';
+import { z } from "zod";
+import { AuthInput } from "@/components/auth/auth-input";
+import { AuthScreenWrapper } from "@/components/auth/auth-screen-wrapper";
+import { BrandMark } from "@/components/auth/brand-mark";
+import { GoldButton } from "@/components/auth/gold-button";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { authApi } from "@/services/api/auth";
 
-import { BRAND, FONT, SEMANTIC, SPACING } from '@/theme/tokens';
+import { BRAND, FONT, SEMANTIC, SPACING } from "@/theme/tokens";
 
 const schema = z.object({
-  email: z.string().email('auth.errors.invalid_email'),
+  email: z.string().email("auth.errors.invalid_email"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -28,29 +28,29 @@ function useStyles() {
   const colors = useAppColors();
   return React.useMemo(() => StyleSheet.create({
     header: {
-      alignItems: 'center' as const,
+      alignItems: "center" as const,
       marginTop: SPACING.xl,
-      marginBottom: SPACING['2xl'],
+      marginBottom: SPACING["2xl"],
     },
     title: {
       fontFamily: FONT.sans,
-      fontWeight: '700',
+      fontWeight: "700",
       fontSize: 24,
       color: colors.text,
-      textAlign: 'center' as const,
+      textAlign: "center" as const,
       marginBottom: SPACING.xs,
     },
     subtitle: {
       fontFamily: FONT.sans,
       fontSize: 14,
       color: colors.textMuted,
-      textAlign: 'center' as const,
+      textAlign: "center" as const,
       marginBottom: SPACING.xl,
       lineHeight: 22,
     },
     form: { marginBottom: SPACING.sm },
-    footer: { alignItems: 'center' as const, marginTop: SPACING.lg },
-    backLinkRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: SPACING.xs },
+    footer: { alignItems: "center" as const, marginTop: SPACING.lg },
+    backLinkRow: { flexDirection: "row" as const, alignItems: "center" as const, gap: SPACING.xs },
     backLink: {
       fontFamily: FONT.sans,
       fontSize: 14,
@@ -58,30 +58,30 @@ function useStyles() {
     },
     successCard: {
       flex: 1,
-      alignItems: 'center' as const,
-      justifyContent: 'center' as const,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
       gap: SPACING.md,
       paddingHorizontal: SPACING.lg,
     },
     successTitle: {
       fontFamily: FONT.sans,
-      fontWeight: '700',
+      fontWeight: "700",
       fontSize: 22,
       color: colors.text,
-      textAlign: 'center' as const,
+      textAlign: "center" as const,
     },
     successBody: {
       fontFamily: FONT.sans,
       fontSize: 14,
       color: colors.textMuted,
-      textAlign: 'center' as const,
+      textAlign: "center" as const,
       lineHeight: 22,
     },
     tryDifferentEmail: {
       fontFamily: FONT.sans,
       fontSize: 14,
       color: colors.textMuted,
-      textAlign: 'center' as const,
+      textAlign: "center" as const,
       marginTop: SPACING.sm,
     },
   }), [colors]);
@@ -92,7 +92,7 @@ export default function ForgotPasswordScreen() {
   const colors = useAppColors();
   const styles = useStyles();
   const [sent, setSent] = React.useState(false);
-  const [sentEmail, setSentEmail] = React.useState('');
+  const [sentEmail, setSentEmail] = React.useState("");
 
   const {
     control,
@@ -100,7 +100,7 @@ export default function ForgotPasswordScreen() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { email: '' },
+    defaultValues: { email: "" },
   });
 
   async function onSubmit({ email }: FormData) {
@@ -111,8 +111,8 @@ export default function ForgotPasswordScreen() {
     }
     catch {
       showMessage({
-        message: t('common.error'),
-        type: 'danger',
+        message: t("common.error"),
+        type: "danger",
         backgroundColor: SEMANTIC.error,
       });
     }
@@ -127,18 +127,18 @@ export default function ForgotPasswordScreen() {
 
         <View style={styles.successCard}>
           <EnvelopeSimple size={56} color={BRAND.gold} />
-          <Text style={styles.successTitle}>{t('auth.reset_link_sent')}</Text>
+          <Text style={styles.successTitle}>{t("auth.reset_link_sent")}</Text>
           <Text style={styles.successBody}>
-            {t('auth.reset_link_body', { email: sentEmail })}
+            {t("auth.reset_link_body", { email: sentEmail })}
           </Text>
         </View>
 
         <GoldButton
           variant="outline"
-          label={t('auth.back_to_login')}
+          label={t("auth.back_to_login")}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            router.replace('/(auth)/login');
+            router.replace("/(auth)/login");
           }}
         />
         <Pressable
@@ -147,9 +147,9 @@ export default function ForgotPasswordScreen() {
             setSent(false);
           }}
           hitSlop={8}
-          style={{ alignItems: 'center', marginTop: SPACING.sm }}
+          style={{ alignItems: "center", marginTop: SPACING.sm }}
         >
-          <Text style={styles.tryDifferentEmail}>{t('auth.forgot.tryDifferentEmail')}</Text>
+          <Text style={styles.tryDifferentEmail}>{t("auth.forgot.tryDifferentEmail")}</Text>
         </Pressable>
       </AuthScreenWrapper>
     );
@@ -161,8 +161,8 @@ export default function ForgotPasswordScreen() {
         <BrandMark size="sm" />
       </View>
 
-      <Text style={styles.title}>{t('auth.reset_password')}</Text>
-      <Text style={styles.subtitle}>{t('auth.forgot_password_body')}</Text>
+      <Text style={styles.title}>{t("auth.reset_password")}</Text>
+      <Text style={styles.subtitle}>{t("auth.forgot_password_body")}</Text>
 
       <View style={styles.form}>
         <Controller
@@ -170,7 +170,7 @@ export default function ForgotPasswordScreen() {
           name="email"
           render={({ field: { onChange, onBlur, value } }) => (
             <AuthInput
-              label={t('auth.email')}
+              label={t("auth.email")}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -185,7 +185,7 @@ export default function ForgotPasswordScreen() {
       </View>
 
       <GoldButton
-        label={t('auth.send_reset_link')}
+        label={t("auth.send_reset_link")}
         onPress={handleSubmit(onSubmit)}
         loading={isSubmitting}
       />
@@ -200,7 +200,7 @@ export default function ForgotPasswordScreen() {
           style={styles.backLinkRow}
         >
           <ArrowLeft size={14} color={colors.textMuted} />
-          <Text style={styles.backLink}>{t('common.back')}</Text>
+          <Text style={styles.backLink}>{t("common.back")}</Text>
         </Pressable>
       </View>
     </AuthScreenWrapper>

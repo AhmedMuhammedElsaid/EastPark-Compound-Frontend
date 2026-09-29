@@ -15,11 +15,11 @@
 #         with:
 #           APP_ENV: 'staging'
 
-name: 'Setup  JDK + GRADLE + Generate APK'
-description: 'Setup  JDK + GRADLE + Generate APK'
+name: "Setup  JDK + GRADLE + Generate APK"
+description: "Setup  JDK + GRADLE + Generate APK"
 inputs:
   APP_ENV:
-    description: 'APP_ENV (one of): development, staging, production'
+    description: "APP_ENV (one of): development, staging, production"
     required: true
     default: staging
 
@@ -30,7 +30,7 @@ runs:
       uses: actions/setup-java@v3
       with:
         distribution: zulu # See 'Supported distributions' for available options
-        java-version: '17'
+        java-version: "17"
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
 
@@ -43,6 +43,6 @@ runs:
         cd ..
       shell: bash
       env:
-        EXPO_NO_DOTENV: '1'
+        EXPO_NO_DOTENV: "1"
         APP_ENV: ${{ inputs.APP_ENV }}
-        CI: 'true'
+        CI: "true"

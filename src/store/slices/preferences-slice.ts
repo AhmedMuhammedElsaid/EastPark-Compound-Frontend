@@ -1,9 +1,9 @@
-import type { PayloadAction } from '@reduxjs/toolkit';
+import type { PayloadAction } from "@reduxjs/toolkit";
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-type Language = 'ar' | 'en';
-type Theme = 'dark' | 'light' | 'system';
+type Language = "ar" | "en";
+type Theme = "dark" | "light" | "system";
 
 type PreferencesState = {
   language: Language;
@@ -11,12 +11,12 @@ type PreferencesState = {
 };
 
 const initialState: PreferencesState = {
-  language: 'ar', // Arabic RTL is primary
-  theme: 'dark', // Dark mode is flagship default
+  language: "ar", // Arabic RTL is primary
+  theme: "dark", // Dark mode is flagship default
 };
 
 export const preferencesSlice = createSlice({
-  name: 'preferences',
+  name: "preferences",
   initialState,
   reducers: {
     setLanguage(state, action: PayloadAction<Language>) {

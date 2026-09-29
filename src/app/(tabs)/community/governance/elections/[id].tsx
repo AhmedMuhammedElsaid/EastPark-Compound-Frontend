@@ -1,26 +1,26 @@
-import type { Candidate } from '@/services/api/governance';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { router, useLocalSearchParams } from 'expo-router';
-import { ArrowLeft } from 'phosphor-react-native';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import type { Candidate } from "@/services/api/governance";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { router, useLocalSearchParams } from "expo-router";
+import { ArrowLeft } from "phosphor-react-native";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
 
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { showMessage } from 'react-native-flash-message';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
-import { governanceApi } from '@/services/api/governance';
-import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { useAuthGuard } from "@/lib/hooks/use-auth-guard";
+import { governanceApi } from "@/services/api/governance";
+import { BRAND, FONT, RADIUS, SPACING } from "@/theme/tokens";
 
 function useStyles() {
   const colors = useAppColors();
   return React.useMemo(() => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
     nav: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       paddingHorizontal: SPACING.base,
       paddingVertical: SPACING.md,
       gap: SPACING.sm,
@@ -33,12 +33,12 @@ function useStyles() {
       height: 36,
       borderRadius: 18,
       backgroundColor: colors.elevated,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    navTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 18, color: colors.text },
+    navTitle: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 18, color: colors.text },
     scroll: { padding: SPACING.base },
-    title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 22, color: colors.text, lineHeight: 30, marginBottom: SPACING.sm },
+    title: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 22, color: colors.text, lineHeight: 30, marginBottom: SPACING.sm },
     description: { fontFamily: FONT.sans, fontSize: 14, color: colors.textMuted, lineHeight: 22, marginBottom: SPACING.md },
     sealedBanner: {
       backgroundColor: colors.card,
@@ -49,7 +49,7 @@ function useStyles() {
       borderLeftColor: BRAND.gold,
     },
     sealedText: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted },
-    sectionTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text, marginBottom: SPACING.md },
+    sectionTitle: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 16, color: colors.text, marginBottom: SPACING.md },
     candidates: { gap: SPACING.md },
     candidateCard: {
       backgroundColor: colors.card,
@@ -60,40 +60,40 @@ function useStyles() {
       borderColor: colors.border,
     },
     candidateSelected: { borderColor: BRAND.gold },
-    candidateTop: { flexDirection: 'row' as const, gap: SPACING.md },
+    candidateTop: { flexDirection: "row" as const, gap: SPACING.md },
     avatar: { width: 56, height: 56, borderRadius: 28 },
-    avatarFallback: { backgroundColor: colors.elevated, justifyContent: 'center' as const, alignItems: 'center' as const },
-    avatarInitial: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 20, color: BRAND.gold },
+    avatarFallback: { backgroundColor: colors.elevated, justifyContent: "center" as const, alignItems: "center" as const },
+    avatarInitial: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 20, color: BRAND.gold },
     candidateInfo: { flex: 1 },
-    candidateName: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text },
+    candidateName: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 16, color: colors.text },
     candidateStatement: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, lineHeight: 20, marginTop: 4 },
     voteBar: {
       height: 28,
       backgroundColor: colors.elevated,
       borderRadius: RADIUS.sm,
-      overflow: 'hidden' as const,
-      justifyContent: 'center' as const,
+      overflow: "hidden" as const,
+      justifyContent: "center" as const,
       paddingHorizontal: SPACING.sm,
     },
     voteBarFill: {
-      position: 'absolute' as const,
+      position: "absolute" as const,
       left: 0,
       top: 0,
       bottom: 0,
       backgroundColor: `${BRAND.gold}33`,
     },
-    voteBarText: { fontFamily: FONT.sans, fontSize: 12, color: colors.text, fontWeight: '600' },
+    voteBarText: { fontFamily: FONT.sans, fontSize: 12, color: colors.text, fontWeight: "600" },
     voteBtn: {
       height: 40,
       borderRadius: RADIUS.md,
       backgroundColor: BRAND.gold,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    voteBtnText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: colors.bg },
-    votedRow: { alignItems: 'center' as const },
-    votedText: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: '600' },
-    meta: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, marginTop: SPACING.lg, textAlign: 'center' as const },
+    voteBtnText: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 14, color: colors.bg },
+    votedRow: { alignItems: "center" as const },
+    votedText: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: "600" },
+    meta: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, marginTop: SPACING.lg, textAlign: "center" as const },
   }), [colors]);
 }
 
@@ -107,31 +107,31 @@ export default function ElectionScreen() {
   const colors = useAppColors();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['election', id],
+    queryKey: ["election", id],
     queryFn: () => governanceApi.getElection(id),
     enabled: !!id,
   });
 
   const election = data?.data.data;
-  const isAr = i18n.language === 'ar';
+  const isAr = i18n.language === "ar";
 
   const { mutate, isPending } = useMutation({
     mutationFn: (candidateId: string) => governanceApi.voteElection(id, candidateId),
     onSuccess: () => {
-      showMessage({ message: t('governance.vote_submitted'), type: 'success' });
-      queryClient.invalidateQueries({ queryKey: ['election', id] });
-      queryClient.invalidateQueries({ queryKey: ['elections'] });
+      showMessage({ message: t("governance.vote_submitted"), type: "success" });
+      queryClient.invalidateQueries({ queryKey: ["election", id] });
+      queryClient.invalidateQueries({ queryKey: ["elections"] });
     },
   });
 
   function handleVote(candidateId: string, candidateName: string) {
     requireAuth(() => {
       Alert.alert(
-        t('governance.vote'),
-        t('governance.vote_confirm', { option: candidateName }),
+        t("governance.vote"),
+        t("governance.vote_confirm", { option: candidateName }),
         [
-          { text: t('common.cancel'), style: 'cancel' },
-          { text: t('governance.vote'), onPress: () => mutate(candidateId) },
+          { text: t("common.cancel"), style: "cancel" },
+          { text: t("governance.vote"), onPress: () => mutate(candidateId) },
         ],
       );
     });
@@ -151,7 +151,7 @@ export default function ElectionScreen() {
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
           <ArrowLeft size={18} color={colors.text} />
         </Pressable>
-        <Text style={styles.navTitle}>{t('governance.elections')}</Text>
+        <Text style={styles.navTitle}>{t("governance.elections")}</Text>
       </View>
 
       <ScrollView
@@ -163,11 +163,11 @@ export default function ElectionScreen() {
 
         {election.myVote && !showVotes && (
           <View style={styles.sealedBanner}>
-            <Text style={styles.sealedText}>{t('governance.sealed')}</Text>
+            <Text style={styles.sealedText}>{t("governance.sealed")}</Text>
           </View>
         )}
 
-        <Text style={styles.sectionTitle}>{t('governance.candidates')}</Text>
+        <Text style={styles.sectionTitle}>{t("governance.candidates")}</Text>
 
         <CandidateList
           candidates={election.candidates}
@@ -182,13 +182,13 @@ export default function ElectionScreen() {
 
         <Text style={styles.meta}>
           {election.totalVotes}
-          {' '}
-          {t('governance.votes_label')}
-          {' · '}
-          {t('governance.expires', {
-            date: new Date(election.expiresAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-GB', {
-              month: 'short',
-              day: 'numeric',
+          {" "}
+          {t("governance.votes_label")}
+          {" · "}
+          {t("governance.expires", {
+            date: new Date(election.expiresAt).toLocaleDateString(isAr ? "ar-EG" : "en-GB", {
+              month: "short",
+              day: "numeric",
             }),
           })}
         </Text>
@@ -296,7 +296,7 @@ function CandidateCard({
           <View style={[styles.voteBarFill, { width: `${pct}%` }]} />
           <Text style={styles.voteBarText}>
             {votes}
-            {' '}
+            {" "}
             (
             {pct}
             %)
@@ -306,12 +306,12 @@ function CandidateCard({
 
       {canVote && (
         <Pressable style={styles.voteBtn} onPress={onVote}>
-          <Text style={styles.voteBtnText}>{t('governance.vote')}</Text>
+          <Text style={styles.voteBtnText}>{t("governance.vote")}</Text>
         </Pressable>
       )}
       {isSelected && (
         <View style={styles.votedRow}>
-          <Text style={styles.votedText}>{t('governance.voted')}</Text>
+          <Text style={styles.votedText}>{t("governance.voted")}</Text>
         </View>
       )}
     </View>

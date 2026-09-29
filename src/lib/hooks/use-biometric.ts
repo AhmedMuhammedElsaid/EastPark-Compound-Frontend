@@ -8,22 +8,22 @@
  * login screen can offer a one-tap "Sign in with Face ID/Fingerprint"
  * button that exchanges it for a fresh access token via /auth/refresh.
  */
-import * as LocalAuthentication from 'expo-local-authentication';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import * as LocalAuthentication from "expo-local-authentication";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   deleteSecureItem,
   getSecureItem,
   setSecureItem,
-} from '@/lib/secure-storage';
+} from "@/lib/secure-storage";
 import {
   SECURE_KEY_BIOMETRIC_EMAIL,
   SECURE_KEY_BIOMETRIC_ENABLED,
   SECURE_KEY_REFRESH,
-} from '@/services/api/client';
+} from "@/services/api/client";
 
-export type BiometricKind = 'face' | 'fingerprint' | 'iris' | 'generic';
+export type BiometricKind = "face" | "fingerprint" | "iris" | "generic";
 
 type BiometricState = {
   ready: boolean;
@@ -36,19 +36,19 @@ type BiometricState = {
 const initialState: BiometricState = {
   ready: false,
   isAvailable: false,
-  kind: 'generic',
+  kind: "generic",
   enabled: false,
   email: null,
 };
 
 function pickKind(types: LocalAuthentication.AuthenticationType[]): BiometricKind {
   if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION))
-    return 'face';
+    return "face";
   if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT))
-    return 'fingerprint';
+    return "fingerprint";
   if (types.includes(LocalAuthentication.AuthenticationType.IRIS))
-    return 'iris';
-  return 'generic';
+    return "iris";
+  return "generic";
 }
 
 export function useBiometric() {
@@ -68,13 +68,13 @@ export function useBiometric() {
         ready: true,
         isAvailable: hasHardware && isEnrolled,
         kind: pickKind(types),
-        enabled: enabledRaw === '1',
+        enabled: enabledRaw === "1",
         email,
       });
     }
     catch (err) {
       if (__DEV__)
-        console.warn('[biometric] refresh failed', err);
+        console.warn("[biometric] refresh failed", err);
       setState({ ...initialState, ready: true });
     }
   }, []);
@@ -86,15 +86,15 @@ export function useBiometric() {
   const authenticate = React.useCallback(async (): Promise<boolean> => {
     try {
       const res = await LocalAuthentication.authenticateAsync({
-        promptMessage: t('auth.biometric.prompt'),
-        cancelLabel: t('common.cancel'),
+        promptMessage: t("auth.biometric.prompt"),
+        cancelLabel: t("common.cancel"),
         disableDeviceFallback: false,
       });
       return res.success;
     }
     catch (err) {
       if (__DEV__)
-        console.warn('[biometric] authenticate failed', err);
+        console.warn("[biometric] authenticate failed", err);
       return false;
     }
   }, [t]);
@@ -103,7 +103,7 @@ export function useBiometric() {
     const ok = await authenticate();
     if (!ok)
       return false;
-    await setSecureItem(SECURE_KEY_BIOMETRIC_ENABLED, '1');
+    await setSecureItem(SECURE_KEY_BIOMETRIC_ENABLED, "1");
     await setSecureItem(SECURE_KEY_BIOMETRIC_EMAIL, email);
     setState(s => ({ ...s, enabled: true, email }));
     return true;

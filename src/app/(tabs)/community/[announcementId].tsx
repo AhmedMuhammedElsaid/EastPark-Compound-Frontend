@@ -1,26 +1,26 @@
-import type { AxiosResponse } from 'axios';
-import type { Comment } from '@/services/api/community';
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { router, useLocalSearchParams } from 'expo-router';
-import { ArrowLeft, FilePdf, PaperPlaneTilt } from 'phosphor-react-native';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import type { AxiosResponse } from "axios";
+import type { Comment } from "@/services/api/community";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { router, useLocalSearchParams } from "expo-router";
+import { ArrowLeft, FilePdf, PaperPlaneTilt } from "phosphor-react-native";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
 
-import { KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { useAuthGuard } from '@/lib/hooks/use-auth-guard';
-import { communityApi } from '@/services/api/community';
-import { BRAND, FONT, RADIUS, SPACING } from '@/theme/tokens';
+import { KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { useAuthGuard } from "@/lib/hooks/use-auth-guard";
+import { communityApi } from "@/services/api/community";
+import { BRAND, FONT, RADIUS, SPACING } from "@/theme/tokens";
 
 function useStyles() {
   const colors = useAppColors();
   return React.useMemo(() => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
     nav: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       paddingHorizontal: SPACING.base,
       paddingBottom: SPACING.sm,
       backgroundColor: colors.card,
@@ -33,45 +33,45 @@ function useStyles() {
       height: 36,
       borderRadius: 18,
       backgroundColor: colors.elevated,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
-    navTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: '600', fontSize: 16, color: colors.text },
+    navTitle: { flex: 1, fontFamily: FONT.sans, fontWeight: "600", fontSize: 16, color: colors.text },
     scroll: { padding: SPACING.base },
-    title: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 22, color: colors.text, lineHeight: 32, marginBottom: SPACING.md },
+    title: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 22, color: colors.text, lineHeight: 32, marginBottom: SPACING.md },
     body: { fontFamily: FONT.sans, fontSize: 15, color: colors.textMuted, lineHeight: 26 },
     pdfRow: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       gap: SPACING.sm,
       marginTop: SPACING.md,
       padding: SPACING.md,
       backgroundColor: colors.card,
       borderRadius: RADIUS.md,
     },
-    pdfLabel: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: '600' },
+    pdfLabel: { fontFamily: FONT.sans, fontSize: 14, color: BRAND.gold, fontWeight: "600" },
     divider: { height: 1, backgroundColor: colors.border, marginVertical: SPACING.lg },
-    sectionTitle: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 16, color: colors.text, marginBottom: SPACING.md },
+    sectionTitle: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 16, color: colors.text, marginBottom: SPACING.md },
     commentsWrap: { gap: SPACING.sm },
-    commentRow: { flexDirection: 'row' as const, gap: SPACING.sm },
+    commentRow: { flexDirection: "row" as const, gap: SPACING.sm },
     commentAvatar: {
       width: 36,
       height: 36,
       borderRadius: 18,
       backgroundColor: colors.elevated,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
       flexShrink: 0,
     },
-    commentAvatarText: { fontFamily: FONT.sans, fontWeight: '700', fontSize: 14, color: BRAND.gold },
+    commentAvatarText: { fontFamily: FONT.sans, fontWeight: "700", fontSize: 14, color: BRAND.gold },
     commentContent: { flex: 1, backgroundColor: colors.card, borderRadius: RADIUS.sm, padding: SPACING.sm },
-    commentName: { fontFamily: FONT.sans, fontWeight: '600', fontSize: 13, color: colors.text },
+    commentName: { fontFamily: FONT.sans, fontWeight: "600", fontSize: 13, color: colors.text },
     commentBody: { fontFamily: FONT.sans, fontSize: 13, color: colors.textMuted, lineHeight: 20, marginTop: 2 },
-    loadMoreBtn: { alignItems: 'center' as const, paddingVertical: SPACING.sm },
-    loadMoreText: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: '600' },
+    loadMoreBtn: { alignItems: "center" as const, paddingVertical: SPACING.sm },
+    loadMoreText: { fontFamily: FONT.sans, fontSize: 13, color: BRAND.gold, fontWeight: "600" },
     commentBar: {
-      flexDirection: 'row' as const,
-      alignItems: 'flex-end' as const,
+      flexDirection: "row" as const,
+      alignItems: "flex-end" as const,
       gap: SPACING.sm,
       paddingHorizontal: SPACING.base,
       paddingTop: SPACING.sm,
@@ -96,8 +96,8 @@ function useStyles() {
       height: 40,
       borderRadius: 20,
       backgroundColor: BRAND.gold,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
     sendBtnDisabled: { opacity: 0.4 },
   }), [colors]);
@@ -110,15 +110,15 @@ export default function AnnouncementDetailScreen() {
   const styles = useStyles();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['announcement', announcementId],
+    queryKey: ["announcement", announcementId],
     queryFn: () => communityApi.getAnnouncement(announcementId),
     enabled: !!announcementId,
   });
 
   const ann = data?.data.data;
-  const isAr = i18n.language === 'ar';
-  const title = ann ? (isAr ? ann.titleAr : ann.title) : '';
-  const body = ann ? (isAr ? ann.bodyAr : ann.body) : '';
+  const isAr = i18n.language === "ar";
+  const title = ann ? (isAr ? ann.titleAr : ann.title) : "";
+  const body = ann ? (isAr ? ann.bodyAr : ann.body) : "";
 
   if (isLoading || !ann)
     return <AnnouncementSkeleton insets={insets} />;
@@ -126,7 +126,7 @@ export default function AnnouncementDetailScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <View style={[styles.nav, { paddingTop: insets.top + SPACING.sm }]}>
         <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
@@ -145,12 +145,12 @@ export default function AnnouncementDetailScreen() {
         {ann.pdfUrl && (
           <Pressable style={styles.pdfRow} onPress={() => Linking.openURL(ann.pdfUrl!)}>
             <FilePdf size={24} color={BRAND.gold} />
-            <Text style={styles.pdfLabel}>{t('community.view_pdf')}</Text>
+            <Text style={styles.pdfLabel}>{t("community.view_pdf")}</Text>
           </Pressable>
         )}
 
         <View style={styles.divider} />
-        <Text style={styles.sectionTitle}>{t('community.comments')}</Text>
+        <Text style={styles.sectionTitle}>{t("community.comments")}</Text>
         <CommentsSection announcementId={announcementId} styles={styles} />
       </ScrollView>
 
@@ -171,7 +171,7 @@ function CommentsSection({ announcementId, styles }: { announcementId: string; s
       string[],
       string | undefined
     >({
-      queryKey: ['comments', announcementId],
+      queryKey: ["comments", announcementId],
       queryFn: ({ pageParam }) =>
         communityApi.getComments(announcementId, { cursor: pageParam, limit: 20 }),
       getNextPageParam: last => last.data.data.nextCursor ?? undefined,
@@ -201,7 +201,7 @@ function CommentsSection({ announcementId, styles }: { announcementId: string; s
               fetchNextPage();
           }}
         >
-          <Text style={styles.loadMoreText}>{t('common.load_more')}</Text>
+          <Text style={styles.loadMoreText}>{t("common.load_more")}</Text>
         </Pressable>
       )}
     </View>
@@ -227,13 +227,13 @@ function AddCommentBar({ announcementId, bottomInset, styles }: { announcementId
   const colors = useAppColors();
   const { requireAuth } = useAuthGuard();
   const queryClient = useQueryClient();
-  const [text, setText] = React.useState('');
+  const [text, setText] = React.useState("");
 
   const { mutate, isPending } = useMutation({
     mutationFn: () => communityApi.addComment(announcementId, text),
     onSuccess: () => {
-      setText('');
-      queryClient.invalidateQueries({ queryKey: ['comments', announcementId] });
+      setText("");
+      queryClient.invalidateQueries({ queryKey: ["comments", announcementId] });
     },
   });
 
@@ -248,7 +248,7 @@ function AddCommentBar({ announcementId, bottomInset, styles }: { announcementId
       <TextInput
         value={text}
         onChangeText={setText}
-        placeholder={t('community.comment_placeholder')}
+        placeholder={t("community.comment_placeholder")}
         placeholderTextColor={colors.textMuted}
         style={styles.commentInput}
         multiline

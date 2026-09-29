@@ -1,11 +1,11 @@
-import { WarningCircle } from 'phosphor-react-native';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { WarningCircle } from "phosphor-react-native";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, View } from "react-native";
 
-import { useAppColors } from '@/lib/hooks/use-app-colors';
-import { FONT, RADIUS, SEMANTIC, SPACING } from '@/theme/tokens';
-import { Text } from './text';
+import { useAppColors } from "@/lib/hooks/use-app-colors";
+import { FONT, RADIUS, SEMANTIC, SPACING } from "@/theme/tokens";
+import { Text } from "./text";
 
 type ErrorStateProps = {
   onRetry?: () => void;
@@ -21,16 +21,16 @@ export function ErrorState({ onRetry, message }: ErrorStateProps) {
     <View style={styles.container}>
       <WarningCircle size={48} color={SEMANTIC.error} />
       <Text style={styles.message}>
-        {message ?? t('common.error')}
+        {message ?? t("common.error")}
       </Text>
       {onRetry && (
         <Pressable
           style={styles.retryButton}
           onPress={onRetry}
           accessibilityRole="button"
-          accessibilityLabel={t('common.retry')}
+          accessibilityLabel={t("common.retry")}
         >
-          <Text style={styles.retryText}>{t('common.retry')}</Text>
+          <Text style={styles.retryText}>{t("common.retry")}</Text>
         </Pressable>
       )}
     </View>
@@ -43,8 +43,8 @@ function useStyles(colors: ReturnType<typeof useAppColors>) {
       StyleSheet.create({
         container: {
           flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
+          alignItems: "center",
+          justifyContent: "center",
           paddingHorizontal: SPACING.xl,
           gap: SPACING.md,
         },
@@ -52,7 +52,7 @@ function useStyles(colors: ReturnType<typeof useAppColors>) {
           fontFamily: FONT.sans,
           fontSize: 15,
           color: colors.textMuted,
-          textAlign: 'center',
+          textAlign: "center",
         },
         retryButton: {
           marginTop: SPACING.sm,

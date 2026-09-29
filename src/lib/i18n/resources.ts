@@ -1,5 +1,5 @@
-import ar from '@/translations/ar.json';
-import en from '@/translations/en.json';
+import ar from "@/translations/ar.json";
+import en from "@/translations/en.json";
 
 export const resources = {
   en: {
