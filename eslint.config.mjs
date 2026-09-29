@@ -40,6 +40,9 @@ export default antfu(
       "cli/",
       "expo-env.d.ts",
       "migration/*",
+      "README.md",
+      "claude.md",
+      "Documentation/*.md",
     ],
   },
 
