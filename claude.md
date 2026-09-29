@@ -5,7 +5,33 @@
 
 ## Status
 
-✅ **Functionally complete. 2026-07-19 audit gaps addressed 2026-07-26: FE-1 merchant blocker fixed backend-side, FE-3 real auth tests added (verified 5/5), FE-6 dead routes removed. FE-2 (analytics) descoped. See `frontend_review.md`.**
+✅ **2026-09-29 pass: 3 commits (`9fef982`, `9743231`, `03d13bd`), tree clean, nothing pushed.**
+`pnpm type-check` exit 0 · tests **41/41** · lint 3915 errors → 37 (deferred by choice).
+
+- **Type-checking had NEVER run.** `tsconfig.json:4` set `ignoreDeprecations: "6.0"`, invalid for
+  TypeScript 5.9.3, so `tsc` aborted with TS5103 at config parsing before reading a single file —
+  every "TS clean" claim in these docs was unfounded. Now `"5.0"`; checks 3280 files, exit 0.
+  The code was genuinely clean underneath; the tooling was the bug.
+- **Four real bugs** surfaced once lint was readable: `merchant.pending_count_waiting` showed the
+  literal `{{n}}` instead of the count (the i18n validator rejects single-char interpolation
+  names — use `{{count}}`); `checkbox.tsx` used the nonexistent `bg-primary-300`; a suppressed
+  `exhaustive-deps`; dead code in the merchant menu.
+- **Kebab-case renames** via `git mv`: `format-currency.ts`, `{auth,cart,preferences}-slice.ts`.
+  All 30 importers updated — including the `jest.mock()` path in `jest-setup.ts`, which is
+  load-bearing.
+- ESLint now ignores `README.md`/`claude.md`/`Documentation/*.md` — it was parsing their code
+  fences as standalone TypeScript and inventing ~33 phantom errors.
+- `src/theme/tokens.ts` was reformatted to double quotes, so it is **no longer byte-identical** to
+  `eastpark-web-app`'s copy. Values are identical — diff values, not bytes. See `../restructure.md`.
+
+**Open:** `eas.json` `submit.production`/`submit.preview` are both `{}`, so store submission is
+impossible · no build profile supplies `EXPO_PUBLIC_API_URL`/`EXPO_PUBLIC_SOCKET_URL`, so cloud
+builds ship pointing at `localhost:3000` · `package-lock.json` is still **tracked** in this
+pnpm-only repo · preview profile mixes `distribution:"store"` with `buildType:"apk"` (Play is
+AAB-only). Full list: `../eastpark-backend/COMPLETION-ROADMAP.md` Part 3.
+
+Earlier: 2026-07-19 audit gaps addressed 2026-07-26 (FE-1 fixed backend-side, FE-3 tests, FE-6
+dead routes removed; FE-2 analytics descoped). See `frontend_review.md`.
 
 ✅ All 7 phases + all 38 AppGaps + deep-audit passes + FE-BE wiring + maintenance pass resolved.
 Last commits: `3ea3f75` → `a498a15` (maintenance pass + review pass + TS fixes + Jest fix pass). Branch: main.
