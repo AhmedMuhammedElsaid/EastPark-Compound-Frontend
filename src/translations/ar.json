@@ -297,7 +297,7 @@
     "new_product": "منتج جديد",
     "orders": "الطلبات الواردة",
     "pending": "معلّق",
-    "pending_count_waiting": "{{n}} طلبات جديدة بانتظارك",
+    "pending_count_waiting": "{{count}} طلبات جديدة بانتظارك",
     "pending_orders_waiting": "طلبات جديدة بانتظارك",
     "reject": "رفض",
     "section_basic_info": "المعلومات الأساسية",

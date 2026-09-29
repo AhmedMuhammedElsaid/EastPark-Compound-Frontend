@@ -1,18 +1,18 @@
-import type { PressableProps } from 'react-native';
-import { MotiView } from 'moti';
-import * as React from 'react';
-import { useCallback } from 'react';
+import type { PressableProps } from "react-native";
+import { MotiView } from "moti";
+import * as React from "react";
+import { useCallback } from "react";
 import {
   I18nManager,
   Pressable,
 
   View,
-} from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+} from "react-native";
+import Svg, { Path } from "react-native-svg";
 
-import colors from '@/components/ui/colors';
+import colors from "@/components/ui/colors";
 
-import { Text } from './text';
+import { Text } from "./text";
 
 const SIZE = 20;
 const WIDTH = 50;
@@ -26,7 +26,7 @@ export type RootProps = {
   checked?: boolean;
   className?: string;
   accessibilityLabel: string;
-} & Omit<PressableProps, 'onPress'>;
+} & Omit<PressableProps, "onPress">;
 
 export type IconProps = {
   checked: boolean;
@@ -37,7 +37,7 @@ export function Root({
   children,
   onChange,
   disabled,
-  className = '',
+  className = "",
   ...props
 }: RootProps) {
   const handleChange = useCallback(() => {
@@ -48,7 +48,7 @@ export function Root({
     <Pressable
       onPress={handleChange}
       className={`flex-row items-center ${className} ${
-        disabled ? 'opacity-50' : ''
+        disabled ? "opacity-50" : ""
       }`}
       accessibilityState={{ checked }}
       disabled={disabled}
@@ -65,7 +65,7 @@ type LabelProps = {
   testID?: string;
 };
 
-function Label({ text, testID, className = '' }: LabelProps) {
+function Label({ text, testID, className = "" }: LabelProps) {
   return (
     <Text testID={testID} className={`${className} pl-2`}>
       {text}
@@ -83,20 +83,20 @@ export function CheckboxIcon({ checked = false }: IconProps) {
         borderColor: color,
       }}
       className="items-center justify-center rounded-[5px] border-2"
-      from={{ backgroundColor: 'transparent', borderColor: '#CCCFD6' }}
+      from={{ backgroundColor: "transparent", borderColor: "#CCCFD6" }}
       animate={{
-        backgroundColor: checked ? color : 'transparent',
+        backgroundColor: checked ? color : "transparent",
         borderColor: color,
       }}
       transition={{
-        backgroundColor: { type: 'timing', duration: 100 },
-        borderColor: { type: 'timing', duration: 100 },
+        backgroundColor: { type: "timing", duration: 100 },
+        borderColor: { type: "timing", duration: 100 },
       }}
     >
       <MotiView
         from={{ opacity: 0 }}
         animate={{ opacity: checked ? 1 : 0 }}
-        transition={{ opacity: { type: 'timing', duration: 100 } }}
+        transition={{ opacity: { type: "timing", duration: 100 } }}
       >
         <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <Path
@@ -156,17 +156,17 @@ export function RadioIcon({ checked = false }: IconProps) {
         borderColor: color,
       }}
       className="items-center justify-center rounded-[20px] border-2 bg-transparent"
-      from={{ borderColor: '#CCCFD6' }}
+      from={{ borderColor: "#CCCFD6" }}
       animate={{
         borderColor: color,
       }}
-      transition={{ borderColor: { duration: 100, type: 'timing' } }}
+      transition={{ borderColor: { duration: 100, type: "timing" } }}
     >
       <MotiView
-        className={`size-[10px] rounded-[10px] ${checked && 'bg-primary-300'}`}
+        className={`size-[10px] rounded-[10px] ${checked && "bg-gold-400"}`}
         from={{ opacity: 0 }}
         animate={{ opacity: checked ? 1 : 0 }}
-        transition={{ opacity: { duration: 50, type: 'timing' } }}
+        transition={{ opacity: { duration: 50, type: "timing" } }}
       />
     </MotiView>
   );
@@ -226,8 +226,8 @@ export function SwitchIcon({ checked = false }: IconProps) {
         style={{
           height: THUMB_HEIGHT,
           width: THUMB_WIDTH,
-          position: 'absolute',
-          backgroundColor: 'white',
+          position: "absolute",
+          backgroundColor: "white",
           borderRadius: 13,
           right: 0,
         }}

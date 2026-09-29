@@ -1,11 +1,11 @@
-import * as SplashScreen from 'expo-splash-screen';
-import * as React from 'react';
-import { getSecureItem } from '@/lib/secure-storage';
+import * as SplashScreen from "expo-splash-screen";
+import * as React from "react";
+import { getSecureItem } from "@/lib/secure-storage";
 
-import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from '@/services/api/client';
-import { usersApi } from '@/services/api/users';
-import { useAppDispatch } from '@/store';
-import { login } from '@/store/slices/authSlice';
+import { SECURE_KEY_ACCESS, SECURE_KEY_REFRESH } from "@/services/api/client";
+import { usersApi } from "@/services/api/users";
+import { useAppDispatch } from "@/store";
+import { login } from "@/store/slices/auth-slice";
 
 /**
  * Reads persisted tokens from SecureStore on cold launch.
@@ -32,7 +32,7 @@ export function useAuthRehydration(): void {
         else {
           // network error — don't clear tokens, let user retry
           if (__DEV__)
-            console.warn('[auth-rehydration] network error on startup', err);
+            console.warn("[auth-rehydration] network error on startup", err);
         }
       }
       finally {
@@ -40,6 +40,5 @@ export function useAuthRehydration(): void {
       }
     }
     rehydrate();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 }
