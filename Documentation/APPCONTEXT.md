@@ -15,6 +15,14 @@
 - Mobile binaries are not yet built/submitted. Website/backend deployment does not imply a mobile
   store release.
 
+### Web parity reference
+
+`eastpark-web-app` is expanding from lead capture into a responsive browser counterpart.
+This mobile app is the behavioral reference for feature parity; backend endpoints and DTO behavior
+are authoritative. Web work must mirror flows without changing mobile solely for convenience.
+The parent `packages/shared` experiment is deferred. This repository remains independently
+installable and does not depend on parent workspace packages.
+
 ---
 
 ## Status

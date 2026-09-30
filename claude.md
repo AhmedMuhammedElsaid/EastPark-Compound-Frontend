@@ -5,6 +5,17 @@
 
 ## Status
 
+### Cross-platform parity handoff — 2026-09-30
+
+The deployed `eastpark-web-app` is beginning feature parity with this completed mobile app. Treat this
+mobile repository as the behavioral reference for routes, role guards, API use, cart/order rules,
+community flows, and Arabic/English UX. Do not modify mobile merely to make web implementation
+easier. Backend contracts remain authoritative when code and older docs disagree.
+
+The parent repository has a deferred pnpm workspace experiment and private `packages/shared`
+package. This mobile repository remains independently installable and does not consume it. Read
+parent `restructure.md` before changing workspace resolution.
+
 ✅ **2026-09-30 production integration update:**
 
 - Backend is live at `https://eastpark-backend.fly.dev`; health and Prisma are verified.
