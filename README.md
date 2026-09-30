@@ -417,7 +417,7 @@ Rules enforced in code:
 
 ```bash
 git clone <repo>
-cd eastpark-frontend
+cd apps/mobile
 pnpm install
 ```
 
@@ -579,7 +579,7 @@ Examples:
 ## Project Structure Reference
 
 ```
-eastpark-frontend/
+apps/mobile/
 ├── src/
 │   ├── app/                        All Expo Router screens (see Navigation Structure above)
 │   ├── components/

@@ -1,6 +1,6 @@
 # EastPark Frontend — Session Context
 
-> Claude Code loads this file automatically when invoked in `eastpark-frontend/`.
+> Claude Code loads this file automatically when invoked in `apps/mobile/`.
 > Root project context: see `/mnt/c/Unite/EastPark-App/CLAUDE.md`.
 
 ## Status
@@ -41,10 +41,10 @@ parent `restructure.md` before changing workspace resolution.
 - ESLint now ignores `README.md`/`claude.md`/`Documentation/*.md` — it was parsing their code
   fences as standalone TypeScript and inventing ~33 phantom errors.
 - `src/theme/tokens.ts` was reformatted to double quotes, so it is **no longer byte-identical** to
-  `eastpark-web-app`'s copy. Values are identical — diff values, not bytes. See `../restructure.md`.
+  `eastpark-web-app`'s copy. Values are identical — diff values, not bytes. See `../../restructure.md`.
 
 **Open:** store submit configuration/account credentials and the actual EAS build/submit remain.
-Full list: `../eastpark-backend/COMPLETION-ROADMAP.md` Part 3.
+Full list: `../backend/COMPLETION-ROADMAP.md` Part 3.
 
 Earlier: 2026-07-19 audit gaps addressed 2026-07-26 (FE-1 fixed backend-side, FE-3 tests, FE-6
 dead routes removed; FE-2 analytics descoped). See `frontend_review.md`.
@@ -57,7 +57,7 @@ Last commits: `3ea3f75` → `a498a15` (maintenance pass + review pass + TS fixes
 - `EAS_PROJECT_ID` already populated (`062399ed-48df-4d4f-ba1a-a0801a86b1bc`) — `eas init` is done
 
 ### Audit 2026-07-19 → status 2026-07-26 (full detail in `frontend_review.md`)
-- **FE-1 ✅ FIXED backend-side:** the backend now exposes a `/merchant/*` controller (`eastpark-backend/src/modules/merchant/`) that resolves the merchant's shop from the JWT. `src/services/api/merchant.ts` and all `(merchant)` screens work UNCHANGED — do NOT rewrite them to `/shops/:id`. Also solved B-7 (no way to discover own shopId).
+- **FE-1 ✅ FIXED backend-side:** the backend now exposes a `/merchant/*` controller (`apps/backend/src/modules/merchant/`) that resolves the merchant's shop from the JWT. `src/services/api/merchant.ts` and all `(merchant)` screens work UNCHANGED — do NOT rewrite them to `/shops/:id`. Also solved B-7 (no way to discover own shopId).
 - **FE-2 DESCOPED:** Posthog + Sentry/GlitchTip not wired — deferred pending product decision.
 - **FE-3 ✅ FIXED:** real login-form tests added (`login-form.test.tsx`, 5 tests) — verified 5/5 passing on Node v24.
 - **FE-4 tooling:** WSL default node is v12, but modern Node IS available via nvm (`. ~/.nvm/nvm.sh; nvm use 24`) — use it to run `pnpm test`/`type-check` (slow on the mounted drive, ~15min for a test file).
@@ -286,7 +286,7 @@ pnpm build:production:ios   # EAS production iOS
 
 - All commits use `--no-verify` — WSL cannot run node/pnpm, pre-commit hook always fails
 - `EAS_PROJECT_ID` is already populated (`062399ed-48df-4d4f-ba1a-a0801a86b1bc`) — `eas init` is done
-- `eastpark-frontend/` is its own git repo — commits must be made from inside this directory
+- `apps/mobile/` is its own git repo — commits must be made from inside this directory
 - `deleteAccount` (`DELETE /user`): frontend calls it correctly but backend only exposes `DELETE /admin/user/:id` — self-delete endpoint (B-1) still needs to be added to backend
 - `PATCH /merchant/shop` does not exist in backend — shop profile editor uses `PATCH /shops/:id` (accepts MERCHANT role with ownership enforcement)
 - **Jest mocking:** `@reduxjs/toolkit` and `react-redux` ship ESM-only builds that Jest cannot parse. `jest-setup.ts` globally mocks `@/store` (minimal dispatch/getState/persistor/useAppDispatch/useAppSelector), `@/store/slices/preferencesSlice`, and `react-native-restart` to prevent the ESM chain from ever loading. `jest.config.js` `transformIgnorePatterns` also includes `immer|@reduxjs/toolkit|redux-persist`. Do NOT remove these mocks.

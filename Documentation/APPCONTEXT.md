@@ -1,7 +1,7 @@
 # EastPark Frontend — Application Context
 
-> Technical snapshot of `eastpark-frontend/` as of April 2026.
-> For backend context, see `../eastpark-backend/APPCONTEXT.md`.
+> Technical snapshot of `apps/mobile/` as of April 2026.
+> For backend context, see `../../backend/Documentation/APPCONTEXT.md`.
 > For full project context, see `../APPCONTEXT.md`.
 
 ---

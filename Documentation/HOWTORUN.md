@@ -2,7 +2,7 @@
 
 > **EastPark** is a residential compound super-app for the MENA region.
 > This document covers the **Expo 54 React Native** frontend only.
-> For the backend setup, see `../eastpark-backend/HOWTORUN.md`.
+> For the backend setup, see `../../backend/Documentation/HOWTORUN.md`.
 > For full-stack local dev, run both simultaneously.
 
 ---
@@ -36,7 +36,7 @@ Primary language: **Arabic (RTL)**. Secondary: **English (LTR)**. Switchable in-
 ## Step 1 — Install dependencies
 
 ```bash
-cd eastpark-frontend
+cd apps/mobile
 pnpm install
 ```
 
@@ -93,7 +93,7 @@ cd ../eastpark-backend
 pnpm dev:setup    # Docker → migrate → seed → API server on :3000
 ```
 
-See `../eastpark-backend/HOWTORUN.md` for full backend setup.
+See `../../backend/Documentation/HOWTORUN.md` for full backend setup.
 
 ---
 
@@ -215,7 +215,7 @@ app/
 ### 1 — EAS project ID (required for push notifications)
 
 ```bash
-cd eastpark-frontend
+cd apps/mobile
 eas login
 eas init
 ```
@@ -262,7 +262,7 @@ When developing end-to-end, run the backend and frontend simultaneously.
 
 ### Terminal 1 — Backend
 ```bash
-cd /mnt/c/Unite/EastPark-App/eastpark-backend
+cd /mnt/c/Unite/EastPark-App/apps/backend
 cp .env.example .env         # first time only
 pnpm dev:setup               # Docker + migrate + seed + dev server in one command
 # or manually: docker compose up -d && pnpm prisma:migrate && pnpm seed && pnpm dev
@@ -270,7 +270,7 @@ pnpm dev:setup               # Docker + migrate + seed + dev server in one comma
 
 ### Terminal 2 — Frontend
 ```bash
-cd /mnt/c/Unite/EastPark-App/eastpark-frontend
+cd /mnt/c/Unite/EastPark-App/apps/mobile
 # Ensure EXPO_PUBLIC_API_URL=http://localhost:3000 in .env.local (no /v1)
 pnpm start                   # Expo dev server
 # Press i (iOS simulator) or a (Android emulator) or scan QR with Expo Go
