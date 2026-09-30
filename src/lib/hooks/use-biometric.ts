@@ -42,12 +42,15 @@ const initialState: BiometricState = {
 };
 
 function pickKind(types: LocalAuthentication.AuthenticationType[]): BiometricKind {
-  if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION))
+  if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
     return "face";
-  if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT))
+  }
+  if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
     return "fingerprint";
-  if (types.includes(LocalAuthentication.AuthenticationType.IRIS))
+  }
+  if (types.includes(LocalAuthentication.AuthenticationType.IRIS)) {
     return "iris";
+  }
   return "generic";
 }
 
@@ -73,8 +76,9 @@ export function useBiometric() {
       });
     }
     catch (err) {
-      if (__DEV__)
+      if (__DEV__) {
         console.warn("[biometric] refresh failed", err);
+      }
       setState({ ...initialState, ready: true });
     }
   }, []);
@@ -93,16 +97,18 @@ export function useBiometric() {
       return res.success;
     }
     catch (err) {
-      if (__DEV__)
+      if (__DEV__) {
         console.warn("[biometric] authenticate failed", err);
+      }
       return false;
     }
   }, [t]);
 
   const enable = React.useCallback(async (email: string): Promise<boolean> => {
     const ok = await authenticate();
-    if (!ok)
+    if (!ok) {
       return false;
+    }
     await setSecureItem(SECURE_KEY_BIOMETRIC_ENABLED, "1");
     await setSecureItem(SECURE_KEY_BIOMETRIC_EMAIL, email);
     setState(s => ({ ...s, enabled: true, email }));

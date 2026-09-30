@@ -5,6 +5,14 @@
 
 ## Status
 
+✅ **2026-09-30 production integration update:**
+
+- Backend is live at `https://eastpark-backend.fly.dev`; health and Prisma are verified.
+- EAS production and preview profiles now use the live API/socket URLs and strict env validation.
+- Preview distribution is `internal`; production remains store distribution.
+- `package-lock.json` is removed from this pnpm-only repository.
+- Store binaries have not yet been built or submitted; mobile release remains a separate task.
+
 ✅ **2026-09-29 pass: 3 commits (`9fef982`, `9743231`, `03d13bd`), tree clean, nothing pushed.**
 `pnpm type-check` exit 0 · tests **41/41** · lint 3915 errors → 37 (deferred by choice).
 
@@ -24,11 +32,8 @@
 - `src/theme/tokens.ts` was reformatted to double quotes, so it is **no longer byte-identical** to
   `eastpark-web-app`'s copy. Values are identical — diff values, not bytes. See `../restructure.md`.
 
-**Open:** `eas.json` `submit.production`/`submit.preview` are both `{}`, so store submission is
-impossible · no build profile supplies `EXPO_PUBLIC_API_URL`/`EXPO_PUBLIC_SOCKET_URL`, so cloud
-builds ship pointing at `localhost:3000` · `package-lock.json` is still **tracked** in this
-pnpm-only repo · preview profile mixes `distribution:"store"` with `buildType:"apk"` (Play is
-AAB-only). Full list: `../eastpark-backend/COMPLETION-ROADMAP.md` Part 3.
+**Open:** store submit configuration/account credentials and the actual EAS build/submit remain.
+Full list: `../eastpark-backend/COMPLETION-ROADMAP.md` Part 3.
 
 Earlier: 2026-07-19 audit gaps addressed 2026-07-26 (FE-1 fixed backend-side, FE-3 tests, FE-6
 dead routes removed; FE-2 analytics descoped). See `frontend_review.md`.

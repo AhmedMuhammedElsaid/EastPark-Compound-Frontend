@@ -6,6 +6,17 @@
 
 ---
 
+## Production Integration — 2026-09-30
+
+- Backend: `https://eastpark-backend.fly.dev` (health and Prisma verified)
+- Production and preview EAS profiles use the live API and Socket.io base URL.
+- Strict environment validation is enabled for cloud builds.
+- Preview distribution is internal; production is configured for store builds.
+- Mobile binaries are not yet built/submitted. Website/backend deployment does not imply a mobile
+  store release.
+
+---
+
 ## Status
 
 **All 7 phases + all 38 AppGaps + 3 deep-audit passes + FE-BE wiring: 100% complete.**
